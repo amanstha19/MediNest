@@ -1,0 +1,56 @@
+/* Reset some default styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Ensure the body takes full height */
+html, body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+/* Main container, ensure it takes full space minus the header/footer */
+.main-container {
+  flex-grow: 1; /* Take all available space except the footer */
+}
+
+/* Navbar styling */
+.navbar {
+  margin-bottom: 20px;
+}
+
+/* Footer styling */
+footer {
+  background-color: #343a40;
+  color: white;
+  padding: 20px 0;
+  text-align: center;
+  font-size: 14px;
+  margin-top: auto;  /* Ensures footer goes to the bottom */
+}
+
+/* Fix for flexbox or centering issues */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Optional: Center content inside a flexbox container */
+.centered-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+/* Ensure full viewport height for sections */
+.full-height {
+  height: 100vh;
+}

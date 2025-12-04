@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 from django.db import transaction
 
@@ -757,9 +758,10 @@ class BookingPaymentView(APIView):
                     logger.info(f"Booking payment callback processed successfully for transaction {transaction_uuid}")
                     return Response({
                         "message": "Payment successful",
-                        "transaction_uuid": transaction_uuid
+                        "transaction_uuid": transaction_uuid,
+                        "booking_id": payment.booking.id if payment.booking else None
                     }, status=status.HTTP_200_OK)
-
+    
                 except userPayment.DoesNotExist:
                     logger.error(f"Payment not found for transaction {transaction_uuid}")
                     return Response({"error": "Payment not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -811,8 +813,8 @@ class BookingPaymentView(APIView):
                 "product_code": "EPAYTEST",
                 "product_service_charge": "0",
                 "product_delivery_charge": "0",
-                "success_url": f"https://developer.esewa.com.np/success/",  # Update with your success URL
-                "failure_url": f"https://developer.esewa.com.np/failure/",  # Update with your failure URL
+                "success_url": "http://localhost:5173/booking-payment-verification",
+                "failure_url": "http://localhost:5173/booking-payment-verification",
                 "signed_field_names": "total_amount,transaction_uuid,product_code",
                 "signature": signature
             }
@@ -838,3 +840,33 @@ class BookingPaymentView(APIView):
 
 
 
+
+
+# Admin Verification Endpoint
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def verify_admin_access(request):
+    """
+    Verify if the authenticated user has admin access
+    Returns user info if they are admin, 403 if not
+    """
+    user = request.user
+    
+    if user.is_staff or user.is_superuser:
+        return Response({
+            'is_admin': True,
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'is_staff': user.is_staff,
+                'is_superuser': user.is_superuser
+            }
+        }, status=status.HTTP_200_OK)
+    else:
+        return Response({
+            'is_admin': False,
+            'error': 'User is not an admin'
+        }, status=status.HTTP_403_FORBIDDEN)

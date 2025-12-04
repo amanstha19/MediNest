@@ -60,10 +60,10 @@ function HomeScreen() {
         <h1>Your Trusted Online Healthcare Companion</h1>
         <p>Medicines, Lab Tests, Emergency Services - Everything You Need for Your Health, Available 24/7</p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '32px' }}>
-          <Link to="/medicines" style={{ textDecoration: 'none' }}>
+          <Link to="/category/medicines" style={{ textDecoration: 'none' }}>
             <Button variant="secondary" size="lg">🛒 Shop Medicines</Button>
           </Link>
-          <Link to="/lab-tests" style={{ textDecoration: 'none' }}>
+          <Link to="/category/lab-tests" style={{ textDecoration: 'none' }}>
             <Button variant="secondary" size="lg">📋 Book Test</Button>
           </Link>
         </div>

@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Container } from 'react-bootstrap';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -25,61 +25,79 @@ import MedicinesPage from './components/screens/MedicinesPage';
 import LabTestsPage from './components/screens/LabTestsPage';
 import Payment from './components/screens/Payment';
 import PaymentVerification from './components/screens/PaymentVerification';
-import AllServicesPage from './components/screens/AllServicesPage';
-
 import PaymentSuccess from './components/screens/PaymentSuccess';
 import BookingPayment from './components/screens/BookingPayment';
+import BookingSuccessScreen from './components/screens/BookingSuccessScreen';
+import BookingPaymentVerification from './components/screens/BookingPaymentVerification';
+import './components/ui/modern-ui.css';
 
-import AdminRedirect from './components/screens/AdminPanel';
+
+
+
+const AppContent = () => {
+  const location = useLocation();
+  const isAdminPage = location.pathname === '/admin' || location.pathname.startsWith('/admin');
+  const isLoginPage = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/signin';
+
+  const isAuthenticated = true; // Replace with actual authentication check
+
+  return (
+    <>
+      {!isAdminPage && !isLoginPage && <Navbar />}
+      {!isAdminPage && <Container>
+        <Routes>
+          <Route path="/" element={<HomeScreen />} />
+          <Route path="/product/:id" element={<ProductScreen />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignupScreen />} />
+          <Route path="/signin" element={<Login />} />
+          <Route path="/ambulance" element={<Ambulance />} />
+          <Route 
+            path="/profile" 
+            element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} 
+          />
+          <Route path="/cart" element={<CartScreen />} />
+          <Route path="/checkout" element={<CheckoutScreen />} />
+          <Route path="/order-success/:orderId" element={<OrderSuccessScreen />} />
+          <Route path="/book-test/:testId" element={<LabTestBookingPage />} />
+          <Route path="/category/health-packages" element={<HealthPackagesPage />} />
+          <Route path="/category/medicines" element={<MedicinesPage />} />
+          <Route path="/category/lab-tests" element={<LabTestsPage />} />
+
+          {/* Payment Route with params */}
+          <Route 
+            path="/payment/:orderId/:totalPrice" 
+            element={<Payment />} 
+          />
+         <Route path="/booking-payment/:bookingId/:amount" element={<BookingPayment />} />
+          <Route path="/payment/verification" element={<PaymentVerification />} />
+          <Route path="/payment-success" component={PaymentSuccess} />
+          <Route path="/booking-success/:bookingId" element={<BookingSuccessScreen />} />
+        </Routes>
+      </Container>}
+      {isAdminPage && <Routes>
+        <Route path="/admin" element={<AdminPanel />} />
+      </Routes>}
+      {isLoginPage && <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignupScreen />} />
+        <Route path="/signin" element={<Login />} />
+      </Routes>}
+      {!isAdminPage && !isLoginPage && <Footer />}
+    </>
+  );
+};
+
 function App() {
   useEffect(() => {
     testAPI();
   }, []);
 
-  const isAuthenticated = true; // Replace with actual authentication check
-
   return (
     <AuthProvider>
       <CartProvider>
         <Router>
-          <Navbar />
-          <Container>
-            <Routes>
-              <Route path="/" element={<HomeScreen />} />
-              <Route path="/admin" element={<AdminRedirect />} />
-
-              <Route path="/product/:id" element={<ProductScreen />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<SignupScreen />} />
-              <Route path="/signin" element={<Login />} />
-              <Route path="/ambulance" element={<Ambulance />} />
-              <Route 
-                path="/profile" 
-                element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} 
-              />
-              <Route path="/cart" element={<CartScreen />} />
-              <Route path="/admin" element={<AdminPanel />} />
-              <Route path="/checkout" element={<CheckoutScreen />} />
-              <Route path="/order-success/:orderId" element={<OrderSuccessScreen />} />
-              <Route path="/book-test/:testId" element={<LabTestBookingPage />} />
-              <Route path="/category/health-packages" element={<HealthPackagesPage />} />
-              <Route path="/category/medicines" element={<MedicinesPage />} />
-              <Route path="/category/lab-tests" element={<LabTestsPage />} />
-              <Route path="/services" element={<AllServicesPage />} />
-
-              {/* Payment Route with params */}
-              <Route 
-                path="/payment/:orderId/:totalPrice" 
-                element={<Payment />} 
-              />
-             <Route path="/booking-payment/:bookingId/:amount" element={<BookingPayment />} />
-              <Route path="/payment/verification" element={<PaymentVerification />} />
-              <Route path="/payment-success" component={PaymentSuccess} />
-
-              
-            </Routes>
-          </Container>
-          <Footer />
+          <AppContent />
         </Router>
       </CartProvider>
     </AuthProvider>

@@ -14,7 +14,7 @@ from .views import (
     OrderDetailView,
     ViewCart,
     RegisterAPIView, ProductSearchAPIView, BookingPaymentView,
-
+    verify_admin_access,
 )
 from .views import ProcessPaymentView, PaymentSuccessView
 
@@ -38,6 +38,7 @@ urlpatterns = [
     path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('check-email/', views.check_email, name='check_email'),
     path('user/profile/', UserProfileView.as_view(), name='user-profile'),
+    path('verify-admin/', verify_admin_access, name='verify-admin'),
 
     # Product Routes
     path('products/', views.getProducts, name='products'),

@@ -238,6 +238,7 @@ html, body, #root {
   background: var(--eh-surface);
   color: var(--eh-text-primary);
   font-weight: 500;
+  box-sizing: border-box;
 }
 .eh-input:focus {
   outline: none;
@@ -369,7 +370,10 @@ html, body, #root {
 .eh-flex { display: flex; align-items: center; }
 .eh-flex-between { display: flex; align-items: center; justify-content: space-between; }
 .eh-flex-col { display: flex; flex-direction: column; }
+.eh-flex-start { display: flex; align-items: flex-start; }
 .eh-center { text-align: center; }
+.eh-text-primary { color: var(--eh-text-primary); }
+.eh-text-secondary { color: var(--eh-text-secondary); }
 .eh-text-muted { color: var(--eh-text-muted); }
 .eh-text-sm { font-size: 0.85rem; }
 .eh-mt { margin-top: var(--eh-spacing-lg); }

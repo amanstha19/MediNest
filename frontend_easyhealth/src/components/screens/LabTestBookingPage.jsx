@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Container, Form, Button, Alert, Card } from 'react-bootstrap';
 import axios from 'axios';
-import { Card, CardContent } from '../ui/card';
-import Button from '../ui/button';
-import BookingPayment from './BookingPayment';
+import BookingPayment from './BookingPayment'; // Import your payment component
 
 const getCookie = (name) => {
   let cookieValue = null;
@@ -94,7 +93,7 @@ const LabTestBookingPage = () => {
       const response = await api.post('/api/bookings/', submitData);
       setSuccess(true);
       setBookingId(response.data.id);
-      setShowPayment(true);
+      setShowPayment(true); // Show payment option after booking
     } catch (err) {
       if (err.response?.data?.error === 'This time slot is already booked') {
         setError('The selected time slot is already booked. Please choose another time.');
@@ -117,7 +116,7 @@ const LabTestBookingPage = () => {
         setBookingStatus('No booking found with the provided information.');
       } else {
         setBookingStatus(response.data);
-        setReports(response.data.reports);
+        setReports(response.data.reports); // Assuming response includes reports
       }
     } catch (err) {
       setError('Failed to check status');
@@ -127,274 +126,193 @@ const LabTestBookingPage = () => {
   };
 
   return (
-    <div className="eh-container" style={{ paddingTop: 'var(--eh-spacing-2xl)', paddingBottom: 'var(--eh-spacing-2xl)' }}>
-      <div style={{ marginBottom: 'var(--eh-spacing-2xl)' }}>
-        <div style={{ display: 'flex', gap: 'var(--eh-spacing-md)', borderBottom: '2px solid var(--eh-border)', marginBottom: 'var(--eh-spacing-lg)' }}>
-          <button
-            onClick={() => { setActiveTab('booking'); setError(null); }}
-            style={{
-              padding: 'var(--eh-spacing-md) var(--eh-spacing-lg)',
-              background: activeTab === 'booking' ? 'var(--eh-primary)' : 'transparent',
-              color: activeTab === 'booking' ? 'white' : 'var(--eh-text-primary)',
-              border: 'none',
-              borderRadius: 'var(--eh-radius-sm)',
-              cursor: 'pointer',
-              fontWeight: 600,
-              fontSize: '1rem',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            📅 Book Appointment
-          </button>
-          <button
-            onClick={() => { setActiveTab('status'); setError(null); }}
-            style={{
-              padding: 'var(--eh-spacing-md) var(--eh-spacing-lg)',
-              background: activeTab === 'status' ? 'var(--eh-primary)' : 'transparent',
-              color: activeTab === 'status' ? 'white' : 'var(--eh-text-primary)',
-              border: 'none',
-              borderRadius: 'var(--eh-radius-sm)',
-              cursor: 'pointer',
-              fontWeight: 600,
-              fontSize: '1rem',
-              transition: 'all 0.2s ease',
-            }}
-          >
-            📋 Check Status
-          </button>
-        </div>
+    <Container className="mt-5">
+      <div className="mb-4">
+        <Button
+          variant={activeTab === 'booking' ? 'primary' : 'outline-primary'}
+          className="me-2"
+          onClick={() => setActiveTab('booking')}
+        >
+          Book Appointment
+        </Button>
+        <Button
+          variant={activeTab === 'status' ? 'primary' : 'outline-primary'}
+          onClick={() => setActiveTab('status')}
+        >
+          Check Status
+        </Button>
       </div>
 
       {activeTab === 'booking' ? (
-        <Card>
-          <CardContent>
-            <h2 style={{ fontSize: '1.8rem', marginBottom: 'var(--eh-spacing-lg)', color: 'var(--eh-text-primary)' }}>
-              Book a Lab Test
-            </h2>
+        <>
+          <h2 className="text-center mb-4">Book an Appointment</h2>
+          {error && <Alert variant="danger">{error}</Alert>}
+          {success && <Alert variant="success">Booking submitted successfully!</Alert>}
 
-            {error && (
-              <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '2px solid var(--eh-accent)', borderRadius: 'var(--eh-radius)', padding: 'var(--eh-spacing-md)', marginBottom: 'var(--eh-spacing-lg)', color: 'var(--eh-accent)' }}>
-                {error}
-              </div>
-            )}
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>Full Name</Form.Label>
+              <Form.Control
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-            {success && (
-              <div style={{ background: 'rgba(34, 197, 94, 0.1)', border: '2px solid var(--eh-success)', borderRadius: 'var(--eh-radius)', padding: 'var(--eh-spacing-md)', marginBottom: 'var(--eh-spacing-lg)', color: 'var(--eh-success)' }}>
-                ✓ Booking submitted successfully!
-              </div>
-            )}
+            <Form.Group className="mb-3">
+              <Form.Label>Mobile Number</Form.Label>
+              <Form.Control
+                type="text"
+                name="mobile_number"
+                value={formData.mobile_number}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-            <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 'var(--eh-spacing-lg)' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--eh-spacing-lg)' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: 'var(--eh-text-primary)' }}>Full Name *</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="eh-input"
-                    required
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: 'var(--eh-text-primary)' }}>Mobile Number *</label>
-                  <input
-                    type="text"
-                    name="mobile_number"
-                    value={formData.mobile_number}
-                    onChange={handleChange}
-                    className="eh-input"
-                    required
-                  />
-                </div>
-              </div>
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--eh-spacing-lg)' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: 'var(--eh-text-primary)' }}>Email *</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="eh-input"
-                    required
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: 'var(--eh-text-primary)' }}>Test Service *</label>
-                  <select
-                    name="service"
-                    value={formData.service}
-                    onChange={handleChange}
-                    className="eh-input"
-                    required
-                  >
-                    <option value="">Select a service</option>
-                    {services.map((service) => (
-                      <option key={service.id} value={service.id}>
-                        {service.name} - NPR {service.price}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+            <Form.Group className="mb-3">
+              <Form.Label>Service</Form.Label>
+              <Form.Control
+                as="select"
+                name="service"
+                value={formData.service}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select a service</option>
+                {services.map((service) => (
+                  <option key={service.id} value={service.id}>
+                    {service.name} - ${service.price}
+                  </option>
+                ))}
+              </Form.Control>
+            </Form.Group>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--eh-spacing-lg)' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: 'var(--eh-text-primary)' }}>Booking Date *</label>
-                  <input
-                    type="date"
-                    name="booking_date"
-                    value={formData.booking_date}
-                    onChange={handleChange}
-                    className="eh-input"
-                    required
-                  />
-                </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: 'var(--eh-text-primary)' }}>Appointment Time *</label>
-                  <input
-                    type="time"
-                    name="appointment_time"
-                    value={formData.appointment_time}
-                    onChange={handleChange}
-                    className="eh-input"
-                    required
-                  />
-                </div>
-              </div>
+            <Form.Group className="mb-3">
+              <Form.Label>Booking Date</Form.Label>
+              <Form.Control
+                type="date"
+                name="booking_date"
+                value={formData.booking_date}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: 'var(--eh-text-primary)' }}>Address *</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleChange}
-                  className="eh-input"
-                  required
-                />
-              </div>
+            <Form.Group className="mb-3">
+              <Form.Label>Appointment Time</Form.Label>
+              <Form.Control
+                type="time"
+                name="appointment_time"
+                value={formData.appointment_time}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: 'var(--eh-text-primary)' }}>Notes</label>
-                <textarea
-                  name="notes"
-                  value={formData.notes}
-                  onChange={handleChange}
-                  className="eh-input"
-                  rows="3"
-                  style={{ resize: 'vertical' }}
-                />
-              </div>
+            <Form.Group className="mb-3">
+              <Form.Label>Address</Form.Label>
+              <Form.Control
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  name="agreedToTerms"
-                  checked={formData.agreedToTerms}
-                  onChange={handleChange}
-                  required
-                  style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                />
-                <span style={{ color: 'var(--eh-text-secondary)' }}>
-                  I agree to the terms and conditions *
-                </span>
-              </label>
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="checkbox"
+                label="I agree to the terms and conditions"
+                name="agreedToTerms"
+                checked={formData.agreedToTerms}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-              <div style={{ display: 'flex', gap: 'var(--eh-spacing-lg)' }}>
-                <Button
-                  variant="success"
-                  size="md"
-                  disabled={loading || !formData.agreedToTerms}
-                  style={{ flex: 1 }}
-                >
-                  {loading ? '⏳ Submitting...' : '✓ Book Appointment'}
-                </Button>
-              </div>
-            </form>
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={loading || !formData.agreedToTerms}
+            >
+              {loading ? 'Submitting...' : 'Book Appointment'}
+            </Button>
+          </Form>
 
-            {showPayment && bookingId && (
-              <div style={{ marginTop: 'var(--eh-spacing-2xl)', paddingTop: 'var(--eh-spacing-2xl)', borderTop: '2px solid var(--eh-border)' }}>
-                <BookingPayment 
-                  bookingId={bookingId} 
-                  amount={services.find(s => s.id === parseInt(formData.service))?.price || 0}
-                />
-              </div>
-            )}
-          </CardContent>
-        </Card>
+          {/* Payment Component */}
+          {showPayment && bookingId && (
+            <BookingPayment 
+              bookingId={bookingId} 
+              amount={services.find(s => s.id === parseInt(formData.service))?.price || 0}
+            />
+          )}
+        </>
       ) : (
-        <Card>
-          <CardContent>
-            <h2 style={{ fontSize: '1.8rem', marginBottom: 'var(--eh-spacing-lg)', color: 'var(--eh-text-primary)' }}>
-              Check Appointment Status
-            </h2>
+        <>
+          <h2 className="text-center mb-4">Check Appointment Status</h2>
+          {error && <Alert variant="danger">{error}</Alert>}
+          {bookingStatus && <Alert variant="info">{bookingStatus}</Alert>}
+          <Form onSubmit={handleStatusCheck}>
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={statusCheck.email}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-            {error && (
-              <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '2px solid var(--eh-accent)', borderRadius: 'var(--eh-radius)', padding: 'var(--eh-spacing-md)', marginBottom: 'var(--eh-spacing-lg)', color: 'var(--eh-accent)' }}>
-                {error}
-              </div>
-            )}
+            <Form.Group className="mb-3">
+              <Form.Label>Mobile Number</Form.Label>
+              <Form.Control
+                type="text"
+                name="mobile_number"
+                value={statusCheck.mobile_number}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-            <form onSubmit={handleStatusCheck} style={{ display: 'grid', gap: 'var(--eh-spacing-lg)', maxWidth: '500px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: 'var(--eh-text-primary)' }}>Email *</label>
-                <input
-                  type="email"
-                  value={statusCheck.email}
-                  onChange={(e) => setStatusCheck({ ...statusCheck, email: e.target.value })}
-                  className="eh-input"
-                  required
-                />
-              </div>
+            <Button
+              variant="primary"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? 'Checking...' : 'Check Status'}
+            </Button>
+          </Form>
 
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500, color: 'var(--eh-text-primary)' }}>Mobile Number *</label>
-                <input
-                  type="text"
-                  value={statusCheck.mobile_number}
-                  onChange={(e) => setStatusCheck({ ...statusCheck, mobile_number: e.target.value })}
-                  className="eh-input"
-                  required
-                />
-              </div>
-
-              <Button variant="primary" size="md" disabled={loading}>
-                {loading ? '⏳ Checking...' : '🔍 Check Status'}
-              </Button>
-            </form>
-
-            {bookingStatus && (
-              <div style={{ marginTop: 'var(--eh-spacing-lg)', padding: 'var(--eh-spacing-lg)', background: 'rgba(15, 118, 110, 0.05)', borderRadius: 'var(--eh-radius)' }}>
-                <p style={{ color: 'var(--eh-text-primary)' }}>
-                  {typeof bookingStatus === 'string' ? bookingStatus : JSON.stringify(bookingStatus)}
-                </p>
-              </div>
-            )}
-
-            {reports.length > 0 && (
-              <Card style={{ marginTop: 'var(--eh-spacing-lg)' }}>
-                <CardContent>
-                  <h3 style={{ fontSize: '1.1rem', marginBottom: 'var(--eh-spacing-lg)', color: 'var(--eh-primary)' }}>
-                    📄 Reports
-                  </h3>
-                  <div style={{ display: 'grid', gap: 'var(--eh-spacing-md)' }}>
-                    {reports.map((report, index) => (
-                      <div key={index} style={{ padding: 'var(--eh-spacing-md)', background: 'white', border: '1px solid var(--eh-border)', borderRadius: 'var(--eh-radius-sm)' }}>
-                        {report}
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </CardContent>
-        </Card>
+          {/* Display reports */}
+          {reports.length > 0 && (
+            <Card className="mt-4">
+              <Card.Header>Reports</Card.Header>
+              <Card.Body>
+                {reports.map((report, index) => (
+                  <p key={index}>{report}</p>
+                ))}
+              </Card.Body>
+            </Card>
+          )}
+        </>
       )}
-    </div>
+    </Container>
   );
 };
 

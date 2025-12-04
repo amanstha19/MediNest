@@ -53,10 +53,25 @@ class UserSerializerWithToken(serializers.ModelSerializer):
 
 # Custom Token Serializer (for login using email instead of username)
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    username = serializers.EmailField(required=True)  # Use email instead of username
+    username_field = CustomUser.USERNAME_FIELD  # Use username field from CustomUser
 
     def validate(self, attrs):
-        # Custom validation logic can go here if needed
+        # Allow login with either username or email
+        username = attrs.get('username')
+        password = attrs.get('password')
+        
+        # Try to find user by username first, then by email
+        try:
+            user = CustomUser.objects.get(username=username)
+        except CustomUser.DoesNotExist:
+            try:
+                user = CustomUser.objects.get(email=username)
+            except CustomUser.DoesNotExist:
+                user = None
+        
+        if user and user.check_password(password) and user.is_active:
+            attrs['username'] = user.username
+        
         return super().validate(attrs)
 
 

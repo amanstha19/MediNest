@@ -36,9 +36,6 @@ function Navbar() {
             <Link to="/ambulance" className="eh-navbar__link" style={{ textDecoration: 'none', fontWeight: 600, transition: 'all 0.2s ease' }}>
               Emergency
             </Link>
-            <Link to="/services" className="eh-navbar__link" style={{ textDecoration: 'none', fontWeight: 600, transition: 'all 0.2s ease' }}>
-              Services
-            </Link>
           </div>
 
           {/* Right Section */}

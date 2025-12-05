@@ -6,7 +6,7 @@ import Footer from './components/Footer';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import { testAPI } from './utils/api';
+
 import Login from './components/screens/Login';
 import SignupScreen from './components/screens/SignupScreen';
 import HomeScreen from './components/screens/HomeScreen';
@@ -90,7 +90,7 @@ const AppContent = () => {
 
 function App() {
   useEffect(() => {
-    testAPI();
+    
   }, []);
 
   return (

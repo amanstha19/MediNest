@@ -6,6 +6,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import Product, CustomUser, Cart, CartItem, Order, Booking
 from rest_framework import generics
 
+
 # User Serializer for creating and managing users (register)
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])

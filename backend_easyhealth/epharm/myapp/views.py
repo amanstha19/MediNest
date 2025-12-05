@@ -40,6 +40,8 @@ import hashlib
 import base64
 import logging
 import time
+from django.core.cache import cache
+
 
 logger = logging.getLogger(__name__)
 
@@ -51,20 +53,51 @@ def getRoutes(request):
 
 @api_view(['GET'])
 def getProducts(request):
+    # 1. Check cache
+    data = cache.get("all_products")
+
+    if data:
+        print("➡️ CACHE HIT: Products List")
+        return Response(data)
+
+    print("❌ CACHE MISS: Products List")
     products = Product.objects.all()
     serializer = ProductSerializer(products, many=True)
-    return Response(serializer.data)
+
+    data = serializer.data
+
+    # Store in cache for 5 minutes
+    cache.set("all_products", data, timeout=300)
+
+    return Response(data)
+
 
 @api_view(['GET'])
 def getProduct(request, pk):
+    cache_key = f"product_{pk}"
+
+    # 1. Check cache
+    data = cache.get(cache_key)
+
+    if data:
+        print(f"➡️ CACHE HIT: Product {pk}")
+        return Response(data)
+
+    print(f"❌ CACHE MISS: Product {pk}")
+
     try:
         product = get_object_or_404(Product, pk=pk)
         serializer = ProductSerializer(product, many=False)
-        return Response(serializer.data)
+        data = serializer.data
+
+        # Cache product for 5 minutes
+        cache.set(cache_key, data, timeout=300)
+
+        return Response(data)
+
     except Exception as e:
         logger.error(f"Error fetching product: {e}")
         return Response({'error': 'Product not found'}, status=404)
-
 # Register new user
 class RegisterAPIView(generics.CreateAPIView):
     serializer_class = RegisterSerializer

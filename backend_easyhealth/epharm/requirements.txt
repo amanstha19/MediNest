@@ -22,6 +22,7 @@ django-environ==0.11.2
 django-jazzmin==2.6.0
 django-jet==1.0.8
 django-material-admin==1.8.6
+django-redis==5.4.0
 django-registration-redux==2.13
 django-shopping-cart==0.1
 djangorestframework==3.14.0

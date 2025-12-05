@@ -5,6 +5,7 @@ from django.contrib import messages
 from .models import (
     Product, CustomUser, Cart, CartItem, Order, Service, Booking, BookingReport, userPayment
 )
+from .cache_utils import invalidate_product_cache
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -30,6 +31,8 @@ class ProductAdmin(admin.ModelAdmin):
                 operation = 'increased' if stock_change > 0 else 'decreased'
                 messages.add_message(request, messages.INFO, f'Stock {operation} by {abs(stock_change)} units for {obj.name}')
         super().save_model(request, obj, form, change)
+        # Invalidate product caches when product is saved
+        invalidate_product_cache()
 
 admin.site.register(Product, ProductAdmin)
 

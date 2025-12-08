@@ -12,7 +12,7 @@
   --eh-info: #0288d1;
   --eh-purple: #6a1b9a; /* Purple for variety */
   --eh-teal: #00897b; /* Teal accent */
-  
+
   /* Neutrals - Professional & Clear */
   --eh-bg: #f5f7fa;
   --eh-surface: #ffffff;
@@ -21,7 +21,7 @@
   --eh-text-muted: #8b8b9a;
   --eh-border: #dde1e6;
   --eh-divider: #d0d5dd;
-  
+
   /* UI */
   --eh-radius: 12px;
   --eh-radius-sm: 8px;
@@ -30,7 +30,7 @@
   --eh-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
   --eh-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
   --eh-shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.15);
-  
+
   /* Spacing */
   --eh-spacing-xs: 4px;
   --eh-spacing-sm: 8px;
@@ -39,6 +39,21 @@
   --eh-spacing-xl: 24px;
   --eh-spacing-2xl: 32px;
   --eh-spacing-3xl: 48px;
+}
+
+/* Dark Mode Variables */
+[data-theme="dark"] {
+  --eh-bg: #121212;
+  --eh-surface: #1e1e1e;
+  --eh-text-primary: #e0e0e0;
+  --eh-text-secondary: #b0b0b0;
+  --eh-text-muted: #808080;
+  --eh-border: #333333;
+  --eh-divider: #404040;
+  --eh-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --eh-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --eh-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --eh-shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.6);
 }
 
 /* Base Styles */

@@ -16,6 +16,7 @@ import { AuthProvider } from './context/AuthProvider';
 import Profile from './components/screens/profile';
 import CartScreen from './components/screens/CartScreen';
 import { CartProvider } from './context/CartContext';
+import { DarkModeProvider } from './context/DarkModeContext';
 import AdminPanel from './components/screens/AdminPanel';
 import CheckoutScreen from './components/screens/CheckoutScreen';
 import OrderSuccessScreen from './components/screens/OrderSuccessScreen';
@@ -28,7 +29,7 @@ import PaymentVerification from './components/screens/PaymentVerification';
 import PaymentSuccess from './components/screens/PaymentSuccess';
 import BookingPayment from './components/screens/BookingPayment';
 import BookingSuccessScreen from './components/screens/BookingSuccessScreen';
-import BookingPaymentVerification from './components/screens/BookingPaymentVerification';
+
 import './components/ui/modern-ui.css';
 
 
@@ -90,17 +91,19 @@ const AppContent = () => {
 
 function App() {
   useEffect(() => {
-    
+
   }, []);
 
   return (
-    <AuthProvider>
-      <CartProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </CartProvider>
-    </AuthProvider>
+    <DarkModeProvider>
+      <AuthProvider>
+        <CartProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </CartProvider>
+      </AuthProvider>
+    </DarkModeProvider>
   );
 }
 

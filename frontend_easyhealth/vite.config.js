@@ -7,9 +7,9 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/admin': 'http://localhost:8000', // Proxy admin requests to port 8000
-      '/api': 'http://localhost:8000',   // Proxy API requests to port 8000
-      
+      '/admin': 'http://backend:8000', // Proxy admin requests to backend service
+      '/api': 'http://backend:8000',   // Proxy API requests to backend service
+
     },
   },
 })

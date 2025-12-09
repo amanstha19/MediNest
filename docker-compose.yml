@@ -8,7 +8,7 @@ services:
 
   backend:
     build:
-      context: ./backend_easyhealth/epharm/myapp/
+      context: ./backend_easyhealth/
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
@@ -20,9 +20,13 @@ services:
       - DJANGO_SECRET_KEY=your-secret-key-here
       - ESEWA_SECRET_KEY=your-esewa-key-here
     volumes:
-      - ./backend_easyhealth/epharm:/app 
-      - static_volume:/app/staticfiles
-      - media_volume:/app/static/images
+    - ./backend_easyhealth/epharm:/app                 # backend code
+    - ./backend_easyhealth/epharm/staticfiles:/app/staticfiles   # static files
+    - ./backend_easyhealth/epharm/static/images:/app/static/images #
+    
+     
+      
+      
     command: python manage.py runserver 0.0.0.0:8000
 
   frontend:

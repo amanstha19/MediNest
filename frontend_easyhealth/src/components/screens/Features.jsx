@@ -54,18 +54,8 @@ const Features = () => {
       items: ['Prescription Medicines', 'OTC Medications', 'Health Supplements', 'First Aid Kits'],
       color: 'var(--eh-primary)',
     },
-    {
-      title: 'Lab & Diagnostics',
-      icon: '🧪',
-      items: ['Complete Blood Tests', 'Health Checkups', 'Online Reports', 'Home Sample Collection'],
-      color: 'var(--eh-secondary)',
-    },
-    {
-      title: 'Health Packages',
-      icon: '📋',
-      items: ['Basic Screening', 'Comprehensive Checkup', 'Senior Health Packages', 'Custom Packages'],
-      color: 'var(--eh-info)',
-    },
+  
+
     {
       title: 'Emergency Services',
       icon: '🚑',

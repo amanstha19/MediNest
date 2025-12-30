@@ -30,13 +30,7 @@ function HomeScreen() {
       link: '/category/medicines',
       color: 'var(--eh-primary)'
     },
-    { 
-      name: 'Lab Tests & Diagnostics', 
-      icon: '🧪', 
-      desc: 'Book professional lab tests online with home sample collection and instant online reports.',
-      link: '/category/lab-tests',
-      color: 'var(--eh-secondary)'
-    },
+ 
     { 
       name: 'Emergency Ambulance', 
       icon: '🚑', 

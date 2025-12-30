@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
 from django.contrib import messages
 from .models import (
-    Product, CustomUser, Cart, CartItem, Order, Service, Booking, BookingReport, userPayment
+    Product, CustomUser, Cart, CartItem, Order, userPayment
 )
 from .cache_utils import invalidate_product_cache
 
@@ -86,18 +86,7 @@ class OrderAdmin(admin.ModelAdmin):
         return format_html("<br>".join([f"{item.quantity}x {item.product.name}" for item in items]))
     view_items.short_description = "Order Items"
 
-@admin.register(Booking)
-class BookingAdmin(admin.ModelAdmin):
-    list_display = ('name', 'mobile_number', 'email', 'service', 'booking_date', 'appointment_time', 'status', 'created_at')
-    search_fields = ('name', 'email', 'mobile_number', 'service__name')
-    list_filter = ('status', 'booking_date', 'service')
-    date_hierarchy = 'booking_date'
 
-@admin.register(BookingReport)
-class BookingReportAdmin(admin.ModelAdmin):
-    list_display = ('booking', 'report_file', 'uploaded_at', 'notes')
-    search_fields = ('booking__name', 'booking__service__name')
-    list_filter = ('uploaded_at',)
 
 
 

@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from django.contrib.auth import get_user_model
-from myapp.models import Product, Service, Order, userPayment
+from myapp.models import Product, Order, userPayment
 import json
 import uuid
 
@@ -50,14 +50,7 @@ def sample_product():
         prescription_required=False
     )
 
-@pytest.fixture
-def sample_service():
-    return Service.objects.create(
-        name='Test Service',
-        description='A test service',
-        price=50.00,
-        duration=60
-    )
+# Service fixture removed as Service model was deleted
 
 # Authentication Tests
 @pytest.mark.django_db

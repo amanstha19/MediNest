@@ -1,8 +1,7 @@
-
 from rest_framework import permissions
 from .serializers import ProductSerializer, RegisterSerializer, OrderSerializer, CustomTokenObtainPairSerializer
 
-from .models import  CustomUser, Cart, CartItem, Order
+from .models import  CustomUser, Cart, CartItem, Order, Product, userPayment
 from django.shortcuts import redirect, render
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -16,7 +15,6 @@ from django.utils.decorators import method_decorator
 
 from django.db import transaction
 
-
 import json
 
 from django.http import JsonResponse
@@ -26,15 +24,11 @@ from rest_framework import generics, views
 from rest_framework.permissions import AllowAny
 from django.shortcuts import get_object_or_404
 
-from .models import Service
-from .serializers import ServiceSerializer, BookingSerializer, BookingReportSerializer
 from django.db.models import Q
-
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Booking, userPayment,Product
 import hmac
 import hashlib
 import base64
@@ -46,10 +40,10 @@ from django.core.cache import cache
 logger = logging.getLogger(__name__)
 
 
-
 @api_view(['GET'])
 def getRoutes(request):
     return Response({'message': 'Hello from Django!'})
+
 
 @api_view(['GET'])
 def getProducts(request):
@@ -98,6 +92,8 @@ def getProduct(request, pk):
     except Exception as e:
         logger.error(f"Error fetching product: {e}")
         return Response({'error': 'Product not found'}, status=404)
+
+
 # Register new user
 class RegisterAPIView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -125,6 +121,7 @@ class RegisterAPIView(generics.CreateAPIView):
             "access": str(access_token),
         }, status=status.HTTP_201_CREATED)
 
+
 # Custom Login API View to handle login and token generation
 class CustomLoginAPIView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -132,6 +129,7 @@ class CustomLoginAPIView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         logger.debug("Request Body:", request.data)
         return super().post(request, *args, **kwargs)
+
 
 # Check if an email is already in use
 @csrf_exempt
@@ -153,8 +151,6 @@ def check_email(request):
             return JsonResponse({'error': 'Invalid JSON format.'}, status=400)
 
     return JsonResponse({'error': 'Invalid request method.'}, status=405)
-
-# View to get the user's profile information
 
 
 # Add product to the cart
@@ -259,6 +255,7 @@ def remove_from_cart(request, product_id):
             'error': 'An error occurred while removing the item from cart'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 # View cart
 class ViewCart(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -338,6 +335,8 @@ def update_cart_item_quantity(request, product_id):
         return Response({"error": "Cart not found."}, status=status.HTTP_404_NOT_FOUND)
     except CartItem.DoesNotExist:
         return Response({"error": "Item not found in cart."}, status=status.HTTP_404_NOT_FOUND)
+
+
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def checkout(request):
@@ -433,6 +432,7 @@ class PlaceOrderView(APIView):
             logger.error(f"Error placing order: {str(e)}")
             return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 class OrderDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -443,6 +443,7 @@ class OrderDetailView(APIView):
             return Response(serializer.data)
         except Order.DoesNotExist:
             return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['PATCH'])
 def update_order_status(request, order_id):
@@ -460,122 +461,6 @@ def update_order_status(request, order_id):
     order.save()
 
     return Response({"message": "Order status updated successfully.", "order_id": order.id}, status=status.HTTP_200_OK)
-
- # Assuming this is the correct admin URL for bookings
-
-
-
-class BookingCreateView(views.APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        serializer = BookingSerializer(data=request.data)
-        if serializer.is_valid():
-            # Check for duplicate bookings
-            existing_booking = Booking.objects.filter(
-                service=serializer.validated_data['service'],
-                booking_date=serializer.validated_data['booking_date'],
-                appointment_time=serializer.validated_data['appointment_time']
-            ).exists()
-
-            if existing_booking:
-                return Response(
-                    {'error': 'This time slot is already booked'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            booking = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class BookingStatusView(views.APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        email = request.data.get('email')
-        mobile_number = request.data.get('mobile_number')
-
-        if not email or not mobile_number:
-            return Response(
-                {'error': 'Both email and mobile number are required'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        bookings = Booking.objects.filter(
-            email=email,
-            mobile_number=mobile_number
-        ).order_by('-created_at')
-
-        if not bookings:
-            return Response(
-                {'error': 'No bookings found with these details'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        booking_data = []
-        for booking in bookings:
-            serializer = BookingSerializer(booking)
-            reports = booking.reports.all()
-            report_serializer = BookingReportSerializer(reports, many=True)
-
-            booking_data.append({
-                'booking': serializer.data,
-                'reports': report_serializer.data
-            })
-
-        return Response(booking_data)
-
-
-class ServiceListView(generics.ListCreateAPIView):
-    queryset = Service.objects.all()
-    serializer_class = ServiceSerializer
-    permission_classes = [AllowAny]
-
-
-class ServiceDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Service.objects.all()
-    serializer_class = ServiceSerializer
-
-
-class ConfirmBookingView(views.APIView):
-    def post(self, request, pk):
-        booking = get_object_or_404(Booking, pk=pk)
-
-        if booking.status != 'pending':
-            return Response(
-                {'error': f'Booking cannot be confirmed (current status: {booking.status})'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-        booking.status = 'confirmed'
-        booking.save()
-
-        serializer = BookingSerializer(booking)
-        return Response(serializer.data)
-
-
-def confirm_booking_view(request, pk):
-    booking = get_object_or_404(Booking, pk=pk)
-    # Add your logic for confirming the booking
-    booking.status = 'confirmed'
-    booking.save()
-    return redirect('admin:app_booking_change', pk=booking.pk)
-
-
-def cancel_booking_view(request, pk):
-    booking = get_object_or_404(Booking, pk=pk)
-    # Add your logic for canceling the booking
-    booking.status = 'canceled'
-    booking.save()
-    return redirect('admin:app_booking_change', pk=booking.pk)
-
-
-def upload_report_view(request, pk):
-    booking = get_object_or_404(Booking, pk=pk)
-    # Add your logic for uploading a report
-    return render(request, 'admin/upload_report.html', {'booking': booking})
-
 
 
 class ProcessPaymentView(APIView):
@@ -617,7 +502,7 @@ class ProcessPaymentView(APIView):
                 total_amount=total_amount,
                 transaction_uuid=transaction_uuid,
                 status="PENDING",
-                user=request.user,
+                user=request.user if request.user.is_authenticated else None,
             )
 
             message = f"total_amount={total_amount},transaction_uuid={transaction_uuid},product_code=EPAYTEST"
@@ -638,8 +523,8 @@ class ProcessPaymentView(APIView):
                 "product_code": "EPAYTEST",
                 "product_service_charge": "0",
                 "product_delivery_charge": "0",
-                "success_url": f"https://developer.esewa.com.np/success/",  # eSewa success URL
-                "failure_url": f"https://developer.esewa.com.np/failure/",  # eSewa failure URL
+                "success_url": f"http://localhost:5173/payment-success",
+                "failure_url": f"http://localhost:5173/payment-failure",
                 "signed_field_names": "total_amount,transaction_uuid,product_code",
                 "signature": signature
             }
@@ -649,42 +534,6 @@ class ProcessPaymentView(APIView):
         except Exception as e:
             logger.error(f"Payment processing error: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    def process_payment_callback(self, request):
-        """Handle the callback and add a delay before redirecting"""
-        try:
-            # Introduce a 10-second delay
-            time.sleep(10)
-
-            # Get the status and transaction data from the query params
-            status = request.GET.get('status', 'FAILED')
-            transaction_data = request.GET.get('data', '')
-
-            # Construct the frontend URL with payment status
-            payment_status_url = f"http://localhost:5173/payment-success?status={status}&data={transaction_data}"
-
-            # Return the URL as a JSON response
-            return JsonResponse({"redirect_url": payment_status_url})
-
-        except Exception as e:
-            logger.error(f"Error in process_payment_callback: {str(e)}")
-            return JsonResponse({"error": "Failed to process payment callback"}, status=status.HTTP_400_BAD_REQUEST)
-
-class PaymentSuccessView(APIView):
-    def get(self, request):
-        return Response({"message": "Payment was successful!"}, status=status.HTTP_200_OK)
-
-class PaymentFailureView(APIView):
-    def get(self, request):
-        return Response({"message": "Payment failed. Please try again."}, status=status.HTTP_400_BAD_REQUEST)
-
-class test:
-    pass
-
-
-
-from .models import Product
-
 
 
 class ProductSearchAPIView(APIView):
@@ -716,6 +565,7 @@ class ProductSearchAPIView(APIView):
         } for product in products]
 
         return Response(product_data, status=status.HTTP_200_OK)
+
 
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -763,116 +613,6 @@ class UserProfileView(APIView):
         except Exception as e:
             logger.error(f"Error fetching user profile: {str(e)}")
             return Response({"detail": "Error fetching profile data."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-
-class BookingPaymentView(APIView):
-    def post(self, request):
-        try:
-            # Handle payment callback
-            if 'data' in request.data or 'status' in request.data:
-                transaction_uuid = request.data.get('transaction_uuid')
-                status_code = request.data.get('status', 'SUCCESS')
-                transaction_code = request.data.get('transaction_code')
-
-                try:
-                    payment = userPayment.objects.get(transaction_uuid=transaction_uuid)
-                    payment.transaction_code = transaction_code
-                    payment.status = status_code
-                    payment.save()
-
-                    # Update booking status if payment is successful
-                    if status_code == 'SUCCESS' and payment.booking:
-                        booking = payment.booking
-                        booking.status = 'confirmed'
-                        booking.save()
-
-                    logger.info(f"Booking payment callback processed successfully for transaction {transaction_uuid}")
-                    return Response({
-                        "message": "Payment successful",
-                        "transaction_uuid": transaction_uuid,
-                        "booking_id": payment.booking.id if payment.booking else None
-                    }, status=status.HTTP_200_OK)
-    
-                except userPayment.DoesNotExist:
-                    logger.error(f"Payment not found for transaction {transaction_uuid}")
-                    return Response({"error": "Payment not found"}, status=status.HTTP_404_NOT_FOUND)
-
-            # Initialize new payment
-            booking_id = request.data.get('booking_id')
-            amount = float(request.data.get('amount', 0))
-            tax_amount = float(request.data.get('tax_amount', 0))
-            transaction_uuid = request.data.get('transaction_uuid')
-
-            if not transaction_uuid or not booking_id:
-                return Response({"error": "Missing transaction_uuid or booking_id"}, status=status.HTTP_400_BAD_REQUEST)
-
-            try:
-                booking = Booking.objects.get(id=booking_id)
-            except Booking.DoesNotExist:
-                return Response({"error": "Booking not found"}, status=status.HTTP_404_NOT_FOUND)
-
-            total_amount = amount + tax_amount
-
-            # Create payment record
-            payment = userPayment.objects.create(
-                amount=amount,
-                tax_amount=tax_amount,
-                total_amount=total_amount,
-                transaction_uuid=transaction_uuid,
-                status="PENDING",
-                user=request.user if request.user.is_authenticated else None,
-                booking=booking
-            )
-
-            # Generate eSewa payment signature
-            message = f"total_amount={total_amount},transaction_uuid={transaction_uuid},product_code=EPAYTEST"
-            secret_key = "8gBm/:&EnhH.1/q"  # eSewa test secret key
-            signature = base64.b64encode(
-                hmac.new(
-                    secret_key.encode(),
-                    message.encode(),
-                    hashlib.sha256
-                ).digest()
-            ).decode()
-
-            # Prepare eSewa payment data
-            payment_data = {
-                "amount": str(amount),
-                "tax_amount": str(tax_amount),
-                "total_amount": str(total_amount),
-                "transaction_uuid": transaction_uuid,
-                "product_code": "EPAYTEST",
-                "product_service_charge": "0",
-                "product_delivery_charge": "0",
-                "success_url": "http://localhost:5173/booking-payment-verification",
-                "failure_url": "http://localhost:5173/booking-payment-verification",
-                "signed_field_names": "total_amount,transaction_uuid,product_code",
-                "signature": signature
-            }
-
-            return Response(payment_data, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            logger.error(f"Booking payment processing error: {str(e)}")
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-    def process_payment_callback(self, request):
-        try:
-            time.sleep(10)  # Add delay for payment processing
-            status = request.GET.get('status', 'FAILED')
-            transaction_data = request.GET.get('data', '')
-
-            payment_status_url = f"http://localhost:5173/booking-payment-success?status={status}&data={transaction_data}"
-
-            return JsonResponse({"redirect_url": payment_status_url})
-        except Exception as e:
-            logger.error(f"Error in process_payment_callback: {str(e)}")
-            return JsonResponse({"error": "Failed to process payment callback"}, status=status.HTTP_400_BAD_REQUEST)
-
-
-
 
 
 # Admin Verification Endpoint

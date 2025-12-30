@@ -30,9 +30,6 @@ function Navbar() {
             <Link to="/category/medicines" className="eh-navbar__link" style={{ textDecoration: 'none', fontWeight: 600, transition: 'all 0.2s ease' }}>
               Medicines
             </Link>
-            <Link to="/category/lab-tests" className="eh-navbar__link" style={{ textDecoration: 'none', fontWeight: 600, transition: 'all 0.2s ease' }}>
-              Lab Tests
-            </Link>
             <Link to="/ambulance" className="eh-navbar__link" style={{ textDecoration: 'none', fontWeight: 600, transition: 'all 0.2s ease' }}>
               Emergency
             </Link>

@@ -6,17 +6,13 @@ from .views import (
     PlaceOrderView,
     update_cart_item_quantity,
     update_order_status,
-    ConfirmBookingView,
-    BookingCreateView,
-    BookingStatusView,
-    ServiceListView,
-    ServiceDetailView,
     OrderDetailView,
     ViewCart,
-    RegisterAPIView, ProductSearchAPIView, BookingPaymentView,
+    RegisterAPIView, 
+    ProductSearchAPIView,
     verify_admin_access,
+    ProcessPaymentView,
 )
-from .views import ProcessPaymentView, PaymentSuccessView
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -56,30 +52,9 @@ urlpatterns = [
     path('order/<int:pk>/', OrderDetailView.as_view(), name='order-detail'),
     path('order/<int:order_id>/status/', update_order_status, name='order-status-update'),
 
-    # Service Routes
-    path('services/', ServiceListView.as_view(), name='services'),
-    path('service/<int:pk>/', ServiceDetailView.as_view(), name='service-detail'),
-
-    # Booking Routes
-    path('bookings/', BookingCreateView.as_view(), name='bookings'),
-    path('bookings/status/', BookingStatusView.as_view(), name='booking-status'),
-    path('booking/confirm/<int:pk>/', ConfirmBookingView.as_view(), name='booking-confirm'),
-    path('process-payment/', ProcessPaymentView.as_view(), name='process-payment'),
-
-
-
-    path('payment-success/', PaymentSuccessView.as_view(), name='payment-success'),
-
+    # Search Routes
     path('products/search/', ProductSearchAPIView.as_view(), name='product-search'),
-
-    path('booking-payment/', BookingPaymentView.as_view(), name='booking-payment'),
-
-
-
-
-
-
-
-
-
+    
+    # Payment Routes
+    path('payment/process/', ProcessPaymentView.as_view(), name='payment-process'),
 ]

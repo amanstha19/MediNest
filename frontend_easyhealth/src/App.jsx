@@ -20,15 +20,11 @@ import { DarkModeProvider } from './context/DarkModeContext';
 import AdminPanel from './components/screens/AdminPanel';
 import CheckoutScreen from './components/screens/CheckoutScreen';
 import OrderSuccessScreen from './components/screens/OrderSuccessScreen';
-import LabTestBookingPage from './components/screens/LabTestBookingPage';
-import HealthPackagesPage from './components/screens/HealthPackagesPage';
+
 import MedicinesPage from './components/screens/MedicinesPage';
-import LabTestsPage from './components/screens/LabTestsPage';
 import Payment from './components/screens/Payment';
 import PaymentVerification from './components/screens/PaymentVerification';
 import PaymentSuccess from './components/screens/PaymentSuccess';
-import BookingPayment from './components/screens/BookingPayment';
-import BookingSuccessScreen from './components/screens/BookingSuccessScreen';
 
 import './components/ui/modern-ui.css';
 
@@ -60,20 +56,16 @@ const AppContent = () => {
           <Route path="/cart" element={<CartScreen />} />
           <Route path="/checkout" element={<CheckoutScreen />} />
           <Route path="/order-success/:orderId" element={<OrderSuccessScreen />} />
-          <Route path="/book-test/:testId" element={<LabTestBookingPage />} />
-          <Route path="/category/health-packages" element={<HealthPackagesPage />} />
+         
           <Route path="/category/medicines" element={<MedicinesPage />} />
-          <Route path="/category/lab-tests" element={<LabTestsPage />} />
 
           {/* Payment Route with params */}
           <Route 
             path="/payment/:orderId/:totalPrice" 
             element={<Payment />} 
           />
-         <Route path="/booking-payment/:bookingId/:amount" element={<BookingPayment />} />
           <Route path="/payment/verification" element={<PaymentVerification />} />
-          <Route path="/payment-success" component={PaymentSuccess} />
-          <Route path="/booking-success/:bookingId" element={<BookingSuccessScreen />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
         </Routes>
       </Container>}
       {isAdminPage && <Routes>

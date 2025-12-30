@@ -90,84 +90,11 @@ class CartItem(models.Model):
     def __str__(self):
         return f"{self.quantity} x {self.product.name}"
 
-from django.core.validators import FileExtensionValidator
-
-class Service(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    description = models.TextField(blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        ordering = ['name']
-
-class Booking(models.Model):
-    STATUS_CHOICES = (
-        ('pending', 'Pending'),
-        ('confirmed', 'Confirmed'),
-        ('cancelled', 'Cancelled'),
-        ('completed', 'Completed'),
-    )
-
-    payment_status = models.CharField(
-        max_length=20,
-        choices=[
-            ('pending', 'Pending'),
-            ('paid', 'Paid'),
-            ('failed', 'Failed')
-        ],
-        default='pending'
-    )
-
-    name = models.CharField(max_length=100)
-    mobile_number = models.CharField(max_length=15)
-    email = models.EmailField()
-    service = models.ForeignKey(Service, on_delete=models.CASCADE)
-    booking_date = models.DateField()
-    appointment_time = models.TimeField()
-    address = models.TextField(blank=True, null=True)
-    notes = models.TextField(blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.name} - {self.service.name} - {self.booking_date}"
-
-    class Meta:
-        ordering = ['-created_at']
-        # Prevent double booking
-        constraints = [
-            models.UniqueConstraint(
-                fields=['service', 'booking_date', 'appointment_time'],
-                name='unique_booking_slot'
-            )
-        ]
 
 
-def validate_file_size(value):
-    limit = 20 * 1024 * 1024  # 5MB
-    if value.size > limit:
-        raise ValidationError("File size should not exceed 5MB.")
-
-
-class BookingReport(models.Model):
-    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='reports')
-    report_file = models.FileField(upload_to='reports/', validators=[FileExtensionValidator(['pdf', 'jpg', 'jpeg', 'png']), validate_file_size])
-    uploaded_at = models.DateTimeField(auto_now_add=True)
-    notes = models.TextField(blank=True)
-
-    def __str__(self):
-        return f"Report for {self.booking.name} - {self.booking.service.name}"
-
-    class Meta:
-        ordering = ['-uploaded_at']
-
-from django.db import models
 from django.utils import timezone
+
 class userPayment(models.Model):
-    booking = models.ForeignKey(Booking, on_delete=models.SET_NULL, null=True, blank=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_payments', null=True, blank=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True)
     products = models.ManyToManyField(Product, blank=True)  # If direct product linkage is needed

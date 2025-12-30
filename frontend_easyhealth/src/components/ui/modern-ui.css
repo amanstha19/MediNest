@@ -395,6 +395,7 @@ html, body, #root {
 .eh-mb { margin-bottom: var(--eh-spacing-lg); }
 .eh-gap { gap: var(--eh-spacing-lg); }
 
+
 /* Loader */
 @keyframes eh-spin {
   from { transform: rotate(0deg); }
@@ -407,4 +408,280 @@ html, body, #root {
   border-top-color: var(--eh-primary);
   border-radius: 50%;
   animation: eh-spin 1s linear infinite;
+}
+
+/* Admin Panel Specific Styles */
+.eh-admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--eh-bg);
+}
+
+.eh-admin-sidebar {
+  background: linear-gradient(180deg, #1a1a2e 0%, #0f3460 100%);
+  color: white;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: var(--eh-shadow-lg);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.eh-admin-sidebar--collapsed {
+  width: 100px;
+  padding: 1rem;
+}
+
+.eh-admin-sidebar--expanded {
+  width: 280px;
+  padding: 1.5rem;
+}
+
+.eh-admin-content {
+  margin-left: 280px;
+  flex: 1;
+  padding: 2rem;
+  transition: margin-left 0.3s ease;
+}
+
+.eh-admin-content--collapsed {
+  margin-left: 100px;
+}
+
+.eh-admin-menu-item {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  color: white;
+  text-align: left;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.eh-admin-menu-item:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.eh-admin-menu-item--active {
+  background: rgba(255,255,255,0.15);
+}
+
+.eh-admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.eh-admin-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.eh-admin-logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--eh-primary), var(--eh-secondary));
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.eh-admin-brand-text h1 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.eh-admin-brand-text p {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin: 0;
+}
+
+.eh-admin-toggle {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.eh-admin-toggle:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.eh-admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--eh-spacing-lg);
+  margin-bottom: var(--eh-spacing-2xl);
+}
+
+.eh-admin-stat-card {
+  border-left: 4px solid;
+  cursor: pointer;
+}
+
+.eh-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.eh-admin-table th {
+  padding: 1.2rem;
+  text-align: left;
+  font-weight: bold;
+  color: var(--eh-text-primary);
+  background-color: var(--eh-bg);
+  border-bottom: 2px solid var(--eh-border);
+}
+
+.eh-admin-table td {
+  padding: 1.2rem;
+  color: var(--eh-text-primary);
+  border-bottom: 1px solid var(--eh-border);
+}
+
+.eh-admin-table tr:nth-child(even) {
+  background: var(--eh-surface);
+}
+
+.eh-admin-table tr:nth-child(odd) {
+  background: var(--eh-bg);
+}
+
+.eh-admin-search {
+  flex: 1;
+  position: relative;
+}
+
+.eh-admin-search input {
+  padding-left: 2.5rem;
+}
+
+.eh-admin-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--eh-text-muted);
+  pointer-events: none;
+}
+
+.eh-admin-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.eh-admin-badge--success {
+  background: var(--eh-success-light);
+  color: var(--eh-success);
+}
+
+.eh-admin-badge--warning {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.eh-admin-badge--danger {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.eh-admin-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--eh-primary), var(--eh-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.eh-admin-actions {
+  display: flex;
+  gap: var(--eh-spacing-lg);
+  align-items: center;
+}
+
+.eh-admin-notification {
+  position: relative;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.eh-admin-notification:hover {
+  background: var(--eh-primary-light);
+}
+
+.eh-admin-notification-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background: var(--eh-accent);
+  border-radius: 50%;
+}
+
+.eh-admin-logout {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(211,47,47,0.2);
+  border: 1px solid #d32f2f;
+  color: #ff6b6b;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-top: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.eh-admin-logout:hover {
+  background: rgba(211,47,47,0.3);
+  transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .eh-admin-sidebar {
+    width: 100% !important;
+    transform: translateX(-100%);
+  }
+  
+  .eh-admin-sidebar--mobile-open {
+    transform: translateX(0);
+  }
+  
+  .eh-admin-content {
+    margin-left: 0 !important;
+    padding: 1rem;
+  }
+  
+  .eh-admin-stats-grid {
+    grid-template-columns: 1fr;
+  }
 }

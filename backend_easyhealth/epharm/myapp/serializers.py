@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Product, CustomUser, Cart, CartItem, Order, Booking
+from .models import Product, CustomUser, Cart, CartItem, Order
 from rest_framework import generics
 
 
@@ -122,39 +122,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 
 
-from .models import Service, Booking, BookingReport
 
-
-class ServiceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Service
-        fields = ['id', 'name', 'description', 'price']
-
-
-class BookingSerializer(serializers.ModelSerializer):
-    service_name = serializers.CharField(source='service.name', read_only=True)
-
-    class Meta:
-        model = Booking
-        fields = [
-            'id', 'name', 'mobile_number', 'email', 'service', 'service_name',
-            'booking_date', 'appointment_time', 'address', 'notes', 'status',
-            'created_at'
-        ]
-        read_only_fields = ['status', 'created_at']
-
-    def validate_booking_date(self, value):
-        from django.utils import timezone
-        if value < timezone.now().date():
-            raise serializers.ValidationError("Booking date cannot be in the past")
-        return value
-
-
-class BookingReportSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = BookingReport
-        fields = ['id', 'booking', 'report_file', 'notes', 'uploaded_at']
-        read_only_fields = ['uploaded_at']
 
 
 from rest_framework import serializers
@@ -170,6 +138,7 @@ class UserPaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = userPayment
         fields = [
+            'id',
             'amount',
             'tax_amount',
             'transaction_uuid',
@@ -178,5 +147,5 @@ class UserPaymentSerializer(serializers.ModelSerializer):
             'status',
             'order',  # This will include all order details
             'user',
+            'created_at'
         ]
-

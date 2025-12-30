@@ -51,7 +51,7 @@ const EsewaPayment = ({ totalPrice }) => {
     const handlePaymentCallback = async (status, data) => {
         setLoading(true);
         try {
-            const response = await axios.post('/api/process-payment/', {
+            const response = await axios.post('/api/payment/process/', {
                 status: status,
                 data: data,
                 transaction_uuid: transactionUuid
@@ -95,7 +95,7 @@ const EsewaPayment = ({ totalPrice }) => {
 
             console.log('Sending payment request with data:', formData); // Debug log
 
-            const response = await axios.post('/api/process-payment/', formData);
+            const response = await axios.post('/api/payment/process/', formData);
 
             if (response.data) {
                 // Create and submit eSewa form

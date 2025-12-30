@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('myapp', '0013_alter_bookingreport_report_file'),
+        ('myapp', '0012_alter_booking_options_alter_bookingreport_options_and_more'),
     ]
 
     operations = [

@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import EsewaPayment from '../screens/Payment';
 import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
+import { motion } from 'framer-motion';
 
 const CheckoutScreen = () => {
   const { cartItems } = useCart();
@@ -104,109 +105,341 @@ const CheckoutScreen = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="eh-container" style={{ paddingTop: 'var(--eh-spacing-2xl)' }}>
-        <div className="eh-center" style={{ padding: 'var(--eh-spacing-2xl) 0' }}>
-          <h1 style={{ fontSize: '2rem', marginBottom: 'var(--eh-spacing-lg)' }}>🛒 Checkout</h1>
-          <p style={{ color: 'var(--eh-text-muted)', fontSize: '1.1rem', marginBottom: 'var(--eh-spacing-lg)' }}>Your cart is empty</p>
-          <Button variant="primary" onClick={() => navigate('/')}>Continue Shopping</Button>
-        </div>
+      <div className="eh-container" style={{ paddingTop: '48px', paddingBottom: '48px' }}>
+        <motion.div
+          className="glass"
+          style={{
+            padding: '64px 48px',
+            textAlign: 'center',
+            maxWidth: '500px',
+            margin: '0 auto'
+          }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', delay: 0.2 }}
+            style={{ fontSize: '5rem', marginBottom: '24px' }}
+          >
+            🛒
+          </motion.div>
+          <h1 style={{
+            fontSize: '2rem',
+            marginBottom: '16px',
+            color: 'var(--eh-text-primary)',
+            fontWeight: 800
+          }}>
+            Your Cart is Empty
+          </h1>
+          <p style={{
+            color: 'var(--eh-text-muted)',
+            fontSize: '1.1rem',
+            marginBottom: '32px'
+          }}>
+            Add some medicines to proceed with checkout.
+          </p>
+          <Button variant="primary" size="lg" onClick={() => navigate('/')}>
+            Continue Shopping
+          </Button>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="eh-container" style={{ paddingTop: 'var(--eh-spacing-2xl)', paddingBottom: 'var(--eh-spacing-2xl)' }}>
-      <h1 style={{ fontSize: '2rem', marginBottom: 'var(--eh-spacing-xl)' }}>💳 Order Summary</h1>
+    <div className="eh-container" style={{ paddingTop: '48px', paddingBottom: '48px' }}>
+      <motion.h1
+        initial={{ opacity: 0, x: -30 }}
+        animate={{ opacity: 1, x: 0 }}
+        style={{
+          fontSize: '2rem',
+          marginBottom: '32px',
+          color: 'var(--eh-text-primary)',
+          fontWeight: 800
+        }}
+      >
+        💳 Complete Your Order
+      </motion.h1>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: 'var(--eh-spacing-xl)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '32px' }}>
         {/* Order Items */}
         <div>
-          <Card>
-            <CardContent>
-              <h2 style={{ fontSize: '1.3rem', marginBottom: 'var(--eh-spacing-lg)' }}>Items</h2>
-              <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                {cartItems.map((item, idx) => (
-                  <div key={item.id} style={{ display: 'grid', gridTemplateColumns: '80px 1fr auto', gap: 'var(--eh-spacing-lg)', alignItems: 'center', paddingBottom: 'var(--eh-spacing-lg)', borderBottom: idx < cartItems.length - 1 ? '1px solid var(--eh-border)' : 'none' }}>
-                    <img src={`http://127.0.0.1:8000${item.image}`} alt={item.name} style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: 'var(--eh-radius-sm)' }} />
-                    <div>
-                      <h4 style={{ fontSize: '1rem', marginBottom: '4px' }}>{item.name}</h4>
-                      <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>Qty: {item.quantity}</p>
-                      <p style={{ fontWeight: 700, color: 'var(--eh-success)' }}>NPR {(item.price * item.quantity).toLocaleString()}</p>
-                    </div>
-                  </div>
-                ))}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <Card className="glass" style={{ overflow: 'hidden' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+                padding: '24px',
+                borderBottom: '1px solid var(--glass-border)'
+              }}>
+                <h2 style={{
+                  fontSize: '1.4rem',
+                  marginBottom: 0,
+                  color: 'var(--eh-text-primary)',
+                  fontWeight: 800
+                }}>
+                  Order Items ({cartItems.length})
+                </h2>
               </div>
-            </CardContent>
-          </Card>
+              <CardContent style={{ padding: '24px' }}>
+                <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                  {cartItems.map((item, idx) => (
+                    <motion.div
+                      key={item.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.1 }}
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '100px 1fr auto',
+                        gap: '16px',
+                        alignItems: 'center',
+                        paddingBottom: '16px',
+                        borderBottom: idx < cartItems.length - 1 ? '1px solid var(--glass-border)' : 'none',
+                        marginBottom: '16px'
+                      }}
+                    >
+                      <motion.img
+                        src={`http://127.0.0.1:8000${item.image}`}
+                        alt={item.name}
+                        style={{
+                          width: '100%',
+                          height: '100px',
+                          objectFit: 'cover',
+                          borderRadius: '12px'
+                        }}
+                        whileHover={{ scale: 1.05 }}
+                      />
+                      <div>
+                        <h4 style={{
+                          fontSize: '1.1rem',
+                          marginBottom: '8px',
+                          color: 'var(--eh-text-primary)',
+                          fontWeight: 700
+                        }}>
+                          {item.name}
+                        </h4>
+                        <p style={{
+                          color: 'var(--eh-text-muted)',
+                          fontSize: '0.9rem',
+                          marginBottom: '8px'
+                        }}>
+                          Quantity: {item.quantity}
+                        </p>
+                        {item.prescriptionRequired && (
+                          <span style={{
+                            color: '#f5576c',
+                            fontSize: '0.8rem',
+                            fontWeight: 600,
+                            background: 'rgba(245, 87, 108, 0.1)',
+                            padding: '4px 8px',
+                            borderRadius: '12px'
+                          }}>
+                            ⚠️ Prescription Required
+                          </span>
+                        )}
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <p style={{
+                          background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                          backgroundClip: 'text',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          fontWeight: 800,
+                          fontSize: '1.2rem'
+                        }}>
+                          NPR {(item.price * item.quantity).toLocaleString()}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
 
         {/* Checkout Form */}
         <div style={{ height: 'fit-content', position: 'sticky', top: '20px' }}>
-          <Card>
-            <CardContent>
-              <h2 style={{ fontSize: '1.2rem', marginBottom: 'var(--eh-spacing-lg)' }}>Place Order</h2>
-
-              <form onSubmit={handleSubmit}>
-                <div className="eh-form-group">
-                  <label>Delivery Address</label>
-                  <input
-                    type="text"
-                    className="eh-input"
-                    placeholder="Your address"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    required
-                    disabled={loading}
-                  />
-                </div>
-
-                {prescriptionRequired && (
-                  <div className="eh-form-group">
-                    <label>Upload Prescription</label>
-                    <input
-                      type="file"
-                      className="eh-input"
-                      accept="image/*,application/pdf"
-                      onChange={handlePrescriptionUpload}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <Card className="glass" style={{ overflow: 'hidden' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%)',
+                padding: '24px',
+                borderBottom: '1px solid var(--glass-border)'
+              }}>
+                <h2 style={{
+                  fontSize: '1.4rem',
+                  marginBottom: 0,
+                  color: 'var(--eh-text-primary)',
+                  fontWeight: 800
+                }}>
+                  Order Details
+                </h2>
+              </div>
+              <CardContent style={{ padding: '24px' }}>
+                <form onSubmit={handleSubmit}>
+                  <div style={{ marginBottom: '20px' }}>
+                    <label style={{
+                      display: 'block',
+                      marginBottom: '8px',
+                      fontWeight: 600,
+                      color: 'var(--eh-text-primary)'
+                    }}>
+                      📍 Delivery Address
+                    </label>
+                    <textarea
+                      className="input-glass"
+                      placeholder="Enter your complete delivery address"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
                       required
                       disabled={loading}
+                      rows={3}
+                      style={{
+                        width: '100%',
+                        fontSize: '1rem',
+                        padding: '14px 16px',
+                        resize: 'vertical'
+                      }}
                     />
                   </div>
-                )}
 
-                <div className="eh-form-group">
-                  <label>Payment Method</label>
-                  <select
-                    className="eh-input"
-                    value={paymentMethod}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                    required
-                    disabled={loading}
-                  >
-                    <option value="cod">Cash on Delivery</option>
-                    <option value="online">Online Payment (eSewa)</option>
-                  </select>
-                </div>
+                  {prescriptionRequired && (
+                    <div style={{ marginBottom: '20px' }}>
+                      <label style={{
+                        display: 'block',
+                        marginBottom: '8px',
+                        fontWeight: 600,
+                        color: 'var(--eh-text-primary)'
+                      }}>
+                        📄 Upload Prescription
+                      </label>
+                      <input
+                        type="file"
+                        className="input-glass"
+                        accept="image/*,application/pdf"
+                        onChange={handlePrescriptionUpload}
+                        required
+                        disabled={loading}
+                        style={{
+                          width: '100%',
+                          fontSize: '1rem',
+                          padding: '12px 16px'
+                        }}
+                      />
+                      <p style={{
+                        fontSize: '0.8rem',
+                        color: 'var(--eh-text-muted)',
+                        marginTop: '4px'
+                      }}>
+                        Upload a clear image or PDF of your prescription
+                      </p>
+                    </div>
+                  )}
 
-                <div style={{ marginBottom: 'var(--eh-spacing-lg)', paddingBottom: 'var(--eh-spacing-lg)', borderBottom: '1px solid var(--eh-border)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <span>Total:</span>
-                    <span style={{ fontWeight: 700, color: 'var(--eh-success)', fontSize: '1.2rem' }}>NPR {totalPrice.toLocaleString()}</span>
+                  <div style={{ marginBottom: '24px' }}>
+                    <label style={{
+                      display: 'block',
+                      marginBottom: '8px',
+                      fontWeight: 600,
+                      color: 'var(--eh-text-primary)'
+                    }}>
+                      💳 Payment Method
+                    </label>
+                    <select
+                      className="input-glass"
+                      value={paymentMethod}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      required
+                      disabled={loading}
+                      style={{
+                        width: '100%',
+                        fontSize: '1rem',
+                        padding: '14px 16px'
+                      }}
+                    >
+                      <option value="cod">💵 Cash on Delivery</option>
+                      <option value="online">💳 Online Payment (eSewa)</option>
+                    </select>
                   </div>
-                </div>
 
-                <Button
-                  type="submit"
-                  className="eh-btn--block"
-                  size="lg"
-                  variant="success"
-                  disabled={loading}
-                >
-                  {loading ? '⏳ Processing...' : '✓ Place Order'}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
+                  <div style={{
+                    marginBottom: '24px',
+                    paddingBottom: '20px',
+                    borderBottom: '1px solid var(--glass-border)'
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      marginBottom: '12px',
+                      color: 'var(--eh-text-secondary)'
+                    }}>
+                      <span>Subtotal ({cartItems.length} items):</span>
+                      <span>NPR {totalPrice.toLocaleString()}</span>
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      marginBottom: '12px',
+                      color: 'var(--eh-text-secondary)'
+                    }}>
+                      <span>Shipping:</span>
+                      <span style={{ color: 'var(--eh-success)' }}>Free</span>
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      color: 'var(--eh-text-secondary)'
+                    }}>
+                      <span>Tax:</span>
+                      <span>NPR 0</span>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginBottom: '24px'
+                  }}>
+                    <span style={{ fontWeight: 800, fontSize: '1.2rem' }}>Total:</span>
+                    <span style={{
+                      fontWeight: 800,
+                      fontSize: '1.3rem',
+                      background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent'
+                    }}>
+                      NPR {totalPrice.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Button
+                      type="submit"
+                      size="lg"
+                      variant="gradient"
+                      disabled={loading}
+                      style={{ width: '100%' }}
+                    >
+                      {loading ? '⏳ Processing Order...' : '✅ Place Order'}
+                    </Button>
+                  </motion.div>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
         </div>
       </div>
     </div>

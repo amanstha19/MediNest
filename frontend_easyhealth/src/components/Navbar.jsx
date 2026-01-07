@@ -1,9 +1,13 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthProvider';
+import { useDarkMode } from '../context/DarkModeContext';
+import { motion } from 'framer-motion';
+import Button from './ui/button';
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -11,165 +15,145 @@ function Navbar() {
     navigate('/');
   };
 
+  const navLinks = [
+    { path: '/', label: 'Home' },
+    { path: '/category/medicines', label: 'Medicines' },
+    { path: '/ambulance', label: 'Emergency' },
+    { path: '/profile', label: 'Profile' },
+  ];
+
   return (
-    <nav className="eh-navbar" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
-      <div className="eh-container" style={{ padding: '0 var(--eh-spacing-lg)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '70px' }}>
-          {/* Logo */}
-          <Link to="/" style={{ textDecoration: 'none' }}>
-            <span className="eh-navbar__brand" style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '1.6rem' }}>
-              💊 <span style={{ fontWeight: 800, letterSpacing: '0.5px' }}>Easy Health</span>
+    <nav style={{
+      position: 'sticky',
+      top: 0,
+      zIndex: 1000,
+      padding: '0 24px',
+      background: 'var(--bg-glass)',
+      backdropFilter: 'blur(20px)',
+      WebkitBackdropFilter: 'blur(20px)',
+      borderBottom: '1px solid var(--glass-border)'
+    }}>
+      <div style={{
+        maxWidth: '1280px',
+        margin: '0 auto',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        height: '70px'
+      }}>
+        {/* Logo */}
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <motion.span
+            style={{
+              fontSize: '1.6rem',
+              fontWeight: 800,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              color: 'var(--text-primary)'
+            }}
+            whileHover={{ scale: 1.05 }}
+          >
+            <motion.span
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+              style={{ fontSize: '1.8rem' }}
+            >
+              💊
+            </motion.span>
+            <span style={{
+              background: 'var(--gradient-primary)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}>
+              MEDINEST
             </span>
+          </motion.span>
+        </Link>
+
+        {/* Desktop Navigation */}
+        <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+          {navLinks.map((link) => (
+            <Link 
+              key={link.path} 
+              to={link.path}
+              style={{ 
+                textDecoration: 'none', 
+                color: 'var(--text-primary)',
+                padding: '8px 0',
+                fontSize: '0.95rem',
+                fontWeight: 500
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+
+        {/* Right Section */}
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          {/* Dark Mode Toggle */}
+          <motion.button
+            onClick={toggleDarkMode}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            style={{
+              background: 'var(--bg-glass)',
+              border: '1px solid var(--glass-border)',
+              color: 'var(--text-primary)',
+              padding: '8px 12px',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              fontSize: '1.1rem'
+            }}
+          >
+            {isDarkMode ? '☀️' : '🌙'}
+          </motion.button>
+
+          {/* Cart */}
+          <Link to="/cart">
+            <Button variant="primary">🛒 Cart</Button>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div style={{ display: 'flex', gap: 'var(--eh-spacing-2xl)', alignItems: 'center' }}>
-            <Link to="/" className="eh-navbar__link" style={{ textDecoration: 'none', fontWeight: 600, transition: 'all 0.2s ease' }}>
-              Home
-            </Link>
-            <Link to="/category/medicines" className="eh-navbar__link" style={{ textDecoration: 'none', fontWeight: 600, transition: 'all 0.2s ease' }}>
-              Medicines
-            </Link>
-            <Link to="/ambulance" className="eh-navbar__link" style={{ textDecoration: 'none', fontWeight: 600, transition: 'all 0.2s ease' }}>
-              Emergency
-            </Link>
-          </div>
-
-          {/* Right Section */}
-          <div style={{ display: 'flex', gap: 'var(--eh-spacing-lg)', alignItems: 'center' }}>
-            <Link to="/cart" style={{ textDecoration: 'none' }}>
-              <button style={{
-                background: 'rgba(255, 255, 255, 0.15)',
-                border: '2px solid rgba(255, 255, 255, 0.3)',
-                color: 'white',
-                padding: '8px 14px',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                fontSize: '0.95rem',
-                fontWeight: 600
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background = 'rgba(255, 255, 255, 0.25)';
-                e.target.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = 'rgba(255, 255, 255, 0.15)';
-                e.target.style.transform = 'translateY(0)';
-              }}
+          {/* User Section */}
+          {user ? (
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <span style={{ 
+                color: 'var(--text-primary)', 
+                fontSize: '0.9rem', 
+                fontWeight: 600 
+              }}>
+                {user?.username}
+              </span>
+              <motion.button
+                onClick={handleLogout}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  background: 'var(--danger)',
+                  border: 'none',
+                  color: 'white',
+                  padding: '8px 16px',
+                  borderRadius: '10px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                  fontWeight: 600
+                }}
               >
-                🛒 Cart
-              </button>
-            </Link>
-
-            {user ? (
-              <div style={{ display: 'flex', gap: 'var(--eh-spacing-md)', alignItems: 'center' }}>
-                <span style={{ color: 'rgba(255, 255, 255, 0.95)', fontSize: '0.95rem', fontWeight: 600 }}>
-                  Hi, {user?.username}
-                </span>
-                <Link to="/profile" style={{ textDecoration: 'none' }}>
-                  <button style={{
-                    background: 'rgba(255, 255, 255, 0.15)',
-                    border: '2px solid rgba(255, 255, 255, 0.3)',
-                    color: 'white',
-                    padding: '6px 12px',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem',
-                    fontWeight: 600,
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.25)';
-                    e.target.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.15)';
-                    e.target.style.transform = 'translateY(0)';
-                  }}
-                  >
-                    👤 Profile
-                  </button>
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  style={{
-                    background: 'rgba(211, 47, 47, 0.7)',
-                    border: '2px solid rgba(211, 47, 47, 0.3)',
-                    color: 'white',
-                    padding: '6px 12px',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontSize: '0.9rem',
-                    fontWeight: 600,
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = 'rgba(211, 47, 47, 0.9)';
-                    e.target.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = 'rgba(211, 47, 47, 0.7)';
-                    e.target.style.transform = 'translateY(0)';
-                  }}
-                >
-                  🚪 Logout
-                </button>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', gap: 'var(--eh-spacing-md)' }}>
-                <Link to="/login" style={{ textDecoration: 'none' }}>
-                  <button style={{
-                    background: 'rgba(255, 255, 255, 0.15)',
-                    border: '2px solid rgba(255, 255, 255, 0.3)',
-                    color: 'white',
-                    padding: '8px 14px',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontSize: '0.95rem',
-                    fontWeight: 600,
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.25)';
-                    e.target.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = 'rgba(255, 255, 255, 0.15)';
-                    e.target.style.transform = 'translateY(0)';
-                  }}
-                  >
-                    Login
-                  </button>
-                </Link>
-                <Link to="/signup" style={{ textDecoration: 'none' }}>
-                  <button style={{
-                    background: 'white',
-                    color: 'var(--eh-primary)',
-                    border: 'none',
-                    padding: '8px 14px',
-                    borderRadius: '6px',
-                    cursor: 'pointer',
-                    fontSize: '0.95rem',
-                    fontWeight: 700,
-                    transition: 'all 0.3s ease',
-                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.transform = 'translateY(-2px)';
-                    e.target.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-                  }}
-                  >
-                    Sign Up
-                  </button>
-                </Link>
-              </div>
-            )}
-          </div>
+                Logout
+              </motion.button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <Link to="/login">
+                <Button variant="ghost">Login</Button>
+              </Link>
+              <Link to="/signup">
+                <Button variant="primary">Sign Up</Button>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </nav>
@@ -177,3 +161,4 @@ function Navbar() {
 }
 
 export default Navbar;
+

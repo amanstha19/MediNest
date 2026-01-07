@@ -1,8 +1,9 @@
-import React, { useState, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthProvider';
-import { Card, CardContent } from '../ui/card';
+import { Card } from '../ui/card';
 import Button from '../ui/button';
+import { motion } from 'framer-motion';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -28,20 +29,61 @@ const Login = () => {
   };
 
   return (
-    <div className="eh-container" style={{ paddingTop: 'var(--eh-spacing-2xl)', paddingBottom: 'var(--eh-spacing-2xl)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ width: '100%', maxWidth: '400px' }}>
+    <div 
+      className="hero-2027"
+      style={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        padding: '24px'
+      }}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9, y: 30 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        style={{ width: '100%', maxWidth: '420px' }}
+      >
         <Card>
-          <CardContent>
-            <div style={{ marginBottom: 'var(--eh-spacing-2xl)', textAlign: 'center' }}>
-              <div style={{ fontSize: '3rem', marginBottom: 'var(--eh-spacing-md)' }}>💊</div>
-              <h1 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Welcome Back</h1>
-              <p style={{ color: 'var(--eh-text-muted)' }}>Sign in to your Easy Health account</p>
-            </div>
-
+          <div style={{ 
+            background: 'var(--gradient-surface)',
+            padding: '32px 24px',
+            textAlign: 'center'
+          }}>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: 'spring', delay: 0.2 }}
+              style={{ fontSize: '3rem', marginBottom: '16px' }}
+            >
+              💊
+            </motion.div>
+            <h1 style={{ fontSize: '1.8rem', marginBottom: '8px', fontWeight: 800 }}>
+              Welcome Back
+            </h1>
+            <p style={{ color: 'var(--text-secondary)' }}>
+              Sign in to your MEDINEST account
+            </p>
+          </div>
+          
+          <div style={{ padding: '32px 24px' }}>
             {error && (
-              <div className="eh-alert eh-alert--error" style={{ marginBottom: 'var(--eh-spacing-lg)' }}>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                style={{ 
+                  marginBottom: '24px',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  color: '#f87171',
+                  textAlign: 'center'
+                }}
+              >
                 {error}
-              </div>
+              </motion.div>
             )}
 
             <form onSubmit={handleSubmit}>
@@ -75,28 +117,36 @@ const Login = () => {
 
               <Button
                 variant="primary"
-                className="eh-btn--block"
                 size="lg"
                 type="submit"
                 disabled={loading}
+                style={{ width: '100%' }}
               >
                 {loading ? 'Signing in...' : 'Sign In'}
               </Button>
             </form>
 
-            <div style={{ marginTop: 'var(--eh-spacing-lg)', textAlign: 'center', paddingTop: 'var(--eh-spacing-lg)', borderTop: '1px solid var(--eh-border)' }}>
-              <p style={{ color: 'var(--eh-text-muted)', marginBottom: '8px' }}>Don't have an account?</p>
+            <div style={{ 
+              marginTop: '24px', 
+              textAlign: 'center', 
+              paddingTop: '24px',
+              borderTop: '1px solid var(--glass-border)'
+            }}>
+              <p style={{ color: 'var(--text-muted)', marginBottom: '16px' }}>
+                Do not have an account?
+              </p>
               <Link to="/signup" style={{ textDecoration: 'none' }}>
-                <Button variant="secondary" className="eh-btn--block">
+                <Button variant="glass" size="lg" style={{ width: '100%' }}>
                   Create Account
                 </Button>
               </Link>
             </div>
-          </CardContent>
+          </div>
         </Card>
-      </div>
+      </motion.div>
     </div>
   );
 };
 
 export default Login;
+

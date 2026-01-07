@@ -54,24 +54,39 @@ class UserSerializerWithToken(serializers.ModelSerializer):
 
 # Custom Token Serializer (for login using email instead of username)
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    username_field = CustomUser.USERNAME_FIELD  # Use username field from CustomUser
 
     def validate(self, attrs):
-        # Allow login with either username or email
         username = attrs.get('username')
         password = attrs.get('password')
         
         # Try to find user by username first, then by email
+        user = None
         try:
             user = CustomUser.objects.get(username=username)
         except CustomUser.DoesNotExist:
             try:
                 user = CustomUser.objects.get(email=username)
             except CustomUser.DoesNotExist:
-                user = None
+                pass
         
-        if user and user.check_password(password) and user.is_active:
-            attrs['username'] = user.username
+        # Handle authentication errors with clear messages
+        if user is None:
+            raise serializers.ValidationError({
+                'non_field_errors': ['No account found with this username or email.']
+            })
+        
+        if not user.check_password(password):
+            raise serializers.ValidationError({
+                'non_field_errors': ['Invalid password. Please try again.']
+            })
+        
+        if not user.is_active:
+            raise serializers.ValidationError({
+                'non_field_errors': ['This account has been deactivated.']
+            })
+        
+        # If everything is valid, set the username and call parent validation
+        attrs['username'] = user.username
         
         return super().validate(attrs)
 
@@ -149,3 +164,4 @@ class UserPaymentSerializer(serializers.ModelSerializer):
             'user',
             'created_at'
         ]
+

@@ -1,22 +1,50 @@
-import React from 'react'
-import PropTypes from 'prop-types'
+// MEDINEST Card Component
+import PropTypes from 'prop-types';
+import { motion } from 'framer-motion';
 
-export const Card = ({ children, className = '' }) => {
-  return <div className={`eh-card ${className}`}>{children}</div>
-}
+export const Card = ({
+  children,
+  className = '',
+  hover = false,
+  style = {},
+  ...props
+}) => {
+  const CardWrapper = hover ? motion.div : 'div';
+  const motionProps = hover ? {
+    whileHover: { scale: 1.01 },
+    transition: { duration: 0.3 }
+  } : {};
+
+  return (
+    <CardWrapper
+      className={`card ${className}`}
+      style={{ ...style }}
+      {...motionProps}
+      {...props}
+    >
+      {children}
+    </CardWrapper>
+  );
+};
+
+export const CardContent = ({ children, className = '', style = {} }) => (
+  <div className={`card-content ${className}`} style={style}>
+    {children}
+  </div>
+);
 
 Card.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-}
-
-export const CardContent = ({ children, className = '' }) => {
-  return <div className={`eh-card__body ${className}`}>{children}</div>
-}
+  hover: PropTypes.bool,
+  style: PropTypes.object,
+};
 
 CardContent.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,
-}
+  style: PropTypes.object,
+};
 
-export default Card
+export default Card;
+

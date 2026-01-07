@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Card, CardContent } from '../ui/card';
+import { Card } from '../ui/card';
 import Button from '../ui/button';
+import { motion } from 'framer-motion';
 
 function HomeScreen() {
   const [products, setProducts] = useState([]);
@@ -27,163 +28,203 @@ function HomeScreen() {
       name: 'Pharmacy & Medicines', 
       icon: '💊', 
       desc: 'Browse and order from a wide range of prescription medicines, OTC drugs, and health supplements.',
-      link: '/category/medicines',
-      color: 'var(--eh-primary)'
+      link: '/category/medicines'
     },
- 
     { 
       name: 'Emergency Ambulance', 
       icon: '🚑', 
       desc: '24/7 emergency ambulance services with certified technicians and fast response times.',
-      link: '/ambulance',
-      color: 'var(--eh-accent)'
+      link: '/ambulance'
     },
   ];
 
   const tips = [
-    { title: '🚰 Hydration', desc: 'Drink 2-3 liters of water daily. It kickstarts metabolism and keeps you energized!' },
-    { title: '🥗 Healthy Eating', desc: 'Incorporate leafy greens into your diet. They\'re packed with vitamins and minerals!' },
-    { title: '🏃 Exercise Routine', desc: 'Regular physical activity improves mood, reduces stress, and maintains healthy weight.' },
+    { title: '💧 Hydration', desc: 'Drink 2-3 liters of water daily. It kickstarts metabolism and keeps you energized!' },
+    { title: '🥗 Healthy Eating', desc: 'Incorporate leafy greens into your diet. They are packed with vitamins and minerals!' },
+    { title: '🏃 Exercise', desc: 'Regular physical activity improves mood, reduces stress, and maintains healthy weight.' },
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  };
+
   return (
-    <div className="eh-bg">
-      {/* Hero Section - BIG & BOLD */}
-      <div className="eh-hero" style={{ marginBottom: 0 }}>
-        <div style={{ fontSize: '4rem', marginBottom: '16px' }}>⚕️</div>
-        <h1>Your Trusted Online Healthcare Companion</h1>
-        <p>Medicines, Lab Tests, Emergency Services - Everything You Need for Your Health, Available 24/7</p>
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '32px' }}>
-          <Link to="/category/medicines" style={{ textDecoration: 'none' }}>
-            <Button variant="secondary" size="lg">🛒 Shop Medicines</Button>
-          </Link>
-          <Link to="/category/lab-tests" style={{ textDecoration: 'none' }}>
-            <Button variant="secondary" size="lg">📋 Book Test</Button>
-          </Link>
-        </div>
-      </div>
-
-      <div className="eh-container">
-        {/* KEY SERVICES - Main Feature Section */}
-        <div style={{ marginBottom: 'var(--eh-spacing-3xl)' }}>
-          <h2 style={{ fontSize: '2.2rem', fontWeight: 800, marginBottom: '12px', color: 'var(--eh-text-primary)' }}>
-            Our Key Services
-          </h2>
-          <p style={{ fontSize: '1.1rem', color: 'var(--eh-text-secondary)', marginBottom: 'var(--eh-spacing-2xl)', maxWidth: '800px' }}>
-            Comprehensive healthcare solutions tailored for your needs. Quick, reliable, and always available.
+    <div style={{ minHeight: '100vh' }}>
+      {/* Hero Section */}
+      <motion.div
+        className="hero-2027"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8 }}
+      >
+        <div className="hero-content">
+          <motion.div animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+            <div style={{ fontSize: '4rem', marginBottom: '16px' }}>⚕️</div>
+          </motion.div>
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            Your Healthcare Revolution
+          </motion.h1>
+          <p>
+            Medicines • Lab Tests • Emergency Services<br />
+            Everything for your health, delivered instantly
           </p>
-
-          {/* Vertical Stack of Key Services */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 'var(--eh-spacing-2xl)' }}>
-            {keyServices.map((service, idx) => (
-              <Card key={idx} style={{ borderLeft: `5px solid ${service.color}` }}>
-                <CardContent style={{ padding: 'var(--eh-spacing-2xl)' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', gap: 'var(--eh-spacing-2xl)', alignItems: 'center' }}>
-                    {/* Left Icon */}
-                    <div style={{ fontSize: '3.5rem', lineHeight: 1 }}>
-                      {service.icon}
-                    </div>
-
-                    {/* Middle Content */}
-                    <div>
-                      <h3 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '8px', color: service.color }}>
-                        {service.name}
-                      </h3>
-                      <p style={{ fontSize: '1rem', color: 'var(--eh-text-secondary)', lineHeight: 1.6, margin: 0 }}>
-                        {service.desc}
-                      </p>
-                    </div>
-
-                    {/* Right Button */}
-                    <Link to={service.link} style={{ textDecoration: 'none' }}>
-                      <Button 
-                        variant={service.color === 'var(--eh-primary)' ? 'primary' : service.color === 'var(--eh-secondary)' ? 'secondary' : 'danger'} 
-                        size="lg"
-                      >
-                        Explore →
-                      </Button>
-                    </Link>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap', marginTop: '32px' }}>
+            <Link to="/category/medicines">
+              <Button variant="glass" size="lg">🛒 Shop Medicines</Button>
+            </Link>
+            <Link to="/ambulance">
+              <Button variant="glass" size="lg">🚑 Emergency</Button>
+            </Link>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '48px', marginTop: '48px', flexWrap: 'wrap' }}>
+            <div style={{ textAlign: 'center', color: 'white' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#93c5fd' }}>24/7</div>
+              <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>Available</div>
+            </div>
+            <div style={{ textAlign: 'center', color: 'white' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#93c5fd' }}>5000+</div>
+              <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>Medicines</div>
+            </div>
+            <div style={{ textAlign: 'center', color: 'white' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#86efac' }}>10min</div>
+              <div style={{ fontSize: '0.9rem', opacity: 0.9 }}>Delivery</div>
+            </div>
           </div>
         </div>
+      </motion.div>
 
-        {/* Featured Products Section */}
-        <div className="eh-section">
-          <h2>Popular Products</h2>
-          <p style={{ color: 'var(--eh-text-secondary)', marginBottom: 'var(--eh-spacing-xl)', fontSize: '1.05rem' }}>
+      <div className="eh-container">
+        {/* Services Section */}
+        <motion.div style={{ marginBottom: '48px' }} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '32px', textAlign: 'center' }}>
+            Our Services
+          </h2>
+          <div style={{ display: 'grid', gap: '20px' }}>
+            {keyServices.map((service, idx) => (
+              <motion.div key={idx} whileHover={{ scale: 1.01 }}>
+                <Card hover style={{ borderLeft: '4px solid var(--primary)' }}>
+                  <div style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'auto 1fr auto', 
+                    gap: '24px', 
+                    alignItems: 'center',
+                    padding: '24px',
+                    flexWrap: 'wrap'
+                  }}>
+                    <div style={{ fontSize: '3rem' }}>{service.icon}</div>
+                    <div>
+                      <h3 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '8px' }}>{service.name}</h3>
+                      <p style={{ color: 'var(--text-secondary)', margin: 0 }}>{service.desc}</p>
+                    </div>
+                    <Link to={service.link}>
+                      <Button variant="primary">Explore →</Button>
+                    </Link>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Products Section */}
+        <motion.div style={{ marginBottom: '48px' }} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
+          <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '12px', textAlign: 'center' }}>
+            Popular Products
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '32px', textAlign: 'center' }}>
             Curated selection of top-rated health products
           </p>
           
           {loading ? (
             <div className="eh-center" style={{ padding: '40px' }}>
-              <div className="eh-loader" style={{ margin: '0 auto' }}></div>
+              <div className="eh-loader"></div>
             </div>
           ) : products.length > 0 ? (
-            <div className="eh-grid">
+            <motion.div className="eh-grid" variants={containerVariants} initial="hidden" whileInView="visible">
               {products.slice(0, 8).map((product) => (
-                <Card key={product.id}>
-                  <Link to={`/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <div className="eh-card__media">
-                      {product.image ? (
-                        <img src={`http://127.0.0.1:8000${product.image}`} alt={product.generic_name} />
-                      ) : (
-                        <div className="eh-center">No image</div>
-                      )}
-                    </div>
-                    <CardContent>
-                      <h3 className="eh-card__title">{product.generic_name}</h3>
-                      <p className="eh-card__meta">Category: {product.category}</p>
-                      <p className="eh-card__price">NPR {product.price || 'N/A'}</p>
-                    </CardContent>
-                  </Link>
-                </Card>
+                <motion.div key={product.id} variants={itemVariants}>
+                  <Card hover>
+                    <Link to={`/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <div className="eh-card__media">
+                        {product.image ? (
+                          <img src={`http://127.0.0.1:8000${product.image}`} alt={product.generic_name} />
+                        ) : (
+                          <div className="eh-center" style={{ color: 'var(--text-muted)' }}>No image</div>
+                        )}
+                      </div>
+                      <div className="card-content">
+                        <h3 className="eh-card__title">{product.generic_name}</h3>
+                        <p className="eh-card__meta">Category: {product.category}</p>
+                        <p className="eh-card__price">NPR {product.price || 'N/A'}</p>
+                      </div>
+                    </Link>
+                  </Card>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           ) : (
-            <p className="eh-center" style={{ padding: '40px' }}>No products available.</p>
+            <p className="eh-center" style={{ padding: '40px', color: 'var(--text-muted)' }}>No products available.</p>
           )}
-        </div>
+        </motion.div>
 
         {/* Health Tips Section */}
-        <div style={{ background: 'linear-gradient(135deg, rgba(0, 102, 204, 0.05) 0%, rgba(255, 107, 53, 0.05) 100%)', borderRadius: 'var(--eh-radius-lg)', padding: 'var(--eh-spacing-2xl) var(--eh-spacing-lg)', marginBottom: 'var(--eh-spacing-2xl)' }}>
-          <h2 style={{ marginBottom: 'var(--eh-spacing-xl)' }}>💡 Health Tips & Insights</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--eh-spacing-xl)' }}>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          style={{ 
+            background: 'var(--gradient-surface)', 
+            borderRadius: '20px', 
+            padding: '48px 24px', 
+            marginBottom: '48px'
+          }}
+        >
+          <h2 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '32px', textAlign: 'center' }}>
+            💡 Health Tips
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px' }}>
             {tips.map((tip, idx) => (
-              <Card key={idx}>
-                <CardContent style={{ paddingTop: 'var(--eh-spacing-xl)' }}>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '8px', color: 'var(--eh-primary)' }}>
+              <Card key={idx} hover>
+                <div className="card-content">
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '8px', color: 'var(--primary)' }}>
                     {tip.title}
                   </h3>
-                  <p style={{ color: 'var(--eh-text-secondary)', lineHeight: 1.6 }}>
-                    {tip.desc}
-                  </p>
-                </CardContent>
+                  <p style={{ color: 'var(--text-secondary)', margin: 0 }}>{tip.desc}</p>
+                </div>
               </Card>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* CTA Section */}
-        <Card style={{ background: 'linear-gradient(135deg, var(--eh-primary) 0%, var(--eh-secondary) 100%)', color: 'white' }}>
-          <CardContent style={{ textAlign: 'center', padding: 'var(--eh-spacing-3xl) var(--eh-spacing-2xl)' }}>
-            <h2 style={{ fontSize: '2rem', marginBottom: '12px', color: 'white' }}>
-              Need Medical Assistance?
-            </h2>
-            <p style={{ fontSize: '1.1rem', marginBottom: 'var(--eh-spacing-2xl)', opacity: 0.95 }}>
-              Our team of healthcare professionals is available 24/7 to help you.
-            </p>
-            <div style={{ display: 'flex', gap: 'var(--eh-spacing-lg)', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Button variant="secondary" size="lg">📞 Call Support</Button>
-              <Button variant="secondary" size="lg">💬 Chat with Doctor</Button>
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
+          <Card style={{ background: 'var(--gradient-primary)', color: 'white' }}>
+            <div style={{ padding: '48px 32px', textAlign: 'center' }}>
+              <h2 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '12px', color: 'white' }}>
+                Need Medical Assistance?
+              </h2>
+              <p style={{ fontSize: '1.1rem', marginBottom: '32px', opacity: 0.95 }}>
+                Our team is available 24/7 to help you.
+              </p>
+              <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Button variant="glass" size="lg">📞 Call Support</Button>
+                <Button variant="glass" size="lg">💬 Chat with Doctor</Button>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </Card>
+        </motion.div>
       </div>
     </div>
   );
 }
 
 export default HomeScreen;
+

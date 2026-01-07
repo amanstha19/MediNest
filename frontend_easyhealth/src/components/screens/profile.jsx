@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Card, CardContent } from '../ui/card';
+import { Card } from '../ui/card';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -39,92 +40,158 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="eh-center" style={{ padding: '60px 20px' }}>
-        <div className="eh-loader" style={{ margin: '0 auto' }}></div>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        minHeight: '300px' 
+      }}>
+        <div className="eh-loader"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="eh-container" style={{ paddingTop: 'var(--eh-spacing-2xl)' }}>
-        <div className="eh-alert eh-alert--error">{error}</div>
+      <div className="eh-container" style={{ paddingTop: 'var(--space-2xl)' }}>
+        <div style={{ 
+          padding: '16px', 
+          background: 'rgba(239, 68, 68, 0.1)', 
+          border: '1px solid rgba(239, 68, 68, 0.3)',
+          borderRadius: '12px',
+          color: '#f87171',
+          textAlign: 'center'
+        }}>
+          {error}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="eh-container" style={{ paddingTop: 'var(--eh-spacing-2xl)', paddingBottom: 'var(--eh-spacing-2xl)' }}>
+    <motion.div 
+      className="eh-container" 
+      style={{ paddingTop: 'var(--space-2xl)', paddingBottom: 'var(--space-2xl)' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+    >
       {user ? (
         <div>
-          <h1 style={{ fontSize: '2rem', marginBottom: 'var(--eh-spacing-xl)' }}>👤 {user.username}'s Profile</h1>
+          {/* Profile Header */}
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '20px', 
+            marginBottom: '32px' 
+          }}>
+            <div style={{
+              width: '80px',
+              height: '80px',
+              borderRadius: '50%',
+              background: 'var(--bg-glass)',
+              border: '2px solid var(--glass-border)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '2rem'
+            }}>
+              👤
+            </div>
+            <div>
+              <h1 style={{ fontSize: '1.5rem', marginBottom: '4px' }}>{user.username}</h1>
+              <p style={{ color: 'var(--text-muted)' }}>{user.email}</p>
+            </div>
+          </div>
 
           {/* User Info */}
-          <Card style={{ marginBottom: 'var(--eh-spacing-xl)' }}>
-            <CardContent>
-              <h2 style={{ fontSize: '1.3rem', marginBottom: 'var(--eh-spacing-lg)', color: 'var(--eh-primary)' }}>Personal Information</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--eh-spacing-lg)' }}>
+          <Card style={{ marginBottom: 'var(--space-xl)' }}>
+            <div style={{ padding: '24px' }}>
+              <h2 style={{ fontSize: '1.1rem', marginBottom: '20px' }}>Personal Information</h2>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
+                gap: '20px' 
+              }}>
                 <div>
-                  <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>Email</p>
-                  <p style={{ fontSize: '1rem', fontWeight: 600 }}>{user.email}</p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '4px' }}>Email</p>
+                  <p style={{ fontWeight: 500 }}>{user.email}</p>
                 </div>
                 <div>
-                  <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>Username</p>
-                  <p style={{ fontSize: '1rem', fontWeight: 600 }}>{user.username}</p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '4px' }}>Username</p>
+                  <p style={{ fontWeight: 500 }}>{user.username}</p>
                 </div>
                 <div>
-                  <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>First Name</p>
-                  <p style={{ fontSize: '1rem', fontWeight: 600 }}>{user.first_name || 'N/A'}</p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '4px' }}>First Name</p>
+                  <p style={{ fontWeight: 500 }}>{user.first_name || 'Not set'}</p>
                 </div>
                 <div>
-                  <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>Last Name</p>
-                  <p style={{ fontSize: '1rem', fontWeight: 600 }}>{user.last_name || 'N/A'}</p>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '4px' }}>Last Name</p>
+                  <p style={{ fontWeight: 500 }}>{user.last_name || 'Not set'}</p>
                 </div>
               </div>
-            </CardContent>
+            </div>
           </Card>
 
           {/* Orders Section */}
           <div>
-            <h2 style={{ fontSize: '1.3rem', marginBottom: 'var(--eh-spacing-lg)', color: 'var(--eh-primary)' }}>📦 Order History</h2>
+            <h2 style={{ fontSize: '1.1rem', marginBottom: '20px' }}>Order History</h2>
             {user.orders && user.orders.length > 0 ? (
-              <div style={{ display: 'grid', gap: 'var(--eh-spacing-lg)' }}>
+              <div style={{ display: 'grid', gap: '16px' }}>
                 {user.orders.map((order) => (
                   <Card key={order.order_id}>
-                    <CardContent>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 'var(--eh-spacing-lg)', paddingBottom: 'var(--eh-spacing-lg)', borderBottom: '1px solid var(--eh-border)' }}>
+                    <div style={{ padding: '20px' }}>
+                      <div style={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between', 
+                        alignItems: 'start',
+                        marginBottom: '16px',
+                        paddingBottom: '16px',
+                        borderBottom: '1px solid var(--glass-border)'
+                      }}>
                         <div>
-                          <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Order #{order.order_id}</h3>
-                          <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.9rem' }}>📍 {order.address}</p>
+                          <h3 style={{ fontSize: '1rem', marginBottom: '4px' }}>Order #{order.order_id}</h3>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{order.address}</p>
                         </div>
-                        <span style={{ background: 'var(--eh-primary)', color: 'white', padding: '4px 12px', borderRadius: 'var(--eh-radius-sm)', fontSize: '0.85rem', fontWeight: 600 }}>
+                        <span style={{ 
+                          padding: '4px 12px', 
+                          borderRadius: '20px',
+                          fontSize: '0.8rem',
+                          fontWeight: 600,
+                          background: 'var(--bg-glass)',
+                          border: '1px solid var(--glass-border)'
+                        }}>
                           {order.status}
                         </span>
                       </div>
-                      <p style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--eh-success)', marginBottom: 'var(--eh-spacing-md)' }}>Total: NPR {order.total_price}</p>
+                      <p style={{ fontWeight: 700, marginBottom: '16px' }}>Total: NPR {order.total_price}</p>
                       <div>
-                        <h4 style={{ fontSize: '1rem', marginBottom: '12px', color: 'var(--eh-text-primary)' }}>Items:</h4>
+                        <p style={{ fontSize: '0.9rem', marginBottom: '12px', color: 'var(--text-muted)' }}>Items:</p>
                         {order.cart_items.map((item) => (
-                          <div key={item.product_id} style={{ background: 'var(--eh-bg)', padding: 'var(--eh-spacing-md)', borderRadius: 'var(--eh-radius-sm)', marginBottom: '8px' }}>
+                          <div key={item.product_id} style={{ 
+                            background: 'var(--bg-surface)', 
+                            padding: '12px',
+                            borderRadius: '8px',
+                            marginBottom: '8px'
+                          }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                               <div>
-                                <p style={{ fontWeight: 600, marginBottom: '4px' }}>{item.product_name}</p>
-                                <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.9rem' }}>Qty: {item.quantity}</p>
+                                <p style={{ fontWeight: 500, marginBottom: '2px' }}>{item.product_name}</p>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Qty: {item.quantity}</p>
                               </div>
-                              <p style={{ fontWeight: 600 }}>NPR {item.total_price}</p>
+                              <p style={{ fontWeight: 500 }}>NPR {item.total_price}</p>
                             </div>
                           </div>
                         ))}
                       </div>
-                    </CardContent>
+                    </div>
                   </Card>
                 ))}
               </div>
             ) : (
               <Card>
-                <CardContent>
-                  <p style={{ textAlign: 'center', color: 'var(--eh-text-muted)' }}>No orders yet. Start shopping now!</p>
-                </CardContent>
+                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  No orders yet. Start shopping now!
+                </div>
               </Card>
             )}
           </div>
@@ -132,8 +199,9 @@ const Profile = () => {
       ) : (
         <p>Loading profile...</p>
       )}
-    </div>
+    </motion.div>
   );
 };
 
 export default Profile;
+

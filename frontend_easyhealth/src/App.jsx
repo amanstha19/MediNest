@@ -26,7 +26,8 @@ import Payment from './components/screens/Payment';
 import PaymentVerification from './components/screens/PaymentVerification';
 import PaymentSuccess from './components/screens/PaymentSuccess';
 
-import './components/ui/modern-ui.css';
+// MEDINEST Design System - Unified 2027
+import './components/ui/modern-ui-2027.css';
 
 
 

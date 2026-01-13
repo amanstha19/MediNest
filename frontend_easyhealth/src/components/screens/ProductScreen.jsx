@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useCart } from '../../context/CartContext';
 import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
+import './pages.css';
 
 function ProductScreen() {
   const { id } = useParams();
@@ -39,8 +40,8 @@ function ProductScreen() {
 
   if (loading) {
     return (
-      <div className="eh-center" style={{ padding: '60px 20px' }}>
-        <div className="eh-loader" style={{ margin: '0 auto' }}></div>
+      <div className="eh-center loader-container">
+        <div className="eh-loader"></div>
       </div>
     );
   }
@@ -55,14 +56,14 @@ function ProductScreen() {
   }
 
   return (
-    <div className="eh-container" style={{ paddingTop: 'var(--eh-spacing-2xl)' }}>
-      <Button variant="ghost" onClick={() => navigate(-1)} style={{ marginBottom: 'var(--eh-spacing-xl)' }}>
+    <div className="eh-container product-page">
+      <Button variant="ghost" className="back-btn" onClick={() => navigate(-1)}>
         ← Go Back
       </Button>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--eh-spacing-2xl)', alignItems: 'start' }}>
+      <div className="product-layout">
         {/* Product Image */}
-        <div>
+        <div className="product-image-container">
           <Card>
             <div className="eh-card__media" style={{ aspectRatio: '1/1' }}>
               <img src={`http://127.0.0.1:8000${product.image}`} alt={product.generic_name} />
@@ -72,40 +73,41 @@ function ProductScreen() {
 
         {/* Product Details */}
         <div>
-          <Card>
-            <CardContent>
-              <h1 style={{ fontSize: '2rem', marginBottom: 'var(--eh-spacing-md)', color: 'var(--eh-text-primary)' }}>
+          <Card className="product-detail-card">
+            <CardContent className="product-detail-content">
+              <h1 className="product-detail-title">
                 {product.name}
               </h1>
               
-              <div style={{ marginBottom: 'var(--eh-spacing-lg)', paddingBottom: 'var(--eh-spacing-lg)', borderBottom: '1px solid var(--eh-border)' }}>
-                <p className="eh-card__meta" style={{ marginBottom: 'var(--eh-spacing-sm)' }}>
+              <div className="product-detail-meta">
+                <p className="eh-card__meta">
                   <strong>Generic Name:</strong> {product.generic_name}
                 </p>
-                <p className="eh-card__meta" style={{ marginBottom: 'var(--eh-spacing-sm)' }}>
+                <p className="eh-card__meta">
                   <strong>Category:</strong> {product.category}
                 </p>
                 {product.prescription_required && (
-                  <p style={{ color: 'var(--eh-accent)', fontWeight: 600 }}>⚠️ Prescription Required</p>
+                  <p className="prescription-badge">⚠️ Prescription Required</p>
                 )}
               </div>
 
-              <p className="eh-card__price" style={{ fontSize: '1.8rem', marginBottom: 'var(--eh-spacing-lg)' }}>
+              <p className="product-detail-price">
                 NPR {product.price || 'N/A'}
               </p>
 
-              <p style={{ color: 'var(--eh-text-secondary)', lineHeight: '1.6', marginBottom: 'var(--eh-spacing-lg)' }}>
+              <p className="product-detail-description">
                 {product.description || 'No description available.'}
               </p>
 
-              <Button
-                variant="success"
-                size="lg"
-                className="eh-btn--block"
-                onClick={handleAddToCart}
-              >
-                🛒 Add to Cart
-              </Button>
+              <div className="product-detail-actions">
+                <Button
+                  variant="success"
+                  size="lg"
+                  onClick={handleAddToCart}
+                >
+                  🛒 Add to Cart
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

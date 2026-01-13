@@ -35,13 +35,12 @@ import './components/ui/modern-ui-2027.css';
 const AppContent = () => {
   const location = useLocation();
   const isAdminPage = location.pathname === '/admin' || location.pathname.startsWith('/admin');
-  const isLoginPage = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/signin';
 
   const isAuthenticated = true; // Replace with actual authentication check
 
   return (
     <>
-      {!isAdminPage && !isLoginPage && <Navbar />}
+      {!isAdminPage && <Navbar />}
       {!isAdminPage && <Container>
         <Routes>
           <Route path="/" element={<HomeScreen />} />
@@ -72,12 +71,7 @@ const AppContent = () => {
       {isAdminPage && <Routes>
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>}
-      {isLoginPage && <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignupScreen />} />
-        <Route path="/signin" element={<Login />} />
-      </Routes>}
-      {!isAdminPage && !isLoginPage && <Footer />}
+      {!isAdminPage && <Footer />}
     </>
   );
 };

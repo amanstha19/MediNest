@@ -4,6 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
+import './auth.css';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -66,145 +67,146 @@ const Signup = () => {
   };
 
   return (
-    <div className="eh-container" style={{ paddingTop: 'var(--eh-spacing-2xl)', paddingBottom: 'var(--eh-spacing-2xl)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ width: '100%', maxWidth: '450px' }}>
+    <div className="auth-page">
+      <div className="auth-container signup-container">
         <Card>
           <CardContent>
-            <div style={{ marginBottom: 'var(--eh-spacing-2xl)', textAlign: 'center' }}>
-              <div style={{ fontSize: '3rem', marginBottom: 'var(--eh-spacing-md)' }}>💊</div>
-              <h1 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Create Account</h1>
-              <p style={{ color: 'var(--eh-text-muted)' }}>Join Easy Health today</p>
+            <div className="auth-card-header">
+              <div className="auth-icon">💊</div>
+              <h1 className="auth-title">Create Account</h1>
+              <p className="auth-subtitle">Join MEDINEST today</p>
             </div>
 
-            {generalError && (
-              <div className="eh-alert eh-alert--error" style={{ marginBottom: 'var(--eh-spacing-lg)' }}>
-                {generalError}
-              </div>
-            )}
+            <div className="auth-card-body">
+              {generalError && (
+                <div className="auth-error">
+                  {generalError}
+                </div>
+              )}
 
-            <form onSubmit={handleSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--eh-spacing-md)' }}>
+              <form className="auth-form" onSubmit={handleSubmit}>
+                <div className="signup-form-grid">
+                  <div className="eh-form-group">
+                    <label htmlFor="firstName">First Name</label>
+                    <input
+                      type="text"
+                      className="eh-input"
+                      id="firstName"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="First name"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+
+                  <div className="eh-form-group">
+                    <label htmlFor="lastName">Last Name</label>
+                    <input
+                      type="text"
+                      className="eh-input"
+                      id="lastName"
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="Last name"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+
                 <div className="eh-form-group">
-                  <label htmlFor="firstName">First Name</label>
+                  <label htmlFor="username">Username</label>
                   <input
                     type="text"
                     className="eh-input"
-                    id="firstName"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="First name"
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Choose a username"
                     required
                     disabled={loading}
                   />
                 </div>
 
                 <div className="eh-form-group">
-                  <label htmlFor="lastName">Last Name</label>
+                  <label htmlFor="email">Email</label>
                   <input
-                    type="text"
+                    type="email"
                     className="eh-input"
-                    id="lastName"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Last name"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
                     required
                     disabled={loading}
                   />
-                </div>
-              </div>
-
-              <div className="eh-form-group">
-                <label htmlFor="username">Username</label>
-                <input
-                  type="text"
-                  className="eh-input"
-                  id="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Choose a username"
-                  required
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="eh-form-group">
-                <label htmlFor="email">Email</label>
-                <input
-                  type="email"
-                  className="eh-input"
-                  id="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                  disabled={loading}
-                />
-                {emailError && <div className="eh-form-group" style={{ color: 'var(--eh-accent)', fontSize: '0.85rem', marginTop: '4px' }}>{emailError}</div>}
-              </div>
-
-              <div className="eh-form-group">
-                <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  className="eh-input"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min 8 chars with special character"
-                  required
-                  disabled={loading}
-                />
-                {passwordError && <div className="eh-form-group" style={{ color: 'var(--eh-accent)', fontSize: '0.85rem', marginTop: '4px' }}>{passwordError}</div>}
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--eh-spacing-md)' }}>
-                <div className="eh-form-group">
-                  <label htmlFor="city">City</label>
-                  <input
-                    type="text"
-                    className="eh-input"
-                    id="city"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                    placeholder="Your city"
-                    required
-                    disabled={loading}
-                  />
+                  {emailError && <div className="eh-error">{emailError}</div>}
                 </div>
 
                 <div className="eh-form-group">
-                  <label htmlFor="phone">Phone</label>
+                  <label htmlFor="password">Password</label>
                   <input
-                    type="tel"
+                    type="password"
                     className="eh-input"
-                    id="phone"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="Your phone"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Min 8 chars with special character"
                     required
                     disabled={loading}
                   />
+                  {passwordError && <div className="eh-error">{passwordError}</div>}
                 </div>
-              </div>
 
-              <Button
-                variant="primary"
-                className="eh-btn--block"
-                size="lg"
-                type="submit"
-                disabled={loading}
-              >
-                {loading ? 'Creating Account...' : 'Create Account'}
-              </Button>
-            </form>
+                <div className="signup-form-grid">
+                  <div className="eh-form-group">
+                    <label htmlFor="city">City</label>
+                    <input
+                      type="text"
+                      className="eh-input"
+                      id="city"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      placeholder="Your city"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
 
-            <div style={{ marginTop: 'var(--eh-spacing-lg)', textAlign: 'center', paddingTop: 'var(--eh-spacing-lg)', borderTop: '1px solid var(--eh-border)' }}>
-              <p style={{ color: 'var(--eh-text-muted)', marginBottom: '8px' }}>Already have an account?</p>
-              <Link to="/login" style={{ textDecoration: 'none' }}>
-                <Button variant="secondary" className="eh-btn--block">
-                  Sign In Instead
+                  <div className="eh-form-group">
+                    <label htmlFor="phone">Phone</label>
+                    <input
+                      type="tel"
+                      className="eh-input"
+                      id="phone"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="Your phone"
+                      required
+                      disabled={loading}
+                    />
+                  </div>
+                </div>
+
+                <Button
+                  variant="primary"
+                  size="lg"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading ? 'Creating Account...' : 'Create Account'}
                 </Button>
-              </Link>
+              </form>
+
+              <div className="auth-links">
+                <p className="auth-links-text">Already have an account?</p>
+                <Link to="/login" style={{ textDecoration: 'none' }}>
+                  <Button variant="secondary">
+                    Sign In Instead
+                  </Button>
+                </Link>
+              </div>
             </div>
           </CardContent>
         </Card>

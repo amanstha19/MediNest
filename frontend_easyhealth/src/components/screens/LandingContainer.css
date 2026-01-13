@@ -1,67 +1,144 @@
+/* ==========================================================================
+   LANDING / HERO INTRO – POLISHED VERSION
+   ========================================================================== */
+
 .landing-container {
-  background: linear-gradient(to bottom right, #4caf50, #81c784, #66bb6a); /* Adding more shades of green */
-  color: white;
-  height: 38vh; /* Full viewport height */
+  position: relative;
+  height: 38vh;
   display: flex;
-  align-items: center; /* Vertically center content */
-  justify-content: center; /* Horizontally center content */ 
+  align-items: center;
+  justify-content: center;
   flex-direction: column;
-  animation: fadeBackground 10s ease-in-out infinite; /* Fading background animation */
+  color: white;
+  text-align: center;
+  overflow: hidden;
+
+  background: linear-gradient(
+    135deg,
+    #2e7d32,
+    #4caf50,
+    #81c784,
+    #66bb6a
+  );
+
+  animation: gradientShift 12s ease-in-out infinite;
 }
 
-/* Animation for fading background */
-@keyframes fadeBackground {
+/* Soft glowing overlay */
+.landing-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.18), transparent 40%),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.12), transparent 45%);
+  z-index: 0;
+}
+
+/* Smooth animated gradient */
+@keyframes gradientShift {
   0% {
-    background: linear-gradient(to bottom right, #55ae58, #81c784);
+    background-position: 0% 50%;
   }
   50% {
-    background: linear-gradient(to bottom right, #66bb6a, #7aa17c);
+    background-position: 100% 60%;
   }
   100% {
-    background: linear-gradient(to bottom right, #81c784, #66bb6a);
+    background-position: 0% 50%;
   }
 }
 
+/* ===== TEXT ===== */
+
 .landing-title {
-  font-size: 4rem; /* Larger title for impact */
-  font-weight: bold;
-  margin-bottom: 1.5rem;
-  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3); /* Subtle text shadow for depth */
+  position: relative;
+  z-index: 1;
+  font-size: clamp(2.8rem, 5vw, 4rem);
+  font-weight: 800;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.02em;
+
+  text-shadow:
+    0 8px 30px rgba(0,0,0,0.35),
+    0 2px 6px rgba(0,0,0,0.25);
 }
 
 .landing-subtitle {
-  font-size: 1.8rem; /* Slightly larger subtitle */
-  margin-bottom: 2.5rem;
+  position: relative;
+  z-index: 1;
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  max-width: 720px;
+  margin-bottom: 2.75rem;
   line-height: 1.6;
-  text-align: center; /* Centered subtitle */
-  opacity: 0.9; /* Slight transparency for elegance */
+  opacity: 0.92;
 }
 
+/* ===== SEARCH BAR ===== */
+
 .search-form {
+  position: relative;
+  z-index: 1;
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin-bottom: 2rem;
 }
 
 .search-input {
-  width: 50%; /* Reduced width for a more balanced look */
-  border-radius: 5px 0 0 5px;
-  padding: 0.75rem;
-  font-size: 1.1rem;
+  width: clamp(260px, 45vw, 520px);
+  padding: 0.9rem 1.1rem;
+  font-size: 1.05rem;
   border: none;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border-radius: 14px 0 0 14px;
+  outline: none;
+
+  background: rgba(255,255,255,0.95);
+  color: #1e293b;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.25),
+    inset 0 1px 2px rgba(255,255,255,0.6);
+}
+
+.search-input::placeholder {
+  color: #64748b;
 }
 
 .search-button {
-  border-radius: 0 5px 5px 0;
-  padding: 0.75rem 2rem;
-  font-size: 1.1rem;
-  background-color: #388e3c; /* Slightly darker green */
+  padding: 0.9rem 2.25rem;
+  font-size: 1.05rem;
+  font-weight: 600;
   border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+
+  border-radius: 0 14px 14px 0;
+  background: linear-gradient(135deg, #1b5e20, #388e3c);
+  color: white;
+
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  transition: all 0.25s ease;
 }
 
 .search-button:hover {
-  background-color: #66bb6a; /* Light green on hover */
+  transform: translateY(-2px) scale(1.04);
+  background: linear-gradient(135deg, #2e7d32, #66bb6a);
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 768px) {
+  .landing-container {
+    height: auto;
+    padding: 3rem 1.5rem;
+  }
+
+  .search-form {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .search-input,
+  .search-button {
+    width: 100%;
+    border-radius: 14px;
+  }
 }

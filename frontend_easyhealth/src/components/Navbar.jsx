@@ -4,6 +4,7 @@ import { AuthContext } from '../context/AuthProvider';
 import { useDarkMode } from '../context/DarkModeContext';
 import { motion } from 'framer-motion';
 import Button from './ui/button';
+import './layout.css';
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
@@ -23,68 +24,31 @@ function Navbar() {
   ];
 
   return (
-    <nav style={{
-      position: 'sticky',
-      top: 0,
-      zIndex: 1000,
-      padding: '0 24px',
-      background: 'var(--bg-glass)',
-      backdropFilter: 'blur(20px)',
-      WebkitBackdropFilter: 'blur(20px)',
-      borderBottom: '1px solid var(--glass-border)'
-    }}>
-      <div style={{
-        maxWidth: '1280px',
-        margin: '0 auto',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        height: '70px'
-      }}>
+    <nav className="navbar">
+      <div className="navbar-container">
         {/* Logo */}
-        <Link to="/" style={{ textDecoration: 'none' }}>
+        <Link to="/" className="navbar-logo">
           <motion.span
-            style={{
-              fontSize: '1.6rem',
-              fontWeight: 800,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              color: 'var(--text-primary)'
-            }}
+            className="navbar-logo-icon"
             whileHover={{ scale: 1.05 }}
           >
             <motion.span
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-              style={{ fontSize: '1.8rem' }}
             >
               💊
             </motion.span>
-            <span style={{
-              background: 'var(--gradient-primary)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent'
-            }}>
-              MEDINEST
-            </span>
           </motion.span>
+          <span className="navbar-logo-text">MEDINEST</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+        <div className="navbar-nav">
           {navLinks.map((link) => (
             <Link 
               key={link.path} 
               to={link.path}
-              style={{ 
-                textDecoration: 'none', 
-                color: 'var(--text-primary)',
-                padding: '8px 0',
-                fontSize: '0.95rem',
-                fontWeight: 500
-              }}
+              className="navbar-link"
             >
               {link.label}
             </Link>
@@ -92,60 +56,37 @@ function Navbar() {
         </div>
 
         {/* Right Section */}
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div className="navbar-actions">
           {/* Dark Mode Toggle */}
           <motion.button
+            className="navbar-action-btn"
             onClick={toggleDarkMode}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            style={{
-              background: 'var(--bg-glass)',
-              border: '1px solid var(--glass-border)',
-              color: 'var(--text-primary)',
-              padding: '8px 12px',
-              borderRadius: '10px',
-              cursor: 'pointer',
-              fontSize: '1.1rem'
-            }}
           >
             {isDarkMode ? '☀️' : '🌙'}
           </motion.button>
 
           {/* Cart */}
-          <Link to="/cart">
+          <Link to="/cart" className="navbar-cart">
             <Button variant="primary">🛒 Cart</Button>
           </Link>
 
           {/* User Section */}
           {user ? (
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-              <span style={{ 
-                color: 'var(--text-primary)', 
-                fontSize: '0.9rem', 
-                fontWeight: 600 
-              }}>
-                {user?.username}
-              </span>
+            <div className="navbar-user">
+              <span className="navbar-user-name">{user?.username}</span>
               <motion.button
+                className="navbar-logout-btn"
                 onClick={handleLogout}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                style={{
-                  background: 'var(--danger)',
-                  border: 'none',
-                  color: 'white',
-                  padding: '8px 16px',
-                  borderRadius: '10px',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem',
-                  fontWeight: 600
-                }}
               >
                 Logout
               </motion.button>
             </div>
           ) : (
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <div className="navbar-auth">
               <Link to="/login">
                 <Button variant="ghost">Login</Button>
               </Link>

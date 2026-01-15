@@ -16,7 +16,7 @@ import { AuthProvider } from './context/AuthProvider';
 import Profile from './components/screens/profile';
 import CartScreen from './components/screens/CartScreen';
 import { CartProvider } from './context/CartContext';
-import { DarkModeProvider } from './context/DarkModeContext';
+import { ThemeProvider } from './context/DarkModeContext';
 import AdminPanel from './components/screens/AdminPanel';
 import CheckoutScreen from './components/screens/CheckoutScreen';
 import OrderSuccessScreen from './components/screens/OrderSuccessScreen';
@@ -26,7 +26,7 @@ import Payment from './components/screens/Payment';
 import PaymentVerification from './components/screens/PaymentVerification';
 import PaymentSuccess from './components/screens/PaymentSuccess';
 
-// MEDINEST Design System - Unified 2027
+// MEDINEST Design System - Unified 2027 Light Theme
 import './components/ui/modern-ui-2027.css';
 
 
@@ -82,7 +82,7 @@ function App() {
   }, []);
 
   return (
-    <DarkModeProvider>
+    <ThemeProvider>
       <AuthProvider>
         <CartProvider>
           <Router>
@@ -90,7 +90,7 @@ function App() {
           </Router>
         </CartProvider>
       </AuthProvider>
-    </DarkModeProvider>
+    </ThemeProvider>
   );
 }
 

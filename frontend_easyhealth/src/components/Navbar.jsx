@@ -1,14 +1,12 @@
 import { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthProvider';
-import { useDarkMode } from '../context/DarkModeContext';
 import { motion } from 'framer-motion';
 import Button from './ui/button';
 import './layout.css';
 
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
-  const { isDarkMode, toggleDarkMode } = useDarkMode();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -45,8 +43,8 @@ function Navbar() {
         {/* Desktop Navigation */}
         <div className="navbar-nav">
           {navLinks.map((link) => (
-            <Link 
-              key={link.path} 
+            <Link
+              key={link.path}
               to={link.path}
               className="navbar-link"
             >
@@ -57,16 +55,6 @@ function Navbar() {
 
         {/* Right Section */}
         <div className="navbar-actions">
-          {/* Dark Mode Toggle */}
-          <motion.button
-            className="navbar-action-btn"
-            onClick={toggleDarkMode}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-          >
-            {isDarkMode ? '☀️' : '🌙'}
-          </motion.button>
-
           {/* Cart */}
           <Link to="/cart" className="navbar-cart">
             <Button variant="primary">🛒 Cart</Button>
@@ -102,4 +90,3 @@ function Navbar() {
 }
 
 export default Navbar;
-

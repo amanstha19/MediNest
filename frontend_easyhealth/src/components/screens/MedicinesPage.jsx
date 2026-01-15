@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Card, CardContent } from '../ui/card';
+import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
 import './pages.css';
@@ -123,8 +123,8 @@ const MedicinesPage = () => {
           />
         </div>
       ) : products.length > 0 ? (
-        <motion.div 
-          className="products-layout"
+        <motion.div
+          className="advanced-product-grid"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -132,42 +132,52 @@ const MedicinesPage = () => {
           {products.map((product, idx) => (
             <motion.div
               key={product.id}
+              className="advanced-product-card"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
-              whileHover={{ scale: 1.02, y: -5 }}
             >
-              <Link key={product.id} to={`/product/${product.id}`} className="product-link">
-                <Card hover>
-                  {product.image && (
+              <Link to={`/product/${product.id}`} className="product-link">
+                <div className="product-image-container">
+                  {product.image ? (
                     <img
                       src={`http://127.0.0.1:8000${product.image}`}
-                      alt={product.name}
-                      className="product-image"
+                      alt={product.generic_name || product.name}
                     />
-                  )}
-                  <CardContent className="product-content">
-                    <h3 className="product-name">
-                      {product.name.length > 35 ? product.name.substring(0, 35) + '...' : product.name}
-                    </h3>
-                    <div className="product-badges">
-                      <span className={`badge ${product.prescription_required ? 'badge-rx' : 'badge-otc'}`}>
-                        {product.prescription_required ? 'Rx' : 'OTC'}
-                      </span>
-                      {product.stock <= 0 && (
-                        <span className="badge badge-out-of-stock">
-                          Out of Stock
-                        </span>
-                      )}
+                  ) : (
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      height: '100%',
+                      color: 'var(--text-muted)',
+                      fontSize: '1.2rem'
+                    }}>
+                      💊
                     </div>
-                    <p className="product-price">
-                      NPR {product.price?.toLocaleString() || 'N/A'}
-                    </p>
-                    <Button variant="primary" size="sm" className="product-btn-block">
-                      Add to Cart
-                    </Button>
-                  </CardContent>
-                </Card>
+                  )}
+                  <div className="product-badges">
+                    <span className={`badge ${product.prescription_required ? 'badge-rx' : 'badge-otc'}`}>
+                      {product.prescription_required ? 'Rx' : 'OTC'}
+                    </span>
+                    {product.stock <= 0 && (
+                      <span className="badge badge-out-of-stock">
+                        Out of Stock
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="product-content">
+                  <h3 className="product-name">
+                    {product.generic_name || product.name}
+                  </h3>
+                  <p className="product-price">
+                    {product.price?.toLocaleString() || 'N/A'}
+                  </p>
+                  <Button variant="primary" size="sm" className="product-btn-block">
+                    Add to Cart
+                  </Button>
+                </div>
               </Link>
             </motion.div>
           ))}

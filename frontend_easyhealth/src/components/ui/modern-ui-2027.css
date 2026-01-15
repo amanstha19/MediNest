@@ -1,46 +1,54 @@
 /* ==========================================================================
    MEDINEST - Premium E-Pharmacy Design System
-   Clean White/Gray Design (No Pink/Purple)
+   Light Glassmorphism Theme 2027
    ========================================================================== */
 
 /* CSS Custom Properties */
 :root {
-  /* ===== COLOR PALETTE - Clean White/Gray ===== */
-  --primary: #3b82f6;       /* Clean Blue */
-  --primary-dark: #2563eb;
+  /* ===== COLOR PALETTE ===== */
   --primary-light: #60a5fa;
-  
-  --success: #22c55e;       /* Green */
-  --success-dark: #16a34a;
-  
-  --danger: #ef4444;        /* Red */
-  --danger-dark: #dc2626;
-  
-  --warning: #f59e0b;       /* Amber */
-  
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-soft: #eff6ff;
+
+  --success: #16a34a;
+  --success-soft: #f0fdf4;
+
+  --danger: #ef4444;
+  --danger-soft: #fef2f2;
+
+  --warning: #f59e0b;
+  --warning-soft: #fffbeb;
+
   /* ===== NEUTRAL COLORS ===== */
   --white: #ffffff;
   --black: #000000;
-  
-  --bg-primary: #0f172a;    /* Dark slate */
-  --bg-secondary: #1e293b;
-  --bg-surface: rgba(255, 255, 255, 0.05);
-  --bg-glass: rgba(255, 255, 255, 0.08);
-  --bg-glass-hover: rgba(255, 255, 255, 0.12);
-  
-  --text-primary: #ffffff;
-  --text-secondary: #cbd5e1;
+
+  --bg-primary: #f8f9fa;    /* Soft off-white/light gray */
+  --bg-secondary: #ffffff;
+  --bg-surface: #f1f5f9;
+
+  --text-primary: #1f2937;  /* Dark gray */
+  --text-secondary: #4b5563; /* Secondary text */
   --text-muted: #94a3b8;
-  
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --glass-blur: blur(20px);
-  --glass-backdrop: blur(20px) saturate(180%);
-  
+
+  --border-light: #e2e8f0;
+  --border-subtle: #f1f5f9;
+
+  /* ===== GLASSMORPHISM ===== */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-blur: blur(10px);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08);
+
   /* ===== GRADIENTS ===== */
-  --gradient-primary: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  --gradient-surface: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-  
+  --gradient-primary: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  --gradient-hero: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+
   /* ===== SPACING ===== */
   --space-xs: 0.25rem;
   --space-sm: 0.5rem;
@@ -52,40 +60,32 @@
   --space-4xl: 2.5rem;
   --space-5xl: 3rem;
   --space-6xl: 4rem;
-  
+
   /* ===== BORDER RADIUS ===== */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
   --radius-full: 9999px;
-  
-  /* ===== SHADOWS ===== */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.3);
-  --shadow-glow-lg: 0 0 40px rgba(59, 130, 246, 0.4);
-  
+
   /* ===== TYPOGRAPHY ===== */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  
-  /* ===== LEGACY COMPATIBILITY ===== */
+
+  /* ===== LEGACY COMPATIBILITY (eh- prefix) ===== */
   --eh-primary: var(--primary);
-  --eh-primary-dark: var(--primary-dark);
+  --eh-primary-dark: var(--primary-hover);
   --eh-secondary: var(--primary);
   --eh-accent: var(--danger);
   --eh-success: var(--success);
-  --eh-success-light: var(--success);
+  --eh-success-light: var(--success-soft);
   --eh-warning: var(--warning);
   --eh-bg: var(--bg-primary);
   --eh-surface: var(--bg-surface);
   --eh-text-primary: var(--text-primary);
   --eh-text-secondary: var(--text-secondary);
   --eh-text-muted: var(--text-muted);
-  --eh-border: var(--glass-border);
-  --eh-divider: var(--glass-border);
+  --eh-border: var(--border-light);
+  --eh-divider: var(--border-subtle);
   --eh-radius: var(--radius-lg);
   --eh-radius-sm: var(--radius-sm);
   --eh-radius-lg: var(--radius-xl);
@@ -123,6 +123,8 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
@@ -170,7 +172,7 @@ p {
    BUTTON COMPONENTS
    ========================================================================== */
 
-.btn {
+.mui-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -184,84 +186,125 @@ p {
   transition: all 0.3s ease;
   min-height: 48px;
   position: relative;
+  font-family: var(--font-family);
 }
 
-.btn:disabled {
+.mui-btn:disabled {
   opacity: 0.5;
+  cursor: not-allowed;
   cursor: not-allowed;
 }
 
-.btn-primary {
+.mui-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Primary Button */
+.mui-btn-primary {
   background: var(--gradient-primary);
-  color: var(--text-primary);
-  box-shadow: var(--shadow-glow);
+  color: var(--white);
+  box-shadow: var(--shadow-sm);
 }
 
-.btn-primary:hover:not(:disabled) {
+.mui-btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-glow-lg);
+  box-shadow: var(--shadow-md);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
 }
 
-.btn-secondary {
-  background: var(--bg-glass);
+.mui-btn-primary:focus:not(:disabled) {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Secondary Button */
+.mui-btn-secondary {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  color: var(--text-primary);
+}
+
+.mui-btn-secondary:hover:not(:disabled) {
+  background: var(--bg-primary);
+  transform: translateY(-2px);
+  border-color: var(--primary-light);
+}
+
+.mui-btn-secondary:focus:not(:disabled) {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Glass Button */
+.mui-btn-glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
   color: var(--text-primary);
+  position: relative;
+  overflow: hidden;
 }
 
-.btn-secondary:hover:not(:disabled) {
-  background: var(--bg-glass-hover);
-  transform: translateY(-2px);
+.mui-btn-glass::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  pointer-events: none;
 }
 
-.btn-success {
-  background: var(--success);
-  color: var(--text-primary);
-}
-
-.btn-success:hover:not(:disabled) {
-  background: var(--success-dark);
-  transform: translateY(-2px);
-}
-
-.btn-danger {
-  background: var(--danger);
-  color: var(--text-primary);
-}
-
-.btn-danger:hover:not(:disabled) {
-  background: var(--danger-dark);
-  transform: translateY(-2px);
-}
-
-.btn-glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--text-primary);
-}
-
-.btn-glass:hover:not(:disabled) {
+.mui-btn-glass:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.15);
   transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.btn-ghost {
+.mui-btn-glass:focus:not(:disabled) {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+}
+
+/* Success Button */
+.mui-btn-success {
+  background: var(--success);
+  color: var(--white);
+}
+
+.mui-btn-success:hover:not(:disabled) {
+  background: #15803d;
+  transform: translateY(-2px);
+}
+
+.mui-btn-success:focus:not(:disabled) {
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+/* Ghost Button */
+.mui-btn-ghost {
   background: transparent;
   color: var(--text-secondary);
+  border: 1px solid transparent;
 }
 
-.btn-ghost:hover:not(:disabled) {
-  background: var(--bg-glass);
+.mui-btn-ghost:hover:not(:disabled) {
+  background: var(--bg-surface);
   color: var(--text-primary);
 }
 
-.btn-sm {
+.mui-btn-ghost:focus:not(:disabled) {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Button Sizes */
+.mui-btn-sm {
   padding: var(--space-sm) var(--space-lg);
   font-size: 0.875rem;
   min-height: 36px;
 }
 
-.btn-lg {
+.mui-btn-lg {
   padding: var(--space-lg) var(--space-2xl);
   font-size: 1.125rem;
   min-height: 56px;
@@ -271,26 +314,42 @@ p {
    CARD COMPONENTS
    ========================================================================== */
 
-.card, .glass-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+.mui-card, .mui-glass-card {
+  background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
-  box-shadow: var(--glass-shadow);
+  box-shadow: var(--shadow-md);
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.card:hover, .glass-card:hover {
+.mui-card::before, .mui-glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  pointer-events: none;
+}
+
+.mui-card:hover, .mui-glass-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-xl);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
-.card-content {
+.mui-card-content {
   padding: var(--space-lg);
+  position: relative;
+  z-index: 1;
 }
 
-.eh-card__media {
+.mui-card__media {
   width: 100%;
   aspect-ratio: 4 / 5;
   overflow: hidden;
@@ -298,61 +357,211 @@ p {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
-.eh-card__media img {
+.mui-card__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
 
-.card:hover .eh-card__media img {
+.mui-card:hover .mui-card__media img {
   transform: scale(1.05);
 }
 
-.eh-card__title {
-  font-size: 1.05rem;
+.mui-card__title {
+  font-size: clamp(1rem, 2vw, 1.05rem);
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.4;
   margin: 0 0 var(--space-sm);
 }
 
-.eh-card__meta {
+.mui-card__meta {
   font-size: 0.9rem;
   color: var(--text-muted);
   margin: var(--space-sm) 0;
 }
 
-.eh-card__price {
-  font-size: 1.3rem;
+.mui-card__price {
+  font-size: clamp(1.1rem, 3vw, 1.3rem);
   font-weight: 700;
   color: var(--success);
   margin-top: var(--space-md);
+}
+
+/* Skeleton Shimmer Loader for Product Cards */
+.mui-skeleton {
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-primary) 50%, var(--bg-surface) 75%);
+  background-size: 200% 100%;
+  animation: mui-shimmer 1.5s infinite;
+  border-radius: var(--radius-md);
+}
+
+.mui-skeleton-card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.mui-skeleton-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  pointer-events: none;
+}
+
+.mui-skeleton-media {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-md);
+}
+
+.mui-skeleton-title {
+  height: 1.2rem;
+  width: 80%;
+  margin-bottom: var(--space-sm);
+}
+
+.mui-skeleton-meta {
+  height: 0.9rem;
+  width: 60%;
+  margin-bottom: var(--space-md);
+}
+
+.mui-skeleton-price {
+  height: 1.4rem;
+  width: 40%;
+}
+
+@keyframes mui-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ==========================================================================
+   NAVIGATION COMPONENTS
+   ========================================================================== */
+
+.mui-navbar {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  padding: var(--space-md) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.mui-navbar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+  pointer-events: none;
+}
+
+.mui-navbar-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-2xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.mui-navbar-brand {
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 800;
+  color: var(--text-primary);
+  text-decoration: none;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mui-navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xl);
+}
+
+.mui-nav-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.mui-nav-link:hover {
+  color: var(--primary);
+}
+
+.mui-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transition: width 0.3s ease;
+}
+
+.mui-nav-link:hover::after {
+  width: 100%;
+}
+
+.mui-navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
 }
 
 /* ==========================================================================
    CONTAINER & GRID
    ========================================================================== */
 
-.eh-container, .container {
+.mui-container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 var(--space-2xl);
 }
 
-.eh-grid {
+.mui-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: var(--space-2xl);
 }
 
-.eh-grid--2 {
+.mui-grid--2 {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 }
 
-.eh-grid--3 {
+.mui-grid--3 {
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
 }
 
@@ -361,10 +570,10 @@ p {
    ========================================================================== */
 
 .hero-2027 {
-  background: var(--gradient-primary);
-  color: white;
+  background: var(--gradient-hero);
+  color: var(--text-primary);
   padding: var(--space-5xl) var(--space-2xl);
-  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  border-radius: var(--radius-xl);
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -373,6 +582,7 @@ p {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  border: 1px solid var(--border-light);
 }
 
 .hero-content {
@@ -385,13 +595,13 @@ p {
   font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 800;
   margin-bottom: var(--space-lg);
-  color: white;
+  color: var(--text-primary);
   line-height: 1.2;
 }
 
 .hero-2027 p {
   font-size: clamp(1rem, 2vw, 1.25rem);
-  opacity: 0.95;
+  color: var(--text-secondary);
   margin-bottom: var(--space-2xl);
   line-height: 1.6;
 }
@@ -400,35 +610,41 @@ p {
    FORM COMPONENTS
    ========================================================================== */
 
-.eh-input, .form-input, input[type="text"],
-input[type="email"], input[type="password"] {
+.mui-input, input[type="text"],
+input[type="email"], input[type="password"],
+input[type="number"], textarea, select {
   width: 100%;
   padding: var(--space-md) var(--space-lg);
-  background: var(--bg-surface);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-size: 1rem;
+  font-family: var(--font-family);
   transition: all 0.2s ease;
+  position: relative;
 }
 
-.eh-input:focus, .form-input:focus,
-input[type="text"]:focus, input[type="email"]:focus,
-input[type="password"]:focus {
+.mui-input:focus, input[type="text"]:focus,
+input[type="email"]:focus, input[type="password"]:focus,
+input[type="number"]:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  background: rgba(255, 255, 255, 0.15);
 }
 
-.eh-input::placeholder {
+.mui-input::placeholder {
   color: var(--text-muted);
 }
 
-.eh-form-group {
+.mui-form-group {
   margin-bottom: var(--space-xl);
 }
 
-.eh-form-group label {
+.mui-form-group label {
   display: block;
   margin-bottom: var(--space-sm);
   font-weight: 600;
@@ -436,10 +652,24 @@ input[type="password"]:focus {
   color: var(--text-primary);
 }
 
-.eh-error {
+.mui-error {
   color: var(--danger);
   font-size: 0.875rem;
   margin-top: var(--space-xs);
+}
+
+.mui-textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.mui-select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right var(--space-md) center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: var(--space-4xl);
 }
 
 /* ==========================================================================
@@ -485,51 +715,71 @@ input[type="password"]:focus {
 .mt-6 { margin-top: var(--space-2xl); }
 
 /* ==========================================================================
-   ANIMATIONS
+   ANIMATIONS & LOADING
    ========================================================================== */
 
-@keyframes pulse {
+@keyframes mui-pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
 
-.pulse {
-  animation: pulse 2s ease-in-out infinite;
+.mui-pulse {
+  animation: mui-pulse 2s ease-in-out infinite;
 }
 
-@keyframes spin {
+@keyframes mui-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-.spin {
-  animation: spin 1s linear infinite;
+.mui-spin {
+  animation: mui-spin 1s linear infinite;
 }
 
-@keyframes shimmer {
+@keyframes mui-shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
-.skeleton {
-  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-glass) 50%, var(--bg-surface) 75%);
+.mui-skeleton {
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-primary) 50%, var(--bg-surface) 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: mui-shimmer 1.5s infinite;
   border-radius: var(--radius-md);
 }
 
 /* Loader */
-.eh-loader {
+.mui-loader {
   width: 40px;
   height: 40px;
   border: 3px solid var(--glass-border);
   border-top-color: var(--primary);
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: mui-spin 1s linear infinite;
 }
 
-.eh-center {
+.mui-center {
   text-align: center;
+}
+
+/* Fade In Animation */
+@keyframes mui-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mui-fade-in {
+  animation: mui-fade-in 0.5s ease-out;
+}
+
+/* Scale In Animation */
+@keyframes mui-scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.mui-scale-in {
+  animation: mui-scale-in 0.3s ease-out;
 }
 
 /* ==========================================================================
@@ -537,26 +787,62 @@ input[type="password"]:focus {
    ========================================================================== */
 
 @media (max-width: 768px) {
-  .eh-container, .container {
+  .mui-container {
     padding: 0 var(--space-lg);
   }
-  
-  .eh-grid {
+
+  .mui-grid {
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   }
-  
+
+  .mui-navbar-container {
+    padding: 0 var(--space-lg);
+  }
+
+  .mui-navbar-nav {
+    display: none; /* Hide nav links on mobile - implement hamburger menu separately */
+  }
+
   .hero-2027 {
     padding: var(--space-4xl) var(--space-lg);
     min-height: 300px;
   }
-  
-  .btn {
+
+  .mui-btn {
     width: 100%;
+  }
+
+  .mui-card-content {
+    padding: var(--space-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .mui-container {
+    padding: 0 var(--space-md);
+  }
+
+  .mui-navbar-container {
+    padding: 0 var(--space-md);
+  }
+
+  .mui-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
+
+  .hero-2027 {
+    padding: var(--space-3xl) var(--space-md);
+    min-height: 250px;
+  }
+
+  .hero-2027 h1 {
+    font-size: clamp(1.5rem, 6vw, 2.5rem);
   }
 }
 
 /* ==========================================================================
-   ACCESSIBILITY
+   ACCESSIBILITY & FOCUS MANAGEMENT
    ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {
@@ -566,8 +852,75 @@ input[type="password"]:focus {
   }
 }
 
-:focus-visible {
+/* Focus States */
+.mui-btn:focus-visible,
+.mui-input:focus-visible,
+.mui-card:focus-visible,
+.mui-nav-link:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .mui-glass-card,
+  .mui-navbar,
+  .mui-btn-glass,
+  .mui-input {
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-light);
+  }
+
+  .mui-card::before,
+  .mui-navbar::before,
+  .mui-btn-glass::before {
+    display: none;
+  }
+}
+
+/* Dark Mode Support (for future expansion) */
+@media (prefers-color-scheme: dark) {
+  /* Dark mode variables would be defined here when needed */
+}
+
+/* Print Styles */
+@media print {
+  .mui-navbar,
+  .mui-btn {
+    display: none !important;
+  }
+
+  .mui-card,
+  .mui-glass-card {
+    background: white !important;
+    border: 1px solid black !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ==========================================================================
+   MEDINEST MODERN UI 2027 - COMPLETE DESIGN SYSTEM
+   ==========================================================================
+
+   This design system provides a comprehensive set of components and utilities
+   for building modern, accessible, and beautiful e-pharmacy interfaces.
+
+   Key Features:
+   - Light glassmorphism aesthetic
+   - Centralized CSS variables with eh- prefix for legacy support
+   - mui- prefix for all component classes
+   - Fluid typography using clamp()
+   - Inter font family
+   - Skeleton shimmer loading states
+   - Responsive design with mobile-first approach
+   - Accessibility compliance
+   - Smooth animations and transitions
+
+   Usage:
+   - Import this CSS file into your React components
+   - Use mui- prefixed classes for styling
+   - Leverage CSS variables for theming
+   - eh- prefixed variables available for legacy support
+
+   ========================================================================== */
 

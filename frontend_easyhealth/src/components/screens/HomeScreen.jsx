@@ -64,8 +64,8 @@ function HomeScreen() {
       <motion.div
         className="hero-section"
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.8 }}
+        animate={{ opacity: 1}}
+        transition={{ duration: 0.1 }}
       >
         <div className="hero-content">
           <motion.div className="hero-icon" animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
@@ -75,17 +75,10 @@ function HomeScreen() {
             Your Healthcare Revolution
           </motion.h1>
           <p className="hero-subtitle">
-            Medicines • Lab Tests • Emergency Services<br />
+            Medicines • Emergency Services<br />
             Everything for your health, delivered instantly
           </p>
-          <div className="hero-buttons">
-            <Link to="/category/medicines">
-              <Button variant="glass" size="lg">🛒 Shop Medicines</Button>
-            </Link>
-            <Link to="/ambulance">
-              <Button variant="glass" size="lg">🚑 Emergency</Button>
-            </Link>
-          </div>
+          
           <div className="hero-stats">
             <div className="hero-stat">
               <div className="hero-stat-value" style={{ color: '#93c5fd' }}>24/7</div>
@@ -96,7 +89,7 @@ function HomeScreen() {
               <div className="hero-stat-label">Medicines</div>
             </div>
             <div className="hero-stat">
-              <div className="hero-stat-value" style={{ color: '#86efac' }}>10min</div>
+              <div className="hero-stat-value" style={{ color: '#86efac' }}>fast</div>
               <div className="hero-stat-label">Delivery</div>
             </div>
           </div>

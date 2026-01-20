@@ -1,42 +1,47 @@
 /* ==========================================================================
-   MEDINEST – LAYOUT STYLES (Navbar + Footer) – Light Theme
+   MEDINEST – NAVBAR + FOOTER (Light Theme)
    ========================================================================== */
 
 @import url('./ui/modern-ui-2027.css');
 
-/* ===== NAVBAR ===== */
+/* ============================= */
+/*          NAVBAR BASE          */
+/* ============================= */
+
 .navbar {
   position: sticky;
   top: 0;
   z-index: 1000;
-
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-light);
   box-shadow: var(--shadow-sm);
 }
 
-/* ================= CONTAINER ================= */
+/* Container */
 .navbar-container {
-  max-width: 1280px;
+  max-height: fit-content;
+ 
   margin: 0 auto;
   padding: 0 28px;
   height: 72px;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-/* ================= LOGO ================= */
+/* ============================= */
+/*             LOGO              */
+/* ============================= */
+
 .navbar-logo {
   display: flex;
   align-items: center;
   gap: 10px;
   text-decoration: none;
-
   font-size: 1.7rem;
   font-weight: 900;
   letter-spacing: -0.5px;
+  margin-right: 2rem;
 }
 
 .navbar-logo-icon {
@@ -49,7 +54,6 @@
   background: var(--gradient-primary);
   background-size: 200% 200%;
   animation: gradientMove 5s ease infinite;
-
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -60,11 +64,21 @@
   100% { background-position: 0% 50%; }
 }
 
-/* ================= NAV LINKS ================= */
+/* ============================= */
+/*           NAV LINKS           */
+/* ============================= */
+
+/* Force horizontal links */
 .navbar-nav {
-  display: flex;
+  display: flex !important;
+  flex-direction: row !important;
   align-items: center;
   gap: 28px;
+}
+
+.navbar-nav .navbar-link {
+  display: inline-flex;
+  align-items: center;
 }
 
 .navbar-link {
@@ -72,10 +86,8 @@
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 500;
-
   color: var(--text-primary);
   opacity: 0.8;
-
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
@@ -90,11 +102,9 @@
   position: absolute;
   left: 50%;
   bottom: -8px;
-
   width: 0;
   height: 3px;
   border-radius: 999px;
-
   background: var(--gradient-primary);
   transform: translateX(-50%);
   transition: width 0.3s ease;
@@ -109,19 +119,23 @@
   opacity: 1;
 }
 
-/* ================= ACTIONS ================= */
+/* ============================= */
+/*          NAV ACTIONS          */
+/* ============================= */
+
 .navbar-actions {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-/* ================= CART ================= */
+/* Cart */
 .navbar-cart {
   text-decoration: none;
+
 }
 
-/* ================= USER ================= */
+/* User Section */
 .navbar-user {
   display: flex;
   align-items: center;
@@ -135,23 +149,19 @@
   opacity: 0.85;
 }
 
-/* Logout button */
+/* Logout Button */
 .navbar-logout-btn {
   padding: 9px 16px;
   border-radius: var(--radius-md);
-
   border: none;
   background: var(--danger);
   color: white;
-
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
-
-  transition: 
-    transform 0.25s ease,
-    box-shadow 0.25s ease,
-    filter 0.25s ease;
+  transition: transform 0.25s ease,
+              box-shadow 0.25s ease,
+              filter 0.25s ease;
 }
 
 .navbar-logout-btn:hover {
@@ -160,14 +170,15 @@
   filter: brightness(1.1);
 }
 
-/* ================= AUTH BUTTONS ================= */
+/* Auth buttons */
 .navbar-auth {
   display: flex;
   gap: 12px;
 }
 
-
-/* ===== MOBILE NAVBAR ===== */
+/* ============================= */
+/*         MOBILE NAVBAR         */
+/* ============================= */
 
 @media (max-width: 768px) {
   .navbar-container {
@@ -190,11 +201,7 @@
     gap: 4px;
   }
 
-  .navbar-cart .btn {
-    padding: 6px 10px;
-    font-size: 0.85rem;
-  }
-
+  .navbar-cart .btn,
   .navbar-auth .btn {
     padding: 6px 10px;
     font-size: 0.85rem;
@@ -210,7 +217,9 @@
   }
 }
 
-/* ===== FOOTER ===== */
+/* ============================= */
+/*             FOOTER            */
+/* ============================= */
 
 .footer {
   background: var(--bg-primary);
@@ -293,7 +302,8 @@
   flex-wrap: wrap;
 }
 
-.footer-copyright {
+.footer-copyright,
+.footer-legal-item {
   font-size: 0.85rem;
   color: var(--text-muted);
 }
@@ -304,8 +314,6 @@
 }
 
 .footer-legal-item {
-  font-size: 0.85rem;
-  color: var(--text-muted);
   cursor: pointer;
   transition: color 0.2s ease;
 }
@@ -314,7 +322,9 @@
   color: var(--primary);
 }
 
-/* ===== MOBILE FOOTER ===== */
+/* ============================= */
+/*         MOBILE FOOTER         */
+/* ============================= */
 
 @media (max-width: 768px) {
   .footer-grid {
@@ -345,17 +355,4 @@
   .footer-contact li {
     justify-content: center;
   }
-}
-
-
-/* 🔥 FORCE HORIZONTAL NAV LINKS */
-.navbar-nav {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center;
-}
-
-.navbar-nav .navbar-link {
-  display: inline-flex;
-  align-items: center;
 }

@@ -30,14 +30,12 @@ function Navbar() {
             className="navbar-logo-icon"
             whileHover={{ scale: 1.05 }}
           >
-            <motion.span
-              animate={{ rotate: [0, 360] }}
-              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-            >
-              💊
-            </motion.span>
+        
           </motion.span>
           <span className="navbar-logo-text">MEDINEST</span>
+
+          
+
         </Link>
 
         {/* Desktop Navigation */}

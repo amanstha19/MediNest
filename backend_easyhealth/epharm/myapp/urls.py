@@ -12,6 +12,10 @@ from .views import (
     ProductSearchAPIView,
     verify_admin_access,
     ProcessPaymentView,
+    AdminOrdersView,
+    AdminOrderStatusUpdateView,
+    AdminProductsView,
+    AdminProductStockUpdateView,
 )
 
 from rest_framework_simplejwt.views import (
@@ -57,4 +61,10 @@ urlpatterns = [
     
     # Payment Routes
     path('payment/process/', ProcessPaymentView.as_view(), name='payment-process'),
+
+    # Admin Routes
+    path('admin/orders/', AdminOrdersView.as_view(), name='admin-orders'),
+    path('admin/orders/<int:order_id>/status/', AdminOrderStatusUpdateView.as_view(), name='admin-order-status'),
+    path('admin/products/', AdminProductsView.as_view(), name='admin-products'),
+    path('admin/products/<int:product_id>/stock/', AdminProductStockUpdateView.as_view(), name='admin-product-stock'),
 ]

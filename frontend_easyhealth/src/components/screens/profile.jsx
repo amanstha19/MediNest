@@ -1,69 +1,129 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Card } from '../ui/card';
+import Button from '../ui/button';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import './pages.css';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      const authTokens = sessionStorage.getItem('authTokens');
-      if (!authTokens) {
-        setError('No token available. Please log in.');
-        setLoading(false);
-        navigate('/login');
-        return;
-      }
+  const fetchProfile = useCallback(async () => {
+    const authTokens = sessionStorage.getItem('authTokens');
+    if (!authTokens) {
+      setError('No token available. Please log in.');
+      setLoading(false);
+      navigate('/login');
+      return;
+    }
 
-      try {
-        const parsedTokens = JSON.parse(authTokens);
-        const response = await axios.get('http://localhost:8000/api/user/profile/', {
-          headers: {
-            'Authorization': `Bearer ${parsedTokens.access}`,
-          },
-        });
-        setUser(response.data);
-      } catch (err) {
-        setError('Error fetching profile: ' + err.response?.data?.detail || err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
+    try {
+      const parsedTokens = JSON.parse(authTokens);
+      const response = await axios.get('http://localhost:8000/api/user/profile/', {
+        headers: {
+          'Authorization': `Bearer ${parsedTokens.access}`,
+        },
+      });
+      setUser(response.data);
+      setError(null);
+    } catch (err) {
+      setError('Error fetching profile: ' + (err.response?.data?.detail || err.message));
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   }, [navigate]);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    fetchProfile();
+  };
+
+  const getStatusInfo = (status) => {
+    switch (status.toLowerCase()) {
+      case 'pending':
+        return {
+          icon: '⏳',
+          color: '#856404',
+          bg: '#fff3cd',
+          label: 'Pending',
+          description: 'Your order is being processed'
+        };
+      case 'shipped':
+        return {
+          icon: '📦',
+          color: '#004085',
+          bg: '#cce5ff',
+          label: 'Shipped',
+          description: 'Your order is on its way'
+        };
+      case 'delivered':
+        return {
+          icon: '✅',
+          color: '#155724',
+          bg: '#d4edda',
+          label: 'Delivered',
+          description: 'Your order has been delivered'
+        };
+      default:
+        return {
+          icon: '📋',
+          color: '#333',
+          bg: '#f8f9fa',
+          label: status,
+          description: 'Order status unknown'
+        };
+    }
+  };
+
+  const getStatusProgress = (status) => {
+    switch (status.toLowerCase()) {
+      case 'pending': return 33;
+      case 'shipped': return 66;
+      case 'delivered': return 100;
+      default: return 0;
+    }
+  };
 
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        minHeight: '300px' 
-      }}>
-        <div className="eh-loader"></div>
+      <div className="eh-container" style={{ paddingTop: '48px', paddingBottom: '48px' }}>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '400px' 
+        }}>
+          <div className="eh-loader"></div>
+        </div>
       </div>
     );
   }
 
-  if (error) {
+  if (error && !user) {
     return (
       <div className="eh-container" style={{ paddingTop: 'var(--space-2xl)' }}>
-        <div style={{ 
-          padding: '16px', 
-          background: 'rgba(239, 68, 68, 0.1)', 
-          border: '1px solid rgba(239, 68, 68, 0.3)',
-          borderRadius: '12px',
-          color: '#f87171',
-          textAlign: 'center'
-        }}>
-          {error}
-        </div>
+        <Card>
+          <div style={{ 
+            padding: '24px', 
+            background: 'rgba(239, 68, 68, 0.1)', 
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            borderRadius: '12px',
+            color: '#ef4444',
+            textAlign: 'center'
+          }}>
+            {error}
+          </div>
+        </Card>
       </div>
     );
   }
@@ -71,42 +131,55 @@ const Profile = () => {
   return (
     <motion.div 
       className="eh-container" 
-      style={{ paddingTop: 'var(--space-2xl)', paddingBottom: 'var(--space-2xl)' }}
+      style={{ paddingTop: '48px', paddingBottom: '48px' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
     >
       {user ? (
         <div>
           {/* Profile Header */}
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '20px', 
-            marginBottom: '32px' 
-          }}>
-            <div style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: '50%',
-              background: 'var(--bg-glass)',
-              border: '2px solid var(--glass-border)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '2rem'
-            }}>
-              👤
+          <Card style={{ marginBottom: '24px' }}>
+            <div style={{ padding: '32px' }}>
+              <div style={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '24px',
+                flexWrap: 'wrap'
+              }}>
+                <div style={{
+                  width: '100px',
+                  height: '100px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '2.5rem',
+                  color: 'white',
+                  boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)'
+                }}>
+                  👤
+                </div>
+                <div style={{ flex: 1, minWidth: '200px' }}>
+                  <h1 style={{ fontSize: '1.75rem', marginBottom: '8px' }}>
+                    {user.first_name} {user.last_name}
+                  </h1>
+                  <p style={{ color: 'var(--text-muted)', marginBottom: '4px' }}>@{user.username}</p>
+                  <p style={{ color: 'var(--text-muted)' }}>{user.email}</p>
+                </div>
+                <Button variant="secondary" onClick={handleRefresh} disabled={refreshing}>
+                  {refreshing ? '🔄 Refreshing...' : '🔄 Refresh'}
+                </Button>
+              </div>
             </div>
-            <div>
-              <h1 style={{ fontSize: '1.5rem', marginBottom: '4px' }}>{user.username}</h1>
-              <p style={{ color: 'var(--text-muted)' }}>{user.email}</p>
-            </div>
-          </div>
+          </Card>
 
           {/* User Info */}
-          <Card style={{ marginBottom: 'var(--space-xl)' }}>
+          <Card style={{ marginBottom: '24px' }}>
             <div style={{ padding: '24px' }}>
-              <h2 style={{ fontSize: '1.1rem', marginBottom: '20px' }}>Personal Information</h2>
+              <h2 style={{ fontSize: '1.1rem', marginBottom: '20px', fontWeight: 700 }}>
+                Personal Information
+              </h2>
               <div style={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', 
@@ -134,70 +207,172 @@ const Profile = () => {
 
           {/* Orders Section */}
           <div>
-            <h2 style={{ fontSize: '1.1rem', marginBottom: '20px' }}>Order History</h2>
+            <div style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              marginBottom: '20px'
+            }}>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>
+                📦 Your Orders ({user.orders?.length || 0})
+              </h2>
+              <Button variant="secondary" size="sm" onClick={handleRefresh} disabled={refreshing}>
+                {refreshing ? '...' : '↻'}
+              </Button>
+            </div>
+            
             {user.orders && user.orders.length > 0 ? (
-              <div style={{ display: 'grid', gap: '16px' }}>
-                {user.orders.map((order) => (
-                  <Card key={order.order_id}>
-                    <div style={{ padding: '20px' }}>
-                      <div style={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
-                        alignItems: 'start',
-                        marginBottom: '16px',
-                        paddingBottom: '16px',
-                        borderBottom: '1px solid var(--glass-border)'
-                      }}>
-                        <div>
-                          <h3 style={{ fontSize: '1rem', marginBottom: '4px' }}>Order #{order.order_id}</h3>
-                          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{order.address}</p>
-                        </div>
-                        <span style={{ 
-                          padding: '4px 12px', 
-                          borderRadius: '20px',
-                          fontSize: '0.8rem',
-                          fontWeight: 600,
-                          background: 'var(--bg-glass)',
-                          border: '1px solid var(--glass-border)'
-                        }}>
-                          {order.status}
-                        </span>
-                      </div>
-                      <p style={{ fontWeight: 700, marginBottom: '16px' }}>Total: NPR {order.total_price}</p>
-                      <div>
-                        <p style={{ fontSize: '0.9rem', marginBottom: '12px', color: 'var(--text-muted)' }}>Items:</p>
-                        {order.cart_items.map((item) => (
-                          <div key={item.product_id} style={{ 
-                            background: 'var(--bg-surface)', 
-                            padding: '12px',
-                            borderRadius: '8px',
-                            marginBottom: '8px'
+              <div style={{ display: 'grid', gap: '20px' }}>
+                {user.orders.map((order) => {
+                  const statusInfo = getStatusInfo(order.status);
+                  const progress = getStatusProgress(order.status);
+                  
+                  return (
+                    <motion.div
+                      key={order.order_id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <Card>
+                        <div style={{ padding: '24px' }}>
+                          {/* Order Header */}
+                          <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'flex-start',
+                            marginBottom: '20px',
+                            paddingBottom: '16px',
+                            borderBottom: '1px solid var(--glass-border)',
+                            flexWrap: 'wrap',
+                            gap: '12px'
                           }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                              <div>
-                                <p style={{ fontWeight: 500, marginBottom: '2px' }}>{item.product_name}</p>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Qty: {item.quantity}</p>
+                            <div>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                                <h3 style={{ fontSize: '1.1rem', margin: 0 }}>Order #{order.order_id}</h3>
+                                <span style={{
+                                  padding: '6px 12px',
+                                  borderRadius: '20px',
+                                  fontSize: '0.8rem',
+                                  fontWeight: 600,
+                                  background: statusInfo.bg,
+                                  color: statusInfo.color,
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '6px'
+                                }}>
+                                  {statusInfo.icon} {statusInfo.label}
+                                </span>
                               </div>
-                              <p style={{ fontWeight: 500 }}>NPR {item.total_price}</p>
+                              <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0 }}>
+                                📍 {order.address}
+                              </p>
+                            </div>
+                            <div style={{ textAlign: 'right' }}>
+                              <p style={{ 
+                                fontSize: '1.5rem', 
+                                fontWeight: 800,
+                                background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                                backgroundClip: 'text',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                margin: 0
+                              }}>
+                                NPR {order.total_price}
+                              </p>
+                              <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: 0 }}>
+                                {statusInfo.description}
+                              </p>
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  </Card>
-                ))}
+
+                          {/* Progress Bar */}
+                          <div style={{ marginBottom: '20px' }}>
+                            <div style={{ 
+                              display: 'flex', 
+                              justifyContent: 'space-between',
+                              marginBottom: '8px',
+                              fontSize: '0.8rem'
+                            }}>
+                              <span style={{ color: 'var(--text-muted)' }}>Pending</span>
+                              <span style={{ color: 'var(--text-muted)' }}>Shipped</span>
+                              <span style={{ color: 'var(--text-muted)' }}>Delivered</span>
+                            </div>
+                            <div style={{
+                              height: '8px',
+                              background: '#e9ecef',
+                              borderRadius: '4px',
+                              overflow: 'hidden'
+                            }}>
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${progress}%` }}
+                                transition={{ duration: 0.5, ease: 'easeOut' }}
+                                style={{
+                                  height: '100%',
+                                  background: 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)',
+                                  borderRadius: '4px'
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Order Items */}
+                          <div>
+                            <p style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '12px', color: 'var(--text-muted)' }}>
+                              Items Ordered:
+                            </p>
+                            {order.cart_items.map((item, idx) => (
+                              <div 
+                                key={item.product_id || idx} 
+                                style={{ 
+                                  background: 'var(--bg-surface)', 
+                                  padding: '16px',
+                                  borderRadius: '12px',
+                                  marginBottom: idx < order.cart_items.length - 1 ? '12px' : 0
+                                }}
+                              >
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                  <div>
+                                    <p style={{ fontWeight: 600, marginBottom: '4px' }}>{item.product_name}</p>
+                                    <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                                      Quantity: {item.quantity}
+                                    </p>
+                                  </div>
+                                  <p style={{ fontWeight: 700, fontSize: '1.1rem' }}>
+                                    NPR {item.total_price}
+                                  </p>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+                  );
+                })}
               </div>
             ) : (
               <Card>
-                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                  No orders yet. Start shopping now!
+                <div style={{ padding: '60px 40px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '4rem', marginBottom: '16px' }}>📦</div>
+                  <h3 style={{ marginBottom: '8px', color: 'var(--text-primary)' }}>No Orders Yet</h3>
+                  <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
+                    Start shopping to see your orders here!
+                  </p>
+                  <Button variant="primary" onClick={() => navigate('/medicines')}>
+                    Browse Medicines
+                  </Button>
                 </div>
               </Card>
             )}
           </div>
         </div>
       ) : (
-        <p>Loading profile...</p>
+        <div style={{ textAlign: 'center', padding: '60px' }}>
+          <div className="eh-loader"></div>
+          <p style={{ marginTop: '16px', color: 'var(--text-muted)' }}>Loading profile...</p>
+        </div>
       )}
     </motion.div>
   );

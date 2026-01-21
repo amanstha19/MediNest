@@ -1,351 +1,436 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { LogOut, Menu, X, Search, Bell, Settings } from 'lucide-react';
-import API from '../../utils/api';
-import { Card, CardContent } from '../ui/card';
-import '../ui/modern-ui.css';
+import axios from 'axios';
+import { Card } from '../ui/card';
+import Button from '../ui/button';
+import { motion, AnimatePresence } from 'framer-motion';
+import './pages.css';
 
 const AdminPanel = () => {
-  const [activeSection, setActiveSection] = useState('dashboard');
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [adminLoading, setAdminLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('orders');
+  const [updatingOrder, setUpdatingOrder] = useState(null);
+  const [updatingStock, setUpdatingStock] = useState(null);
+  const [newStockValue, setNewStockValue] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
+  const authTokens = sessionStorage.getItem('authTokens');
+  const parsedTokens = authTokens ? JSON.parse(authTokens) : null;
+  const token = parsedTokens?.access;
 
-  const navigate = useNavigate();
-
-  // Check admin access on mount
   useEffect(() => {
-    const checkAdminAccess = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) return navigate('/login?redirect=admin');
+    fetchData();
+  }, []);
 
-        const response = await API.get('/verify-admin/', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-
-
-        if (response.data.is_admin) {
-          setIsAdmin(true);
-          setAdminLoading(false);
-          fetchDashboardData();
-        } else {
-          navigate('/');
-        }
-      } catch (err) {
-        console.error('Admin verification error:', err);
-        localStorage.removeItem('token');
-        navigate('/login?redirect=admin');
-      }
-    };
-
-    const fetchDashboardData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const [productsRes, ordersRes, usersRes] = await Promise.all([
-          API.get('/products/', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] })),
-          API.get('/orders/', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] })),
-          API.get('/users/', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] }))
-        ]);
-
-        setProducts(productsRes.data || []);
-        setOrders(ordersRes.data || []);
-        setUsers(usersRes.data || []);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching dashboard data:', err);
-        setLoading(false);
-      }
-    };
-
-    checkAdminAccess();
-  }, [navigate]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([fetchOrders(), fetchProducts()]);
+    } catch (err) {
+      setError('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  if (adminLoading) {
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/admin/orders/', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setOrders(response.data.orders || []);
+    } catch (err) {
+      console.error('Failed to fetch orders:', err);
+    }
+  };
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/admin/products/', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setProducts(response.data.products || []);
+    } catch (err) {
+      console.error('Failed to fetch products:', err);
+    }
+  };
+
+  const updateOrderStatus = async (orderId, newStatus) => {
+    setUpdatingOrder(orderId);
+    setError('');
+    setSuccess('');
+    try {
+      const response = await axios.patch(
+        `http://localhost:8000/api/admin/orders/${orderId}/status/`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setSuccess(`Order #${orderId} status updated to ${newStatus}`);
+      fetchOrders();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to update order status');
+    } finally {
+      setUpdatingOrder(null);
+    }
+  };
+
+  const updateProductStock = async (productId) => {
+    if (!newStockValue || newStockValue < 0) {
+      setError('Please enter a valid stock value');
+      return;
+    }
+    setUpdatingStock(productId);
+    setError('');
+    setSuccess('');
+    try {
+      const response = await axios.patch(
+        `http://localhost:8000/api/admin/products/${productId}/stock/`,
+        { stock: parseInt(newStockValue) },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setSuccess(`Stock updated for product #${productId}`);
+      setNewStockValue('');
+      setUpdatingStock(null);
+      fetchProducts();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to update stock');
+    } finally {
+      setUpdatingStock(null);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'pending': return { bg: '#fff3cd', color: '#856404' };
+      case 'shipped': return { bg: '#cce5ff', color: '#004085' };
+      case 'delivered': return { bg: '#d4edda', color: '#155724' };
+      default: return { bg: '#f8f9fa', color: '#333' };
+    }
+  };
+
+  const getStockStatus = (stock) => {
+    if (stock === 0) return { color: '#dc3545', label: 'Out of Stock' };
+    if (stock < 10) return { color: '#fd7e14', label: 'Low Stock' };
+    return { color: '#28a745', label: 'In Stock' };
+  };
+
+  if (loading) {
     return (
-      <div className="eh-hero" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div className="eh-center">
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🔐</div>
-          <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>Verifying admin access...</div>
+      <div className="eh-container" style={{ paddingTop: '48px', paddingBottom: '48px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+          <div className="eh-loader"></div>
         </div>
       </div>
     );
   }
-
-  if (!isAdmin) {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', background: '#f8f9fa' }}>
-        <div style={{ textAlign: 'center', padding: '2rem', background: 'white', borderRadius: '12px', boxShadow: '0 4px 16px rgba(0,0,0,0.1)' }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🔒</div>
-          <h1 style={{ fontSize: '2rem', color: '#d32f2f', marginBottom: '0.5rem' }}>Access Denied</h1>
-          <p style={{ color: '#666', marginBottom: '2rem' }}>You do not have admin privileges</p>
-          <button 
-            onClick={() => navigate('/')}
-            style={{ padding: '0.75rem 2rem', background: '#0066cc', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '1rem', fontWeight: 'bold' }}
-          >
-            ← Go Home
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const menuItems = [
-    { id: 'dashboard', label: '📊 Dashboard', color: '#0066cc' },
-    { id: 'products', label: '📦 Products', color: '#2e7d32' },
-    { id: 'orders', label: '🛒 Orders', color: '#d32f2f' },
-    { id: 'users', label: '👥 Users', color: '#6a1b9a' },
-  ];
-
 
   return (
-    <div className="eh-admin-layout">
-      {/* Sidebar */}
-      <aside className={`eh-admin-sidebar ${sidebarOpen ? 'eh-admin-sidebar--expanded' : 'eh-admin-sidebar--collapsed'}`}>
-        <div className="eh-admin-header">
-          {sidebarOpen && (
-            <div className="eh-admin-logo">
-              <div className="eh-admin-logo-icon">⚙️</div>
-              <div className="eh-admin-brand-text">
-                <h1>Admin</h1>
-                <p>Control Hub</p>
-              </div>
-            </div>
-          )}
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="eh-admin-toggle">
-            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
+    <div className="eh-container" style={{ paddingTop: '48px', paddingBottom: '48px' }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '8px' }}>
+          🔧 Admin Panel
+        </h1>
+        <p style={{ color: 'var(--text-muted)', marginBottom: '32px' }}>
+          Manage orders, track deliveries, and update inventory
+        </p>
 
-        <nav>
-          {menuItems.map(item => (
-            <button
-              key={item.id}
-              onClick={() => setActiveSection(item.id)}
-              className={`eh-admin-menu-item ${activeSection === item.id ? 'eh-admin-menu-item--active' : ''}`}
+        {/* Success/Error Messages */}
+        <AnimatePresence>
+          {success && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              style={{
+                background: '#d4edda',
+                border: '1px solid #c3e6cb',
+                borderRadius: '12px',
+                padding: '16px',
+                marginBottom: '20px',
+                color: '#155724'
+              }}
             >
-              {item.label}
-            </button>
-          ))}
-        </nav>
+              ✅ {success}
+            </motion.div>
+          )}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              style={{
+                background: '#f8d7da',
+                border: '1px solid #f5c6cb',
+                borderRadius: '12px',
+                padding: '16px',
+                marginBottom: '20px',
+                color: '#721c24'
+              }}
+            >
+              ❌ {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-        <button
-          onClick={handleLogout}
-          className="eh-admin-logout"
-        >
-          <LogOut size={18} />
-          {sidebarOpen && <span>Logout</span>}
-        </button>
-      </aside>
-
-      {/* Main Content */}
-      <main className={`eh-admin-content ${!sidebarOpen ? 'eh-admin-content--collapsed' : ''}`}>
-        <Card className="eh-mb">
-          <CardContent>
-            <div className="eh-admin-header">
-              <h2 style={{ fontSize: '1.8rem', fontWeight: 'bold', color: 'var(--eh-text-primary)', margin: 0 }}>
-                {menuItems.find(item => item.id === activeSection)?.label}
-              </h2>
-
-              <div className="eh-admin-actions">
-                <button className="eh-admin-notification">
-                  <Bell size={20} style={{ color: 'var(--eh-text-primary)' }} />
-                  <span className="eh-admin-notification-dot"></span>
-                </button>
-                <button className="eh-admin-notification">
-                  <Settings size={20} style={{ color: 'var(--eh-text-primary)' }} />
-                </button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Section Content */}
-        {activeSection === 'dashboard' && <Dashboard loading={loading} products={products} orders={orders} users={users} />}
-        {activeSection === 'products' && <Products loading={loading} products={products} searchTerm={searchTerm} setSearchTerm={setSearchTerm} />}
-        {activeSection === 'orders' && <Orders loading={loading} orders={orders} />}
-        {activeSection === 'users' && <Users loading={loading} users={users} />}
-      </main>
-    </div>
-  );
-};
-
-
-// Dashboard Component
-const Dashboard = ({ loading, products, orders, users }) => (
-  <div>
-    <div className="eh-admin-stats-grid">
-      {[
-        { label: 'Total Products', value: products.length, icon: '📦', color: 'var(--eh-success)' },
-        { label: 'Total Orders', value: orders.length, icon: '🛒', color: 'var(--eh-accent)' },
-        { label: 'Registered Users', value: users.length, icon: '👥', color: 'var(--eh-purple)' }
-      ].map((stat, idx) => (
-        <Card key={idx} className="eh-card eh-admin-stat-card" style={{ borderLeftColor: stat.color }}>
-          <CardContent>
-            <div className="eh-flex-between">
-              <div>
-                <p className="eh-text-muted" style={{ margin: '0 0 0.5rem 0', fontSize: '0.9rem' }}>{stat.label}</p>
-                <p style={{ fontSize: '2rem', fontWeight: 'bold', color: stat.color, margin: 0 }}>{stat.value}</p>
-              </div>
-              <div style={{ fontSize: '2.5rem' }}>{stat.icon}</div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
-  </div>
-);
-
-
-// Products Component
-const Products = ({ loading, products, searchTerm, setSearchTerm }) => {
-  const filteredProducts = products.filter(p => p.name?.toLowerCase().includes(searchTerm.toLowerCase()));
-  return (
-    <div>
-      <div className="eh-mb eh-flex eh-gap">
-        <div className="eh-admin-search">
-          <Search size={20} className="eh-admin-search-icon" />
-          <input type="text" placeholder="Search products..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="eh-input" />
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '32px' }}>
+          <Button
+            variant={activeTab === 'orders' ? 'primary' : 'secondary'}
+            onClick={() => setActiveTab('orders')}
+          >
+            📦 Orders ({orders.length})
+          </Button>
+          <Button
+            variant={activeTab === 'inventory' ? 'primary' : 'secondary'}
+            onClick={() => setActiveTab('inventory')}
+          >
+            💊 Inventory ({products.length})
+          </Button>
         </div>
-      </div>
 
-      {loading ? <p>Loading...</p> : (
-        <Card>
-          <CardContent style={{ padding: 0 }}>
-            <div style={{ overflowX: 'auto' }}>
-              <table className="eh-admin-table">
-                <thead>
-                  <tr>
-                    <th>Product Name</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredProducts.map((product, idx) => (
-                    <tr key={product.id}>
-                      <td>{product.name}</td>
-                      <td>{product.category}</td>
-                      <td style={{ color: 'var(--eh-success)', fontWeight: 'bold' }}>NPR {product.price}</td>
-                      <td>{product.stock || 0}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+        {/* Orders Tab */}
+        {activeTab === 'orders' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <Card>
+              <div style={{ padding: '24px', borderBottom: '1px solid var(--glass-border)' }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Order Management</h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                  Update order status: Pending → Shipped → Delivered
+                </p>
+              </div>
+              
+              {orders.length === 0 ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  No orders yet
+                </div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ background: '#f8f9fa' }}>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Order ID</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Customer</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Items</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Total</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Current Status</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Update Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orders.map((order) => {
+                        const statusColors = getStatusColor(order.status);
+                        return (
+                          <tr key={order.id} style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                            <td style={{ padding: '16px' }}>
+                              <strong>#{order.id}</strong>
+                              <br />
+                              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                {order.created_at}
+                              </span>
+                            </td>
+                            <td style={{ padding: '16px' }}>
+                              <div style={{ fontWeight: 500 }}>{order.username}</div>
+                              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                                {order.email}
+                              </div>
+                              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                                📞 {order.phone || 'N/A'}
+                              </div>
+                            </td>
+                            <td style={{ padding: '16px' }}>
+                              {order.cart_items.slice(0, 2).map((item, idx) => (
+                                <div key={idx} style={{ fontSize: '0.9rem' }}>
+                                  {item.quantity}x {item.product_name}
+                                </div>
+                              ))}
+                              {order.cart_items.length > 2 && (
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                  +{order.cart_items.length - 2} more
+                                </div>
+                              )}
+                            </td>
+                            <td style={{ padding: '16px', fontWeight: 600 }}>
+                              NPR {order.total_price.toLocaleString()}
+                            </td>
+                            <td style={{ padding: '16px' }}>
+                              <span style={{
+                                padding: '6px 12px',
+                                borderRadius: '20px',
+                                fontSize: '0.85rem',
+                                fontWeight: 600,
+                                background: statusColors.bg,
+                                color: statusColors.color,
+                                textTransform: 'capitalize'
+                              }}>
+                                {order.status}
+                              </span>
+                            </td>
+                            <td style={{ padding: '16px' }}>
+                              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                {['pending', 'shipped', 'delivered'].map((status) => (
+                                  <Button
+                                    key={status}
+                                    size="sm"
+                                    variant={order.status === status ? 'primary' : 'secondary'}
+                                    disabled={order.status === status || updatingOrder === order.id}
+                                    onClick={() => updateOrderStatus(order.id, status)}
+                                    style={{ textTransform: 'capitalize' }}
+                                  >
+                                    {updatingOrder === order.id ? '...' : status}
+                                  </Button>
+                                ))}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Inventory Tab */}
+        {activeTab === 'inventory' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <Card>
+              <div style={{ padding: '24px', borderBottom: '1px solid var(--glass-border)' }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Inventory Management</h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                  Track and update product stock levels
+                </p>
+              </div>
+              
+              {products.length === 0 ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  No products found
+                </div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ background: '#f8f9fa' }}>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Product</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Category</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Price</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Current Stock</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Update Stock</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {products.map((product) => {
+                        const stockStatus = getStockStatus(product.stock);
+                        return (
+                          <tr key={product.id} style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                            <td style={{ padding: '16px' }}>
+                              <div style={{ fontWeight: 500 }}>{product.name}</div>
+                              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                                {product.generic_name}
+                              </div>
+                            </td>
+                            <td style={{ padding: '16px' }}>
+                              <span style={{
+                                padding: '4px 8px',
+                                borderRadius: '8px',
+                                fontSize: '0.8rem',
+                                background: '#e9ecef',
+                                color: '#495057'
+                              }}>
+                                {product.category}
+                              </span>
+                            </td>
+                            <td style={{ padding: '16px', fontWeight: 600 }}>
+                              NPR {product.price.toLocaleString()}
+                            </td>
+                            <td style={{ padding: '16px' }}>
+                              <div style={{ 
+                                fontWeight: 700, 
+                                fontSize: '1.1rem',
+                                color: stockStatus.color 
+                              }}>
+                                {product.stock}
+                              </div>
+                              <div style={{ 
+                                fontSize: '0.8rem',
+                                color: stockStatus.color 
+                              }}>
+                                {stockStatus.label}
+                              </div>
+                            </td>
+                            <td style={{ padding: '16px' }}>
+                              {updatingStock === product.id ? (
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                  <input
+                                    type="number"
+                                    value={newStockValue}
+                                    onChange={(e) => setNewStockValue(e.target.value)}
+                                    placeholder="New stock"
+                                    min="0"
+                                    style={{
+                                      padding: '8px 12px',
+                                      border: '2px solid var(--primary)',
+                                      borderRadius: '8px',
+                                      width: '100px'
+                                    }}
+                                  />
+                                  <Button
+                                    size="sm"
+                                    variant="primary"
+                                    onClick={() => updateProductStock(product.id)}
+                                  >
+                                    Save
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    onClick={() => {
+                                      setUpdatingStock(null);
+                                      setNewStockValue('');
+                                    }}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="secondary"
+                                  onClick={() => {
+                                    setUpdatingStock(product.id);
+                                    setNewStockValue(product.stock.toString());
+                                  }}
+                                >
+                                  ✏️ Edit
+                                </Button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card>
+          </motion.div>
+        )}
+      </motion.div>
     </div>
   );
 };
-
-
-
-
-
-// Orders Component
-const Orders = ({ loading, orders }) => (
-  <div>
-    <div className="eh-mb">
-      <p className="eh-text-muted" style={{ marginTop: '0.5rem' }}>View and manage all customer orders</p>
-    </div>
-    {loading ? <p>Loading...</p> : (
-      <Card>
-        <CardContent style={{ padding: 0 }}>
-          <div style={{ overflowX: 'auto' }}>
-            <table className="eh-admin-table">
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Amount</th>
-                  <th>Status</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((order) => (
-                  <tr key={order.id}>
-                    <td>#{order.id}</td>
-                    <td>{order.customer_name || 'N/A'}</td>
-                    <td style={{ color: 'var(--eh-accent)', fontWeight: 'bold' }}>NPR {order.total_amount}</td>
-                    <td>
-                      <span className={`eh-admin-badge ${order.status === 'completed' ? 'eh-admin-badge--success' : 'eh-admin-badge--warning'}`}>
-                        {order.status?.toUpperCase() || 'PENDING'}
-                      </span>
-                    </td>
-                    <td>{new Date(order.created_at).toLocaleDateString()}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-    )}
-  </div>
-);
-
-
-// Users Component
-const Users = ({ loading, users }) => (
-  <div>
-    <div className="eh-mb">
-      <p className="eh-text-muted" style={{ marginTop: '0.5rem' }}>Manage all registered users</p>
-    </div>
-    {loading ? <p>Loading...</p> : (
-      <Card>
-        <CardContent style={{ padding: 0 }}>
-          <div style={{ overflowX: 'auto' }}>
-            <table className="eh-admin-table">
-              <thead>
-                <tr>
-                  <th>Username</th>
-                  <th>Email</th>
-                  <th>Joined</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user.id}>
-                    <td>
-                      <div className="eh-flex eh-gap">
-                        <div className="eh-admin-avatar">
-                          {user.username?.[0]?.toUpperCase() || 'U'}
-                        </div>
-                        {user.username}
-                      </div>
-                    </td>
-                    <td>{user.email}</td>
-                    <td>{user.date_joined ? new Date(user.date_joined).toLocaleDateString() : 'N/A'}</td>
-                    <td style={{ textAlign: 'center' }}>
-                      <span className={`eh-admin-badge ${user.is_active ? 'eh-admin-badge--success' : 'eh-admin-badge--danger'}`}>
-                        {user.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
-    )}
-  </div>
-);
 
 export default AdminPanel;
+

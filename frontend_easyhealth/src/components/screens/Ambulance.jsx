@@ -45,7 +45,7 @@ const AmbulanceCard = ({ service }) => (
   </Card>
 );
 
-const fetchAmbulances = async (retries = 10) => {
+const fetchAmbulances = async (retries = 20) => {
   // Check cache first
   const cached = localStorage.getItem('ambulanceData');
   if (cached) {
@@ -63,7 +63,7 @@ const fetchAmbulances = async (retries = 10) => {
 
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      const response = await axios.get(url, { timeout: 10000 }); // 10 second timeout
+      const response = await axios.get(url, { timeout: 30000 }); // 30 second timeout
       const data = response.data.elements.map(node => ({
         name: node.tags.name || 'Unnamed Ambulance/Hospital',
         location: node.tags.name || 'Location not specified',
@@ -83,13 +83,13 @@ const fetchAmbulances = async (retries = 10) => {
       return data;
     } catch (error) {
       console.error(`Attempt ${attempt} failed:`, error.message);
-      if (error.response?.status === 429 && attempt < retries) {
-        // Wait before retrying (shorter delay)
-        const delay = 2000; // 2s
+      if (attempt < retries) {
+        // Wait before retrying (exponential backoff)
+        const delay = 3000 * attempt; // 3s, 6s, 9s, etc.
         console.log(`Retrying in ${delay}ms...`);
         await new Promise(resolve => setTimeout(resolve, delay));
       } else {
-        // Non-429 error or last attempt
+        // Last attempt failed
         return null;
       }
     }
@@ -262,11 +262,52 @@ function Ambulance() {
 
 // Fallback static data in case API fails
 const fallbackAmbulances = [
+  // Kathmandu Valley
   { name: 'Nepal Ambulance Service', contact: '01-4427833, 102', location: 'Ghattekulo Marg, Kathmandu', phone: '01-4427833', lat: 27.7172, lng: 85.3240 },
-  { name: 'Akhil Nepal Chiya Majdur Sangh', contact: '9814952000', location: 'Jhapa', phone: '9814952000', lat: 26.6637, lng: 87.9236 },
-  { name: 'Ambulance Lalitpur Municipality', contact: '9841202641, 01-5527003', location: 'Pulchowk, Lalitpur', phone: '9841202641', lat: 27.6786, lng: 85.3188 },
-  { name: 'Ambulance Service Siddhartha Club', contact: '061530200, 061521433', location: 'Siddhartha Chowk, Pokhara', phone: '061530200', lat: 28.2096, lng: 83.9856 },
-  { name: 'Sanjivini Ayurvedic Prakritik Chikitsaylaya', contact: '9848554800', location: 'Chitwan', phone: '9848554800', lat: 27.5291, lng: 84.3542 },
   { name: 'B. P. Smriti Hospital', contact: '9841447710', location: 'Basundhara, Kathmandu', phone: '9841447710', lat: 27.7330, lng: 85.3144 },
+  { name: 'Ambulance Service', contact: '01-4310030', location: 'Teku, Kathmandu', phone: '01-4310030', lat: 27.7100, lng: 85.3200 },
+  { name: 'National Ambulance Service', contact: '01-4331112', location: 'Koteshwor, Kathmandu', phone: '01-4331112', lat: 27.6846, lng: 85.3569 },
+  { name: 'Red Cross Ambulance', contact: '01-4270228, 102', location: 'Kanti Path, Kathmandu', phone: '01-4270228', lat: 27.7056, lng: 85.3122 },
+  { name: 'Teaching Hospital Ambulance', contact: '01-4412303', location: 'Maharajgunj, Kathmandu', phone: '01-4412303', lat: 27.7378, lng: 85.3317 },
+  { name: 'Bir Hospital Ambulance', contact: '01-4221119', location: 'New Road, Kathmandu', phone: '01-4221119', lat: 27.7012, lng: 85.3156 },
+  { name: 'Civil Service Hospital Ambulance', contact: '01-5521006', location: 'Minbhawan, Kathmandu', phone: '01-5521006', lat: 27.6878, lng: 85.3589 },
+  { name: 'Om Hospital Ambulance', contact: '01-4427878', location: 'Chabahil, Kathmandu', phone: '01-4427878', lat: 27.7167, lng: 85.3500 },
+  { name: 'Grande International Hospital', contact: '01-5159266', location: 'Tokha, Kathmandu', phone: '01-5159266', lat: 27.7567, lng: 85.3367 },
+  
+  // Lalitpur/Patan
+  { name: 'Ambulance Lalitpur Municipality', contact: '9841202641, 01-5527003', location: 'Pulchowk, Lalitpur', phone: '9841202641', lat: 27.6786, lng: 85.3188 },
+  { name: 'Patan Hospital Ambulance', contact: '01-5522278', location: 'Lagankhel, Lalitpur', phone: '01-5522278', lat: 27.6681, lng: 85.3239 },
+  { name: 'KIST Medical College Ambulance', contact: '01-5201498', location: 'Imadol, Lalitpur', phone: '01-5201498', lat: 27.6556, lng: 85.3467 },
+  
+  // Pokhara
+  { name: 'Ambulance Service Siddhartha Club', contact: '061530200, 061521433', location: 'Siddhartha Chowk, Pokhara', phone: '061530200', lat: 28.2096, lng: 83.9856 },
+  { name: 'Pokhara Ambulance Service', contact: '061-520400', location: 'Lakeside, Pokhara', phone: '061-520400', lat: 28.2136, lng: 84.0042 },
+  { name: 'Gandaki Medical College Ambulance', contact: '061-527000', location: 'Pokhara', phone: '061-527000', lat: 28.2000, lng: 84.0000 },
+  
+  // Chitwan
+  { name: 'Sanjivini Ayurvedic Prakritik Chikitsaylaya', contact: '9848554800', location: 'Chitwan', phone: '9848554800', lat: 27.5291, lng: 84.3542 },
+  { name: 'Chitwan Medical College Ambulance', contact: '056-593000', location: 'Bharatpur, Chitwan', phone: '056-593000', lat: 27.6867, lng: 84.4350 },
+  { name: 'Bardhanagar Ambulance', contact: '056-520333', location: 'Bardhanagar, Chitwan', phone: '056-520333', lat: 27.7000, lng: 84.4167 },
+  
+  // Biratnagar
+  { name: 'Biratnagar Ambulance Service', contact: '021-470111', location: 'Biratnagar', phone: '021-470111', lat: 26.4525, lng: 87.2718 },
+  { name: 'Nobel Hospital Ambulance', contact: '021-430700', location: 'Biratnagar', phone: '021-430700', lat: 26.4667, lng: 87.2833 },
+  
+  // Butwal
+  { name: 'Butwal Ambulance Service', contact: '071-520100', location: 'Butwal', phone: '071-520100', lat: 27.7000, lng: 83.4500 },
+  { name: 'Lumbini Provincial Hospital', contact: '071-520500', location: 'Butwal', phone: '071-520500', lat: 27.6833, lng: 83.4667 },
+  
+  // Jhapa
+  { name: 'Akhil Nepal Chiya Majdur Sangh', contact: '9814952000', location: 'Jhapa', phone: '9814952000', lat: 26.6637, lng: 87.9236 },
+  { name: 'Birtamode Ambulance', contact: '023-540100', location: 'Birtamode, Jhapa', phone: '023-540100', lat: 26.6333, lng: 87.9833 },
+  
+  // Other Major Cities
+  { name: 'Hetauda Hospital Ambulance', contact: '057-520100', location: 'Hetauda', phone: '057-520100', lat: 27.4167, lng: 85.0333 },
+  { name: 'Bharatpur Hospital Ambulance', contact: '056-520500', location: 'Bharatpur', phone: '056-520500', lat: 27.6833, lng: 84.4333 },
+  { name: 'Dharan Hospital Ambulance', contact: '025-520100', location: 'Dharan', phone: '025-520100', lat: 26.8167, lng: 87.2833 },
+  { name: 'Janakpur Hospital Ambulance', contact: '041-520100', location: 'Janakpur', phone: '041-520100', lat: 26.7167, lng: 85.9333 },
+  { name: 'Surkhet Hospital Ambulance', contact: '063-520100', location: 'Surkhet', phone: '063-520100', lat: 28.6000, lng: 81.6000 },
+  { name: 'Dhangadhi Hospital Ambulance', contact: '091-520100', location: 'Dhangadhi', phone: '091-520100', lat: 28.9833, lng: 80.5833 },
+  { name: 'Mahendranagar Hospital', contact: '099-520100', location: 'Mahendranagar', phone: '099-520100', lat: 28.9667, lng: 80.1833 },
 ];
 export default Ambulance;

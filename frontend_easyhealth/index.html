@@ -1,10 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MEDINEST - Premium E-Pharmacy</title>
+    <!-- Mock grecaptcha to prevent errors from third-party admin themes -->
+    <script>
+      window.grecaptcha = {
+        ready: function (callback) {
+          // Set timeout to ensure callback runs after page load
+          setTimeout(callback, 100);
+        },
+        render: function (container, config) {
+          // Return a dummy widget ID
+          return 0;
+        },
+      };
+    </script>
     <!-- External scripts should be placed after the head content -->
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"

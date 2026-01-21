@@ -643,3 +643,139 @@ def verify_admin_access(request):
             'is_admin': False,
             'error': 'User is not an admin'
         }, status=status.HTTP_403_FORBIDDEN)
+
+
+# Admin: Get All Orders
+class AdminOrdersView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        # Check if user is admin
+        if not request.user.is_staff and not request.user.is_superuser:
+            return Response({'error': 'Admin access required'}, status=status.HTTP_403_FORBIDDEN)
+        
+        orders = Order.objects.all().order_by('-created_at')
+        orders_data = []
+        
+        for order in orders:
+            cart_items = CartItem.objects.filter(order=order)
+            cart_items_data = [
+                {
+                    'product_id': item.product.id,
+                    'product_name': item.product.name,
+                    'quantity': item.quantity,
+                    'price': float(item.product.price),
+                    'total_price': float(item.product.price * item.quantity)
+                } for item in cart_items
+            ]
+            
+            order_data = {
+                'id': order.id,
+                'user_id': order.user.id,
+                'username': order.user.username,
+                'email': order.user.email,
+                'first_name': order.user.first_name,
+                'last_name': order.user.last_name,
+                'phone': order.user.phone,
+                'total_price': float(order.total_price),
+                'status': order.status,
+                'address': order.address,
+                'cart_items': cart_items_data,
+                'created_at': order.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'updated_at': order.updated_at.strftime('%Y-%m-%d %H:%M:%S'),
+            }
+            orders_data.append(order_data)
+        
+        return Response({'orders': orders_data}, status=status.HTTP_200_OK)
+
+
+# Admin: Update Order Status
+class AdminOrderStatusUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def patch(self, request, order_id):
+        # Check if user is admin
+        if not request.user.is_staff and not request.user.is_superuser:
+            return Response({'error': 'Admin access required'}, status=status.HTTP_403_FORBIDDEN)
+        
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        new_status = request.data.get('status')
+        
+        if new_status not in ['pending', 'shipped', 'delivered']:
+            return Response({'error': 'Invalid status. Use: pending, shipped, or delivered'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        old_status = order.status
+        order.status = new_status
+        order.save()
+        
+        return Response({
+            'message': 'Order status updated successfully',
+            'order_id': order.id,
+            'old_status': old_status,
+            'new_status': new_status
+        }, status=status.HTTP_200_OK)
+
+
+# Admin: Get All Products with Stock Management
+class AdminProductsView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        # Check if user is admin
+        if not request.user.is_staff and not request.user.is_superuser:
+            return Response({'error': 'Admin access required'}, status=status.HTTP_403_FORBIDDEN)
+        
+        products = Product.objects.all().order_by('name')
+        products_data = []
+        
+        for product in products:
+            product_data = {
+                'id': product.id,
+                'name': product.name,
+                'generic_name': product.generic_name,
+                'category': product.category,
+                'price': float(product.price),
+                'stock': product.stock,
+                'prescription_required': product.prescription_required,
+                'image': product.image.url if product.image else None,
+            }
+            products_data.append(product_data)
+        
+        return Response({'products': products_data}, status=status.HTTP_200_OK)
+
+
+# Admin: Update Product Stock
+class AdminProductStockUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def patch(self, request, product_id):
+        # Check if user is admin
+        if not request.user.is_staff and not request.user.is_superuser:
+            return Response({'error': 'Admin access required'}, status=status.HTTP_403_FORBIDDEN)
+        
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({'error': 'Product not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        new_stock = request.data.get('stock')
+        
+        if new_stock is None:
+            return Response({'error': 'Stock value is required'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            product.stock = int(new_stock)
+            product.save()
+        except ValueError:
+            return Response({'error': 'Stock must be a number'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response({
+            'message': 'Stock updated successfully',
+            'product_id': product.id,
+            'product_name': product.name,
+            'new_stock': product.stock
+        }, status=status.HTTP_200_OK)

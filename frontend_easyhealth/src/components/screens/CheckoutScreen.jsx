@@ -429,7 +429,7 @@ const CheckoutScreen = () => {
                     <Button
                       type="submit"
                       size="lg"
-                      variant="gradient"
+                      variant="primary"
                       disabled={loading}
                       style={{ width: '100%' }}
                     >

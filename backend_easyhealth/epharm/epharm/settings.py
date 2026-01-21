@@ -49,7 +49,7 @@ CACHES = {
 # Application definition
 
 INSTALLED_APPS = [
-    'jazzmin',
+    'unfold',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -118,7 +118,7 @@ ROOT_URLCONF = 'epharm.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -264,6 +264,56 @@ CORS_ALLOW_METHODS = [
     'DELETE',
     'OPTIONS'
 ]
+
+# Django Unfold Configuration
+UNFOLD = {
+    "SITE_HEADER": "MediNest Admin",
+    "SITE_TITLE": "MediNest Pharmacy",
+    "INDEX_TITLE": "Welcome to MediNest Dashboard",
+    "SITE_URL": "/",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_LINK": True,
+    "SEARCH_FIELD": True,
+    "ORDERING": ["-updated_at", "created_at"],
+    
+    # Disable reCAPTCHA to avoid errors
+    "CAPTCHA_DISABLE": True,
+    
+    # Sidebar navigation
+    "SIDEBAR": {
+        "show_search": True,
+        "navigation_expanded": True,
+    },
+    
+    # Header configuration
+    "HEADER": {
+        "always_show_back": True,
+    },
+    
+    # Custom links in sidebar
+    "LINKS": [
+        {
+            "title": "📊 Dashboard",
+            "link": "/admin/dashboard/",
+            "icon": "dashboard",
+        },
+        {
+            "title": "🛒 Manage Orders",
+            "link": "/admin/myapp/order/",
+            "icon": "shopping_cart",
+        },
+        {
+            "title": "💊 Products",
+            "link": "/admin/myapp/product/",
+            "icon": "medication",
+        },
+    ],
+}
+
+# Custom admin site
+ADMIN_SITE_HEADER = "MediNest Pharmacy Admin"
+ADMIN_SITE_TITLE = "MediNest"
+ADMIN_INDEX_TITLE = "Dashboard Overview"
 
 
 

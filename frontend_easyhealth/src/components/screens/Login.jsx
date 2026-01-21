@@ -30,14 +30,14 @@ const Login = () => {
   };
 
   return (
-    <div className="auth-page">
+    <div className="eh-container">
       <motion.div
         className="auth-container"
-        initial={{ opacity: 0, scale: 0.9, y: 30 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <Card>
+        <Card className="auth-card">
           <div className="auth-card-header">
             <motion.div
               className="auth-icon"

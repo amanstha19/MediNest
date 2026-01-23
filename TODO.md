@@ -1,4 +1,4 @@
-# Navbar and Medicines Page Fixes
+ # Navbar and Medicines Page Fixes
 
 ## Issues Solved ✅
 
@@ -25,6 +25,14 @@
 - [x] Updated HomeScreen.jsx with hero-2027 and modern grid layouts
 - [x] Updated Features.jsx with modern card and grid layouts
 - [x] Integrated modern-ui-2027.css design system in App.jsx
+
+## Cool Features Added ✅
+
+- [x] **Floating Action Button (FAB)** - Added an animated floating action button with quick access to:
+  - Emergency ambulance service
+  - Shopping cart with item count badge
+  - Live chat support (placeholder)
+  - Smooth animations and glassmorphism effects
 
 ## Remaining Tasks
 

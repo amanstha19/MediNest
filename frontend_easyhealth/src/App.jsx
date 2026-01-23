@@ -25,6 +25,7 @@ import MedicinesPage from './components/screens/MedicinesPage';
 import Payment from './components/screens/Payment';
 import PaymentVerification from './components/screens/PaymentVerification';
 import PaymentSuccess from './components/screens/PaymentSuccess';
+import FloatingActionButton from './components/FloatingActionButton';
 
 // MEDINEST Design System - Unified 2027 Light Theme
 import './components/ui/modern-ui-2027.css';

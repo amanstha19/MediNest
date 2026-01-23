@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthProvider';
 import { motion } from 'framer-motion';
@@ -8,10 +8,20 @@ import './layout.css';
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate('/');
+    setIsMobileMenuOpen(false);
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
   };
 
   const navLinks = [
@@ -25,7 +35,7 @@ function Navbar() {
     <nav className="navbar">
       <div className="navbar-container">
         {/* Logo */}
-        <Link to="/" className="navbar-logo">
+        <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
           <motion.span
             className="navbar-logo-icon"
             whileHover={{ scale: 1.05 }}
@@ -38,13 +48,25 @@ function Navbar() {
 
         </Link>
 
+        {/* Hamburger Menu Button */}
+        <button 
+          className={`navbar-hamburger ${isMobileMenuOpen ? 'active' : ''}`}
+          onClick={toggleMobileMenu}
+          aria-label="Toggle menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
         {/* Desktop Navigation */}
-        <div className="navbar-nav">
+        <div className={`navbar-nav ${isMobileMenuOpen ? 'open' : ''}`}>
           {navLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}
               className="navbar-link"
+              onClick={closeMobileMenu}
             >
               {link.label}
             </Link>
@@ -54,7 +76,7 @@ function Navbar() {
         {/* Right Section */}
         <div className="navbar-actions">
           {/* Cart */}
-          <Link to="/cart" className="navbar-cart">
+          <Link to="/cart" className="navbar-cart" onClick={closeMobileMenu}>
             <Button variant="primary">🛒 Cart</Button>
           </Link>
 
@@ -73,10 +95,10 @@ function Navbar() {
             </div>
           ) : (
             <div className="navbar-auth">
-              <Link to="/login">
+              <Link to="/login" onClick={closeMobileMenu}>
                 <Button variant="ghost">Login</Button>
               </Link>
-              <Link to="/signup">
+              <Link to="/signup" onClick={closeMobileMenu}>
                 <Button variant="primary">Sign Up</Button>
               </Link>
             </div>

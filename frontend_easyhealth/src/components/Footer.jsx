@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import './ui/modern-ui-2027.css';
 import './layout.css';
+
 
 function Footer() {
   const currentYear = new Date().getFullYear();
@@ -47,7 +49,7 @@ function Footer() {
                 'Ambulance Service',
                 'Health Consultation',
               ].map((service) => (
-                <li key={service}>{service}</li>
+                <li key={service}><span>{service}</span></li>
               ))}
             </ul>
           </div>
@@ -56,9 +58,9 @@ function Footer() {
           <div className="footer-section">
             <h4 className="footer-title">Contact</h4>
             <ul className="footer-contact">
-              <li>📍 Kathmandu, Nepal</li>
-              <li>📞 +977-01-XXXXXXX</li>
-              <li>✉️ support@medinest.com</li>
+              <li><span>📍 Kathmandu, Nepal</span></li>
+              <li><span>📞 +977-01-XXXXXXX</span></li>
+              <li><span>✉️ support@medinest.com</span></li>
             </ul>
           </div>
         </div>

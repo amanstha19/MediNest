@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
+import { useCart } from '../../context/CartContext';
 
 const OrderSuccessScreen = () => {
   const { orderId } = useParams();
@@ -10,6 +11,7 @@ const OrderSuccessScreen = () => {
   const [orderDetails, setOrderDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { clearCart } = useCart();
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -36,6 +38,8 @@ const OrderSuccessScreen = () => {
           },
         });
         setOrderDetails(response.data);
+        // Clear the cart from localStorage after successful order
+        clearCart();
       } catch (error) {
         setError('There was an error fetching your order details.');
         console.error('Error fetching order details:', error);

@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import API from '../../utils/api';
 import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
+import { useCart } from '../../context/CartContext';
 
 const PaymentVerification = () => {
     const [loading, setLoading] = useState(true);
@@ -10,6 +11,7 @@ const PaymentVerification = () => {
     const [message, setMessage] = useState('');
     const location = useLocation();
     const navigate = useNavigate();
+    const { clearCart } = useCart();
 
     useEffect(() => {
         const verifyPayment = async () => {
@@ -25,6 +27,9 @@ const PaymentVerification = () => {
                     // Check eSewa status - sandbox returns 'complete' for success
                     if (statusCode === 'complete' || statusCode === 'success' || statusCode === 'COMPLETE') {
                         console.log('✓ Payment completed');
+                        
+                        // Clear the cart after successful payment
+                        clearCart();
                         
                         // Try to verify with backend if available
                         try {

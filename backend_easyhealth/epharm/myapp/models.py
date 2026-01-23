@@ -6,6 +6,8 @@ from django.contrib.auth.models import AbstractUser
 from rest_framework.exceptions import ValidationError
 from django.conf import settings
 
+# MediNest Models - Core data structures for e-pharmacy platform
+
 # Custom User model
 class CustomUser(AbstractUser):
     city = models.CharField(max_length=50, blank=True, null=True)

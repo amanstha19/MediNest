@@ -21,7 +21,7 @@ const Features = () => {
     {
       icon: '💳',
       title: 'Flexible Payments',
-      description: 'Cash on delivery, cards, mobile wallets, and eSewa payment options.',
+      description: 'Cash on delivery, cards, mobile wallets, eSewa, and digital banking payment options.',
       color: 'var(--eh-info)',
       bgcolor: 'rgba(2, 136, 209, 0.05)'
     },

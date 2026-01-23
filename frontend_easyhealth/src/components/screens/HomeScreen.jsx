@@ -44,6 +44,7 @@ function HomeScreen() {
     { title: '💧 Hydration', desc: 'Drink 2-3 liters of water daily. It kickstarts metabolism and keeps you energized!' },
     { title: '🥗 Healthy Eating', desc: 'Incorporate leafy greens into your diet. They are packed with vitamins and minerals!' },
     { title: '🏃 Exercise', desc: 'Regular physical activity improves mood, reduces stress, and maintains healthy weight.' },
+    { title: '😴 Sleep Well', desc: 'Aim for 7-9 hours of quality sleep nightly to boost immunity and mental health.' },
   ];
 
   const containerVariants = {

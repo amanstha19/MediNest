@@ -49,7 +49,7 @@ class Product(models.Model):
 
     def __str__(self):
         return self.generic_name if self.generic_name else self.name if self.name else "Unnamed Product"
-
+#controls how it occurs in admin dashboard ,logs
 
 
 class Order(models.Model):

@@ -61,58 +61,58 @@ function HomeScreen() {
   };
 
   return (
-    <div className="home-page">
+    <div className="min-h-screen">
       {/* Hero Section */}
       <motion.div
-        className="hero-section"
+        className="hero-2027"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1}}
         transition={{ duration: 0.1 }}
       >
         <div className="hero-content">
-          <motion.div className="hero-icon" animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+          <motion.div animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
             ⚕️
           </motion.div>
-          <motion.h1 className="hero-title" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             Your Healthcare Revolution
           </motion.h1>
-          <p className="hero-subtitle">
+          <p>
             Medicines • Emergency Services<br />
             Everything for your health, delivered instantly
           </p>
-          
-          <div className="hero-stats">
-            <div className="hero-stat">
-              <div className="hero-stat-value" style={{ color: '#93c5fd' }}>24/7</div>
-              <div className="hero-stat-label">Available</div>
+
+          <div className="flex gap-6 justify-center mt-8">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary">24/7</div>
+              <div className="text-sm text-secondary">Available</div>
             </div>
-            <div className="hero-stat">
-              <div className="hero-stat-value" style={{ color: '#93c5fd' }}>5000+</div>
-              <div className="hero-stat-label">Medicines</div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary">5000+</div>
+              <div className="text-sm text-secondary">Medicines</div>
             </div>
-            <div className="hero-stat">
-              <div className="hero-stat-value" style={{ color: '#86efac' }}>fast</div>
-              <div className="hero-stat-label">Delivery</div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-success">fast</div>
+              <div className="text-sm text-secondary">Delivery</div>
             </div>
           </div>
         </div>
       </motion.div>
 
-      <div className="eh-container">
+      <div className="mui-container">
         {/* Services Section */}
-        <motion.div className="section-container" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
-          <h2 className="section-title">
+        <motion.div className="py-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
+          <h2 className="text-3xl font-bold text-center mb-4 text-primary">
             Our Services
           </h2>
-          <div className="services-grid">
+          <div className="mui-grid--2">
             {keyServices.map((service, idx) => (
               <motion.div key={idx} whileHover={{ scale: 1.01 }}>
                 <Card hover style={{ borderLeft: '4px solid var(--primary)' }}>
-                  <div className="service-card">
-                    <div className="service-icon">{service.icon}</div>
-                    <div className="service-info">
-                      <h3>{service.name}</h3>
-                      <p>{service.desc}</p>
+                  <div className="mui-card-content">
+                    <div className="text-4xl mb-4">{service.icon}</div>
+                    <div className="mb-4">
+                      <h3 className="text-xl font-semibold mb-2">{service.name}</h3>
+                      <p className="text-secondary">{service.desc}</p>
                     </div>
                     <Link to={service.link}>
                       <Button variant="primary">Explore →</Button>
@@ -125,35 +125,35 @@ function HomeScreen() {
         </motion.div>
 
         {/* Products Section */}
-        <motion.div className="section-container" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
-          <h2 className="section-title">
+        <motion.div className="py-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
+          <h2 className="text-3xl font-bold text-center mb-4 text-primary">
             Popular Products
           </h2>
-          <p className="section-subtitle">
+          <p className="text-center text-secondary mb-12">
             Curated selection of top-rated health products
           </p>
-          
+
           {loading ? (
-            <div className="loader-container">
-              <div className="eh-loader"></div>
+            <div className="flex justify-center py-12">
+              <div className="mui-loader"></div>
             </div>
           ) : products.length > 0 ? (
-            <motion.div className="products-grid" variants={containerVariants} initial="hidden" whileInView="visible">
+            <motion.div className="mui-grid" variants={containerVariants} initial="hidden" whileInView="visible">
               {products.slice(0, 8).map((product) => (
                 <motion.div key={product.id} variants={itemVariants}>
                   <Card hover>
-                    <Link to={`/product/${product.id}`} className="product-link">
-                      <div className="eh-card__media">
+                    <Link to={`/product/${product.id}`} className="block">
+                      <div className="mui-card__media">
                         {product.image ? (
                           <img src={`http://127.0.0.1:8000${product.image}`} alt={product.generic_name} />
                         ) : (
-                          <div className="eh-center" style={{ color: 'var(--text-muted)' }}>No image</div>
+                          <div className="flex items-center justify-center h-full text-muted">No image</div>
                         )}
                       </div>
-                      <div className="card-content">
-                        <h3 className="eh-card__title">{product.generic_name}</h3>
-                        <p className="eh-card__meta">Category: {product.category}</p>
-                        <p className="eh-card__price">NPR {product.price || 'N/A'}</p>
+                      <div className="mui-card-content">
+                        <h3 className="mui-card__title">{product.generic_name}</h3>
+                        <p className="mui-card__meta">Category: {product.category}</p>
+                        <p className="mui-card__price">NPR {product.price || 'N/A'}</p>
                       </div>
                     </Link>
                   </Card>
@@ -161,7 +161,7 @@ function HomeScreen() {
               ))}
             </motion.div>
           ) : (
-            <p className="eh-center" style={{ padding: '40px', color: 'var(--text-muted)' }}>No products available.</p>
+            <p className="text-center py-12 text-muted">No products available.</p>
           )}
         </motion.div>
 
@@ -185,16 +185,16 @@ function HomeScreen() {
         </motion.div>
 
         {/* CTA Section */}
-        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
-          <Card className="cta-card">
-            <div className="cta-content">
-              <h2 className="cta-title">
+        <motion.div className="py-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
+          <Card className="mui-card" style={{ background: 'var(--gradient-primary)', color: 'white' }}>
+            <div className="mui-card-content text-center">
+              <h2 className="text-2xl font-bold mb-4">
                 Need Medical Assistance?
               </h2>
-              <p className="cta-subtitle">
+              <p className="text-lg mb-6 opacity-90">
                 Our team is available 24/7 to help you.
               </p>
-              <div className="cta-buttons">
+              <div className="flex gap-4 justify-center flex-wrap">
                 <Button variant="glass" size="lg">📞 Call Support</Button>
                 <Button variant="glass" size="lg">💬 Chat with Doctor</Button>
               </div>

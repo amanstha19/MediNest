@@ -1,4 +1,4 @@
-// MEDINEST Card Component
+// MEDINEST Modern Card Component
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 
@@ -17,7 +17,7 @@ export const Card = ({
 
   return (
     <CardWrapper
-      className={`card ${className}`}
+      className={`mui-card ${className}`}
       style={{ ...style }}
       {...motionProps}
       {...props}
@@ -28,7 +28,7 @@ export const Card = ({
 };
 
 export const CardContent = ({ children, className = '', style = {} }) => (
-  <div className={`card-content ${className}`} style={style}>
+  <div className={`mui-card-content ${className}`} style={style}>
     {children}
   </div>
 );

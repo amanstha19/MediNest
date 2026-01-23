@@ -1,4 +1,4 @@
-// MEDINEST Button Component
+// MEDINEST Modern Button Component
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
 
@@ -13,17 +13,18 @@ const Button = ({
   loading = false,
 }) => {
   const variants = {
-    primary: 'btn btn-primary',
-    secondary: 'btn btn-secondary',
-    success: 'btn btn-success',
-    danger: 'btn btn-danger',
-    glass: 'btn btn-glass',
-    ghost: 'btn btn-ghost',
+    primary: 'mui-btn mui-btn-primary',
+    secondary: 'mui-btn mui-btn-secondary',
+    success: 'mui-btn mui-btn-success',
+    danger: 'mui-btn mui-btn-danger',
+    glass: 'mui-btn mui-btn-glass',
+    ghost: 'mui-btn mui-btn-ghost',
   };
 
   const sizes = {
-    sm: 'btn-sm',
-    lg: 'btn-lg',
+    sm: 'mui-btn-sm',
+    md: '',
+    lg: 'mui-btn-lg',
   };
 
   return (
@@ -37,7 +38,7 @@ const Button = ({
     >
       {loading && (
         <motion.span
-          className="spin"
+          className="mui-spin"
           style={{
             width: '16px',
             height: '16px',

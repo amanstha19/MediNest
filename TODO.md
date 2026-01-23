@@ -1,19 +1,23 @@
-# Navbar and Medicines Page Fixes
+# TODO: Merge Home Page and Medicine Page into Single Awesome HomeScreen
 
-## Issues Solved ✅
+## Steps to Complete:
 
-2. **Medicines page size optimized** - Changed grid from `minmax(220px, 1fr)` to `minmax(180px, 1fr)` with smaller gap (1.25rem)
-3. **Enhanced website responsiveness** - Added progressive responsive breakpoints:
-   - 1024px: Grid columns to 160px min
-   - 768px: Grid columns to 140px min, filter section stacks vertically
-   - 480px: Grid columns to 120px min, improved mobile navbar (hides nav links)
+- [x] Step 1: Update HomeScreen.jsx to include hero section, services, search/filter section, full product grid with pagination, health tips, and CTA.
+- [x] Step 2: Add client-side pagination logic to the product grid.
+- [x] Step 3: Ensure professional styling and animations are maintained.
+- [x] Step 4: Verify the merged page works without errors.
+- [x] Step 5: Add Netflix-style recommendations section showing products from different categories.
+- [x] Step 6: Remove medicine page features (search/filter, products grid) and keep only Netflix-style recommendations.
 
-## Tasks Completed ✅
+## Summary:
 
-- [x] Adjust medicines grid columns to smaller minmax values in pages.css
-- [x] Add better responsive breakpoints for medicines page
-- [x] Ensure all components have proper mobile responsiveness
-- [x] Test responsive design across different screen sizes
-- [x] Fix navbar backdrop-filter by reducing background opacity in layout.css
+The HomeScreen.jsx has been updated to focus on a Netflix-style home page with:
 
-4. **Navbar backdrop filter fixed** - Reduced background opacity from `var(--bg-glass)` (0.08) to `rgba(255, 255, 255, 0.02)` for proper backdrop-filter visibility
+- Hero section with stats and animations
+- Services section with Pharmacy & Medicines and Ambulance cards
+- Netflix-style recommendations showing products grouped by category (up to 5 categories, 6 products each)
+- Health tips section
+- Call-to-action section
+- Professional Framer Motion animations throughout
+
+The medicine page features like search/filter and products grid have been removed to create a clean, recommendation-focused home page.

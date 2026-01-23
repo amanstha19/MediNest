@@ -645,7 +645,8 @@ def verify_admin_access(request):
         }, status=status.HTTP_403_FORBIDDEN)
 
 
-# Admin: Get All Orders
+#Checks whether the authenticated user has admin privileges.
+
 class AdminOrdersView(APIView):
     permission_classes = [IsAuthenticated]
     

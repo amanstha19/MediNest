@@ -8,13 +8,39 @@ import './pages.css';
 
 function HomeScreen() {
   const [products, setProducts] = useState([]);
+  const [productsByCategory, setProductsByCategory] = useState({});
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+
+  const CATEGORIES = [
+    { value: 'OTC', label: 'Over-the-Counter' },
+    { value: 'RX', label: 'Prescription Medicines' },
+    { value: 'SUP', label: 'Supplements & Vitamins' },
+    { value: 'WOM', label: "Women's Health" },
+    { value: 'MEN', label: "Men's Health" },
+    { value: 'PED', label: 'Pediatric Medicines' },
+    { value: 'HERB', label: 'Herbal & Ayurvedic' },
+    { value: 'DIAG', label: 'Diagnostics & Medical Devices' },
+    { value: 'FIRST', label: 'First Aid' },
+  ];
 
   useEffect(() => {
     async function fetchProducts() {
       try {
+        setLoading(true);
         const { data } = await axios.get('/api/products');
-        setProducts(data);
+
+        // Group products by category for recommendations
+        const grouped = data.reduce((acc, product) => {
+          const cat = product.category || 'Other';
+          if (!acc[cat]) acc[cat] = [];
+          acc[cat].push(product);
+          return acc;
+        }, {});
+        setProductsByCategory(grouped);
       } catch (error) {
         console.error('Error fetching products:', error);
       } finally {
@@ -24,16 +50,18 @@ function HomeScreen() {
     fetchProducts();
   }, []);
 
+
+
   const keyServices = [
-    { 
-      name: 'Pharmacy & Medicines', 
-      icon: '💊', 
+    {
+      name: 'Pharmacy & Medicines',
+      icon: '💊',
       desc: 'Browse and order from a wide range of prescription medicines, OTC drugs, and health supplements.',
       link: '/category/medicines'
     },
-    { 
-      name: 'Emergency Ambulance', 
-      icon: '🚑', 
+    {
+      name: 'Emergency Ambulance',
+      icon: '🚑',
       desc: '24/7 emergency ambulance services with certified technicians and fast response times.',
       link: '/ambulance'
     },
@@ -78,7 +106,7 @@ function HomeScreen() {
             Medicines • Emergency Services<br />
             Everything for your health, delivered instantly
           </p>
-          
+
           <div className="hero-stats">
             <div className="hero-stat">
               <div className="hero-stat-value" style={{ color: '#93c5fd' }}>24/7</div>
@@ -122,45 +150,69 @@ function HomeScreen() {
           </div>
         </motion.div>
 
-        {/* Products Section */}
-        <motion.div className="section-container" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
-          <h2 className="section-title">
-            Popular Products
-          </h2>
-          <p className="section-subtitle">
-            Curated selection of top-rated health products
-          </p>
-          
-          {loading ? (
-            <div className="loader-container">
-              <div className="eh-loader"></div>
-            </div>
-          ) : products.length > 0 ? (
-            <motion.div className="products-grid" variants={containerVariants} initial="hidden" whileInView="visible">
-              {products.slice(0, 8).map((product) => (
-                <motion.div key={product.id} variants={itemVariants}>
-                  <Card hover>
+
+
+        {/* Netflix-Style Recommendations */}
+        <motion.div
+          className="recommendations-section"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+        >
+          <h2 className="section-title">🎬 Recommended for You</h2>
+          <p className="section-subtitle">Discover products from different categories</p>
+          {Object.entries(productsByCategory).slice(0, 5).map(([category, categoryProducts]) => (
+            <motion.div
+              key={category}
+              className="recommendation-row"
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <h3 className="recommendation-category-title">{category}</h3>
+              <div className="recommendation-products">
+                {categoryProducts.slice(0, 6).map((product, idx) => (
+                  <motion.div
+                    key={product.id}
+                    className="recommendation-product-card"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
                     <Link to={`/product/${product.id}`} className="product-link">
-                      <div className="eh-card__media">
+                      <div className="product-image-container">
                         {product.image ? (
-                          <img src={`http://127.0.0.1:8000${product.image}`} alt={product.generic_name} />
+                          <img
+                            src={`http://127.0.0.1:8000${product.image}`}
+                            alt={product.generic_name || product.name}
+                          />
                         ) : (
-                          <div className="eh-center" style={{ color: 'var(--text-muted)' }}>No image</div>
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '100%',
+                            color: 'var(--text-muted)',
+                            fontSize: '1.2rem'
+                          }}>
+                            💊
+                          </div>
                         )}
+                        <div className="product-badges">
+                          <span className={`badge ${product.prescription_required ? 'badge-rx' : 'badge-otc'}`}>
+                            {product.prescription_required ? 'Rx' : 'OTC'}
+                          </span>
+                        </div>
                       </div>
-                      <div className="card-content">
-                        <h3 className="eh-card__title">{product.generic_name}</h3>
-                        <p className="eh-card__meta">Category: {product.category}</p>
-                        <p className="eh-card__price">NPR {product.price || 'N/A'}</p>
+                      <div className="product-content">
+                        <h4 className="product-name">{product.generic_name || product.name}</h4>
+                        <p className="product-price">{product.price?.toLocaleString() || 'N/A'}</p>
                       </div>
                     </Link>
-                  </Card>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))}
+              </div>
             </motion.div>
-          ) : (
-            <p className="eh-center" style={{ padding: '40px', color: 'var(--text-muted)' }}>No products available.</p>
-          )}
+          ))}
         </motion.div>
 
         {/* Health Tips Section */}

@@ -968,6 +968,156 @@ button:focus {
   box-shadow: 0 8px 25px rgba(0,0,0,0.2);
 }
 
+/* ===== NETFLIX-STYLE RECOMMENDATIONS SECTION ===== */
+
+.recommendations-section {
+  margin: 4rem 0;
+}
+
+.recommendations-section .section-title {
+  text-align: left;
+  margin-bottom: 0.5rem;
+}
+
+.recommendations-section .section-subtitle {
+  text-align: left;
+  margin-bottom: 2rem;
+}
+
+.recommendation-row {
+  margin-bottom: 2.5rem;
+}
+
+.recommendation-category-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recommendation-products {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0.5rem 0.25rem 1.5rem 0.25rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-products::-webkit-scrollbar {
+  height: 8px;
+}
+
+.recommendation-products::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.recommendation-products::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+.recommendation-products::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-hover);
+}
+
+.recommendation-product-card {
+  flex: 0 0 160px;
+  scroll-snap-align: start;
+  background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  transition: all 0.3s var(--ease-smooth);
+  cursor: pointer;
+}
+
+.recommendation-product-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.recommendation-product-card .product-image-container {
+  width: 100%;
+  height: 140px;
+  aspect-ratio: auto;
+  overflow: hidden;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 16px 16px 0 0;
+}
+
+.recommendation-product-card .product-image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s var(--ease-smooth);
+}
+
+.recommendation-product-card:hover .product-image-container img {
+  transform: scale(1.08);
+}
+
+.recommendation-product-card .product-badges {
+  top: 0.75rem;
+  right: 0.75rem;
+}
+
+.recommendation-product-card .badge {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.65rem;
+  border-radius: 12px;
+}
+
+.recommendation-product-card .product-content {
+  padding: 1rem;
+}
+
+.recommendation-product-card .product-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.6em;
+}
+
+.recommendation-product-card .product-price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--success);
+  margin-bottom: 0;
+}
+
+.recommendation-product-card .product-price::before {
+  content: 'NPR ';
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Hide scrollbar for cleaner look */
+@media (hover: none) {
+  .recommendation-products {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .recommendation-products::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* ===== ADVANCED MEDICINES PAGE ===== */
 
 .medicines-page {

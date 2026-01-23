@@ -8,7 +8,7 @@ from django.conf import settings
 
 # MediNest Models - Core data structures for e-pharmacy platform
 
-# Custom User model
+# Custom User model - Extended Django user with additional profile fields
 class CustomUser(AbstractUser):
     city = models.CharField(max_length=50, blank=True, null=True)
     country = models.CharField(max_length=50, blank=True, null=True)
@@ -83,7 +83,7 @@ class Cart(models.Model):
     def __str__(self):
         return f"Cart of {self.user.username}"
 
-
+# jati ota item add garepani each item lai euta item count hune bhayo 2ta vitamins ra 1 euta cetamol bhaea 3 items
 class CartItem(models.Model):
     cart = models.ForeignKey(Cart, related_name='cart_items', on_delete=models.CASCADE,default=1)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)

@@ -30,7 +30,7 @@ class MediNestAdminSite(UnfoldAdminSite):
         total_products = Product.objects.count()
         total_users = CustomUser.objects.count()
         total_orders = Order.objects.count()
-        total_revenue = userPayment.objects.filter(status='SUCCESS').aggregate(
+        total_revenue = userPayment.objects.filter(status='PAID').aggregate(
             total=Sum('amount')
         )['total'] or 0
         
@@ -49,7 +49,7 @@ class MediNestAdminSite(UnfoldAdminSite):
             day_end = day.replace(hour=23, minute=59, second=59, microsecond=999)
             
             daily_sales = userPayment.objects.filter(
-                status='SUCCESS',
+                status='PAID',
                 created_at__gte=day_start,
                 created_at__lte=day_end
             ).aggregate(total=Sum('amount'))['total'] or 0
@@ -334,12 +334,16 @@ class OrderAdmin(admin.ModelAdmin):
         try:
             payment = userPayment.objects.filter(order=obj).first()
             if payment:
-                if payment.status == 'SUCCESS':
-                    return format_html('<span style="color: green;">Paid</span>')
+                if payment.status == 'PAID':
+                    return format_html('<span style="color: green; font-weight: bold;">PAID</span>')
                 elif payment.status == 'PENDING':
-                    return format_html('<span style="color: orange;">Pending</span>')
+                    return format_html('<span style="color: orange;">PENDING</span>')
+                elif payment.status == 'FAILED':
+                    return format_html('<span style="color: red;">FAILED</span>')
+                elif payment.status == 'REFUNDED':
+                    return format_html('<span style="color: purple;">REFUNDED</span>')
                 else:
-                    return format_html('<span style="color: red;">Failed</span>')
+                    return format_html('<span style="color: gray;">{}</span>', payment.status)
         except:
             pass
         return format_html('<span style="color: gray;">No Payment</span>')
@@ -347,15 +351,41 @@ class OrderAdmin(admin.ModelAdmin):
 
 
 class UserPaymentAdmin(admin.ModelAdmin):
-    list_display = ('transaction_uuid', 'get_user', 'amount', 'status', 'created_at')
+    list_display = ('transaction_uuid', 'get_user', 'get_order', 'amount', 'status', 'transaction_code', 'created_at')
     list_filter = ('status', 'created_at')
-    search_fields = ('transaction_uuid', 'user__username')
+    search_fields = ('transaction_uuid', 'user__username', 'transaction_code')
+    readonly_fields = ('transaction_uuid', 'created_at', 'updated_at')
+    list_editable = ('status',)
     
     def get_user(self, obj):
         if obj.user:
-            return f"{obj.user.username}"
+            return format_html(
+                '<a href="/admin/myapp/customuser/{}/change/">{}</a>',
+                obj.user.id,
+                obj.user.username
+            )
         return "No user"
     get_user.short_description = 'User'
+    get_user.admin_order_field = 'user__username'
+    
+    def get_order(self, obj):
+        if obj.order:
+            return format_html(
+                '<a href="/admin/myapp/order/{}/change/">Order #{}</a>',
+                obj.order.id,
+                obj.order.id
+            )
+        return "No order"
+    get_order.short_description = 'Order'
+    get_order.admin_order_field = 'order__id'
+    
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return ('transaction_uuid', 'created_at', 'updated_at')
+        return ('created_at', 'updated_at')
+    
+    def has_add_permission(self, request):
+        return False
 
 
 # Register all models

@@ -1,3 +1,4 @@
+// Features component: Displays key features, services, trust indicators, and quality assurance for Easy Health platform
 import React from 'react';
 import { Card, CardContent } from '../ui/card';
 

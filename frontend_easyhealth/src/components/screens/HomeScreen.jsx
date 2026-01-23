@@ -1,3 +1,4 @@
+// HomeScreen component: Main landing page displaying hero section, services, popular products, health tips, and call-to-action
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';

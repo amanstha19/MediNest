@@ -1,18 +1,23 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useCart } from '../../context/CartContext';
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
+  const { clearCart } = useCart();
 
   useEffect(() => {
+    // Clear the cart after successful payment
+    clearCart();
+    
     // Redirect to home page after 5 seconds
     const redirectTimer = setTimeout(() => {
       navigate('/', { replace: true });
     }, 5000);
 
     return () => clearTimeout(redirectTimer);
-  }, [navigate]);
+  }, [navigate, clearCart]);
 
   return (
     <div 

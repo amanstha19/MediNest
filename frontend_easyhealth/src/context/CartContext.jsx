@@ -7,9 +7,9 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
-    const authTokens = sessionStorage.getItem('authTokens');
+    // Always try to load cart from localStorage regardless of login status
     const savedCart = localStorage.getItem('cartItems');
-    return (authTokens && savedCart) ? JSON.parse(savedCart) : [];
+    return savedCart ? JSON.parse(savedCart) : [];
   });
 
   useEffect(() => {

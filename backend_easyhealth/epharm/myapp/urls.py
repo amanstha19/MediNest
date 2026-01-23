@@ -33,7 +33,7 @@ urlpatterns = [
     # Base Routes
     path('', views.getRoutes, name='getRoutes'),
 
-    # Authentication & User Routes
+    # Authentication ra user Routes ko lagi
     path('login/', CustomLoginAPIView.as_view(), name='login'),
     path('register/', RegisterAPIView.as_view(), name='register'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
@@ -43,7 +43,7 @@ urlpatterns = [
     path('user/profile/', UserProfileView.as_view(), name='user-profile'),
     path('verify-admin/', verify_admin_access, name='verify-admin'),
 
-    # Product Routes
+    # Product Routes ko lagi
     path('products/', views.getProducts, name='products'),
     path('product/<int:pk>/', views.getProduct, name='product-detail'),
 

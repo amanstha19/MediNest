@@ -1,3 +1,4 @@
+# MediNest Platform Models - Core data structures for e-pharmacy system
 from datetime import timezone
 from django.utils import timezone
 

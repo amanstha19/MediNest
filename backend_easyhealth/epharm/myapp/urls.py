@@ -32,8 +32,9 @@ app_name = 'myapp'
 urlpatterns = [
     # Base Routes
     path('', views.getRoutes, name='getRoutes'),
-
+ 
     # Authentication ra user Routes ko lagi
+    #.asview() class based view ra function based view ko lagi garine bhaiyo
     path('login/', CustomLoginAPIView.as_view(), name='login'),
     path('register/', RegisterAPIView.as_view(), name='register'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

@@ -262,20 +262,15 @@ button:focus {
     radial-gradient(ellipse at bottom right, rgba(0, 191, 255, 0.3) 0%, transparent 50%),
     conic-gradient(from 45deg at 50% 50%, rgba(138, 43, 226, 0.1) 0deg, rgba(255, 20, 147, 0.1) 120deg, rgba(0, 191, 255, 0.1) 240deg, rgba(138, 43, 226, 0.1) 360deg);
   color: white;
-  padding: 12rem 2rem;
+  padding: 6rem 2rem;
   border-radius: 0 0 4rem 4rem;
   text-align: center;
   position: relative;
   overflow: hidden;
-  min-height: 900px;
+  min-height: 500px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow:
-    0 30px 60px rgba(0,0,0,0.4),
-    inset 0 1px 0 rgba(255,255,255,0.15),
-    var(--ultra-shadow-neon);
-  backdrop-filter: blur(1px);
 }
 
 .hero-section::before {

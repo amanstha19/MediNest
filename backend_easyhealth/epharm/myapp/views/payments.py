@@ -1,17 +1,20 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 import hmac
 import hashlib
 import base64
 import logging
 
-from ..models import userPayment
+from ..models import userPayment, Order
 
 logger = logging.getLogger(__name__)
 
 
 class ProcessPaymentView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         try:
             if 'data' in request.data or 'status' in request.data:
@@ -25,12 +28,19 @@ class ProcessPaymentView(APIView):
                     payment.status = status_code
                     payment.save()
 
+                    # Update order status if payment is successful
+                    if payment.status == 'PAID' and payment.order:
+                        payment.order.status = 'paid'
+                        payment.order.save()
+                        logger.info(f"Order {payment.order.id} status updated to paid")
+
                     logger.info(f"Payment callback processed successfully for transaction {transaction_uuid}")
                     return Response({
                         "message": "Payment successful",
-                        "transaction_uuid": transaction_uuid
+                        "transaction_uuid": transaction_uuid,
+                        "order_id": payment.order.id if payment.order else None
                     }, status=status.HTTP_200_OK)
-
+    
                 except userPayment.DoesNotExist:
                     logger.error(f"Payment not found for transaction {transaction_uuid}")
                     return Response({"error": "Payment not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -38,9 +48,18 @@ class ProcessPaymentView(APIView):
             amount = float(request.data.get('amount', 0))
             tax_amount = float(request.data.get('tax_amount', 0))
             transaction_uuid = request.data.get('transaction_uuid')
+            order_id = request.data.get('order_id')
 
             if not transaction_uuid:
                 return Response({"error": "Missing transaction_uuid"}, status=status.HTTP_400_BAD_REQUEST)
+
+            if not order_id:
+                return Response({"error": "Missing order_id"}, status=status.HTTP_400_BAD_REQUEST)
+
+            try:
+                order = Order.objects.get(id=order_id, user=request.user)
+            except Order.DoesNotExist:
+                return Response({"error": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
 
             total_amount = amount + tax_amount
 
@@ -51,8 +70,9 @@ class ProcessPaymentView(APIView):
                 transaction_uuid=transaction_uuid,
                 status="PENDING",
                 user=request.user if request.user.is_authenticated else None,
+                order=order,
             )
-
+        
             message = f"total_amount={total_amount},transaction_uuid={transaction_uuid},product_code=EPAYTEST"
             secret_key = "8gBm/:&EnhH.1/q"
             signature = base64.b64encode(

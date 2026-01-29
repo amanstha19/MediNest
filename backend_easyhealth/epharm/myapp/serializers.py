@@ -15,9 +15,9 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomUser  # Use CustomUser model here
-        fields = ['username', 'email', 'password', 'first_name', 'last_name']  # Specify fields
+        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'city', 'phone']  # Specify fields
         extra_kwargs = {'password': {'write_only': True}}
-
+    
     def create(self, validated_data):
         # Create user using the validated data
         user = CustomUser.objects.create_user(
@@ -25,10 +25,12 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             password=validated_data['password'],
             first_name=validated_data.get('first_name', ''),  # Use empty string if no first name
-            last_name=validated_data.get('last_name', '')     # Use empty string if no last name
+            last_name=validated_data.get('last_name', ''),     # Use empty string if no last name
+            city=validated_data.get('city', ''),              # Use empty string if no city
+            phone=validated_data.get('phone', '')             # Use empty string if no phone
         )
         return user
-
+    
 
 # User Serializer (for listing user data)
 class UserSerializer(serializers.ModelSerializer):

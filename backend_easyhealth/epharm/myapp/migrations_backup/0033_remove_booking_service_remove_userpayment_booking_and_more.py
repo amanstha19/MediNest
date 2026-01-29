@@ -10,25 +10,20 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='booking',
-            name='service',
-        ),
-        migrations.RemoveField(
-            model_name='userpayment',
-            name='booking',
-        ),
-        migrations.RemoveField(
-            model_name='bookingreport',
-            name='booking',
-        ),
+        # Delete models FIRST (before removing their fields)
         migrations.DeleteModel(
-            name='Service',
+            name='BookingReport',
         ),
         migrations.DeleteModel(
             name='Booking',
         ),
         migrations.DeleteModel(
-            name='BookingReport',
+            name='Service',
+        ),
+        # Now remove fields from remaining models
+        migrations.RemoveField(
+            model_name='userpayment',
+            name='booking',
         ),
     ]
+

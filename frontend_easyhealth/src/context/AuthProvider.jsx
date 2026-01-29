@@ -30,10 +30,12 @@ export const AuthProvider = ({ children }) => {
         username: userData.username,
         first_name: userData.firstName,
         last_name: userData.lastName,
+        city: userData.city,
+        phone: userData.phone,
       });
       setUser(response.data.user);
       sessionStorage.setItem('authTokens', JSON.stringify(response.data.tokens));
-      
+
       // Set token to axios default header
       axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.tokens.access}`;
     } catch (err) {

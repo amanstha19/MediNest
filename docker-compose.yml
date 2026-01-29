@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   redis:
     image: redis:alpine
@@ -5,6 +7,17 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+
+  db:
+    image: postgres:15
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: drf_pharmacy
+      POSTGRES_USER: drf_user
+      POSTGRES_PASSWORD: drf123
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   backend:
     build:
@@ -14,19 +27,21 @@ services:
       - "8000:8000"
     depends_on:
       - redis
+      - db
     environment:
       - DJANGO_SETTINGS_MODULE=epharm.settings
       - DEBUG=True
       - DJANGO_SECRET_KEY=your-secret-key-here
       - ESEWA_SECRET_KEY=your-esewa-key-here
+      - POSTGRES_DB=drf_pharmacy
+      - POSTGRES_USER=drf_user
+      - POSTGRES_PASSWORD=drf123
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
     volumes:
-    - ./backend_easyhealth/epharm:/app                 # backend code
-    - ./backend_easyhealth/epharm/staticfiles:/app/staticfiles   # static files
-    - ./backend_easyhealth/epharm/static/images:/app/static/images #
-    
-     
-      
-      
+      - ./backend_easyhealth/epharm:/app
+      - ./backend_easyhealth/epharm/staticfiles:/app/staticfiles
+      - ./backend_easyhealth/epharm/static/images:/app/static/images
     command: python manage.py runserver 0.0.0.0:8000
 
   frontend:
@@ -46,3 +61,4 @@ volumes:
   redis_data:
   static_volume:
   media_volume:
+  pgdata:

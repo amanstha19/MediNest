@@ -351,11 +351,11 @@ class OrderAdmin(admin.ModelAdmin):
 
 
 class UserPaymentAdmin(admin.ModelAdmin):
-    list_display = ('transaction_uuid', 'get_user', 'get_order', 'amount', 'status', 'transaction_code', 'created_at')
-    list_filter = ('status', 'created_at')
+    list_display = ('transaction_uuid', 'get_user', 'get_order', 'amount', 'status', 'payment_method', 'transaction_code', 'created_at')
+    list_filter = ('status', 'payment_method', 'created_at')
     search_fields = ('transaction_uuid', 'user__username', 'transaction_code')
     readonly_fields = ('transaction_uuid', 'created_at', 'updated_at')
-    list_editable = ('status',)
+    list_editable = ('status', 'payment_method')
     
     def get_user(self, obj):
         if obj.user:
@@ -386,6 +386,45 @@ class UserPaymentAdmin(admin.ModelAdmin):
     
     def has_add_permission(self, request):
         return False
+    
+    def save_model(self, request, obj, form, change):
+        """
+        Override save_model to:
+        1. Auto-set status to PAID when payment_method is 'ONLINE'
+        2. Sync order status when payment status changes
+        """
+        # Get the original payment object if this is an update
+        if change:
+            try:
+                original = userPayment.objects.get(pk=obj.pk)
+                
+                # Check if payment_method changed to ONLINE
+                if obj.payment_method == 'ONLINE' and original.payment_method != 'ONLINE':
+                    obj.status = 'PAID'
+                    self.message_user(request, f"Payment status automatically set to PAID for online payment.")
+                
+                # Sync order status when payment status changes
+                if obj.status != original.status and obj.order:
+                    if obj.status == 'PAID':
+                        obj.order.status = 'paid'
+                        self.message_user(request, f"Order #{obj.order.id} status updated to 'paid'.")
+                    elif obj.status == 'FAILED' and obj.order.status == 'paid':
+                        obj.order.status = 'pending'
+                        self.message_user(request, f"Order #{obj.order.id} status reverted to 'pending' due to payment failure.")
+                    elif obj.status == 'REFUNDED' and obj.order.status == 'paid':
+                        obj.order.status = 'refunded'
+                        self.message_user(request, f"Order #{obj.order.id} status updated to 'refunded'.")
+                    obj.order.save()
+                    
+            except userPayment.DoesNotExist:
+                pass
+        
+        # For new objects, if payment_method is ONLINE, set status to PAID
+        if not change and obj.payment_method == 'ONLINE':
+            obj.status = 'PAID'
+            self.message_user(request, f"New online payment status automatically set to PAID.")
+        
+        super().save_model(request, obj, form, change)
 
 
 # Register all models

@@ -104,6 +104,12 @@ class userPayment(models.Model):
         ('REFUNDED', 'Refunded'),
     ]
 
+    PAYMENT_METHOD_CHOICES = [
+        ('ONLINE', 'Online Payment'),
+        ('CASH_ON_DELIVERY', 'Cash on Delivery'),
+        ('BANK_TRANSFER', 'Bank Transfer'),
+    ]
+
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_payments', null=True, blank=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True)
     products = models.ManyToManyField(Product, blank=True)  # If direct product linkage is needed
@@ -113,6 +119,7 @@ class userPayment(models.Model):
     transaction_uuid = models.CharField(max_length=100, unique=True)
     transaction_code = models.CharField(max_length=100, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    payment_method = models.CharField(max_length=50, choices=PAYMENT_METHOD_CHOICES, default='ONLINE')
     product_code = models.CharField(max_length=50, default='EPAYTEST')
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)

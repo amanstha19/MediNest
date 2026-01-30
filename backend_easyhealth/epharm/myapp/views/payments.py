@@ -100,8 +100,8 @@ class ProcessPaymentView(APIView):
                 "product_code": "EPAYTEST",
                 "product_service_charge": "0",
                 "product_delivery_charge": "0",
-                "success_url": f"http://localhost:5173/",
-                "failure_url": f"http://localhost:5173/payment-failure",
+                "success_url": f"http://localhost:5173/#/order-success/{order_id}",
+                "failure_url": f"http://localhost:5173/#/payment-failure",
                 "signed_field_names": "total_amount,transaction_uuid,product_code",
                 "signature": signature
             }

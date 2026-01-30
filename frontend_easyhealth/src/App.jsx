@@ -25,6 +25,7 @@ import MedicinesPage from './components/screens/MedicinesPage';
 import Payment from './components/screens/Payment';
 import PaymentVerification from './components/screens/PaymentVerification';
 import PaymentSuccess from './components/screens/PaymentSuccess';
+import PaymentFailure from './components/screens/PaymentFailure';
 
 // MEDINEST Design System - Unified 2027 Light Theme
 import './components/ui/modern-ui-2027.css';
@@ -66,6 +67,7 @@ const AppContent = () => {
           />
           <Route path="/payment/verification" element={<PaymentVerification />} />
           <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-failure" element={<PaymentFailure />} />
         </Routes>
       </Container>}
       {isAdminPage && <Routes>

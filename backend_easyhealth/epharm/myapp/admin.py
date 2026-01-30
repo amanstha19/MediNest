@@ -297,9 +297,19 @@ class CartItemAdmin(admin.ModelAdmin):
 
 class CartItemInline(admin.TabularInline):
     model = CartItem
-    readonly_fields = ('product', 'quantity', 'prescription_file_tag')
+    readonly_fields = ('product', 'quantity', 'line_total', 'prescription_file_tag')
     can_delete = False
     extra = 0
+    ordering = ('id',)
+    
+    def line_total(self, obj):
+        if obj.product and obj.quantity:
+            return format_html(
+                '<span style="font-weight: bold;">Rs. {}</span>',
+                float(obj.product.price) * obj.quantity
+            )
+        return '-'
+    line_total.short_description = 'Subtotal'
     
     def prescription_file_tag(self, obj):
         if obj.prescription_file:
@@ -308,46 +318,216 @@ class CartItemInline(admin.TabularInline):
                 obj.prescription_file.url
             )
         return '-'
+    prescription_file_tag.short_description = 'Prescription'
     
     def has_add_permission(self, request, obj=None):
         return False
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'total_price', 'status', 'prescription_tag', 'payment_status_display', 'created_at')
-    list_filter = ('status', 'created_at')
-    search_fields = ('user__username', 'user__email', 'id')
-    readonly_fields = ('created_at', 'updated_at')
+    list_display = (
+        'id', 'order_id_link', 'user_link', 'products_list', 
+        'total_price', 'status', 'transaction_info', 
+        'prescription_tag', 'payment_method_display', 'created_at'
+    )
+    list_filter = ('status', 'created_at', 'updated_at')
+    search_fields = ('id', 'user__username', 'user__email', 'user__phone', 'address')
+    readonly_fields = ('created_at', 'updated_at', 'order_summary', 'products_display', 'payment_details')
     inlines = [CartItemInline]
     list_editable = ('status',)
+    list_per_page = 20
+    
+    def order_id_link(self, obj):
+        return format_html(
+            '<a href="/admin/myapp/order/{}/change/" style="font-weight: bold; color: #2196F3;">#{}</a>',
+            obj.id, obj.id
+        )
+    order_id_link.short_description = 'Order ID'
+    order_id_link.admin_order_field = 'id'
+    
+    def user_link(self, obj):
+        if obj.user:
+            return format_html(
+                '<a href="/admin/myapp/customuser/{}/change/">{}</a><br>'
+                '<small style="color: #666;">{}</small>',
+                obj.user.id,
+                obj.user.get_full_name() or obj.user.username,
+                obj.user.email
+            )
+        return '-'
+    user_link.short_description = 'Customer'
+    user_link.admin_order_field = 'user__username'
+    
+    def products_list(self, obj):
+        """Display all products in the order as a list in the admin list view"""
+        items = obj.cartitem_set.all()
+        if items:
+            html = '<div style="max-width: 350px;">'
+            for item in items:
+                img_html = ''
+                if item.product and item.product.image:
+                    img_html = format_html(
+                        '<img src="{}" style="width: 30px; height: 30px; object-fit: cover; border-radius: 3px; vertical-align: middle; margin-right: 5px;" />',
+                        item.product.image.url
+                    )
+                product_name = item.product.name if item.product else 'Unknown Product'
+                quantity = item.quantity
+                price = float(item.product.price) * item.quantity if item.product else 0
+                html += format_html(
+                    '<div style="margin-bottom: 4px; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">'
+                    '{}{} x {} - Rs. {}'
+                    '</div>',
+                    img_html,
+                    product_name,
+                    quantity,
+                    price
+                )
+            html += '</div>'
+            return format_html(html)
+        return format_html('<span style="color: gray;">No products</span>')
+    products_list.short_description = 'Products Purchased'
+    
+    def order_summary(self, obj):
+        """Display order summary in detail view"""
+        items = obj.cartitem_set.all()
+        html = '<div style="background: #f5f5f5; padding: 15px; border-radius: 8px;">'
+        html += f'<h4>Order #{obj.id} Summary</h4>'
+        html += '<table style="width: 100%; border-collapse: collapse;">'
+        html += '<tr><td style="padding: 8px;"><strong>Customer:</strong></td>'
+        html += f'<td>{obj.user.get_full_name() or obj.user.username} ({obj.user.email})</td></tr>'
+        html += '<tr><td style="padding: 8px;"><strong>Total Items:</strong></td>'
+        html += f'<td>{items.count()}</td></tr>'
+        html += '<tr><td style="padding: 8px;"><strong>Total Price:</strong></td>'
+        html += f'<td>Rs. {obj.total_price}</td></tr>'
+        html += '<tr><td style="padding: 8px;"><strong>Status:</strong></td>'
+        html += f'<td>{obj.status.upper()}</td></tr>'
+        html += '<tr><td style="padding: 8px;"><strong>Address:</strong></td>'
+        html += f'<td>{obj.address}</td></tr>'
+        html += '</table></div>'
+        return format_html(html)
+    order_summary.short_description = 'Order Summary'
+    
+    def products_display(self, obj):
+        """Display all products in the order with detailed information"""
+        items = obj.cartitem_set.all()
+        html = '<div style="background: #fff; padding: 15px;">'
+        html += '<h4>Products in Order</h4>'
+        if items:
+            html += '<table style="width: 100%; border-collapse: collapse; margin-top: 10px;">'
+            html += '<thead><tr style="background: #e3f2fd;">'
+            html += '<th style="padding: 10px; border: 1px solid #ddd;">#</th>'
+            html += '<th style="padding: 10px; border: 1px solid #ddd;">Product</th>'
+            html += '<th style="padding: 10px; border: 1px solid #ddd;">Image</th>'
+            html += '<th style="padding: 10px; border: 1px solid #ddd;">Category</th>'
+            html += '<th style="padding: 10px; border: 1px solid #ddd;">Qty</th>'
+            html += '<th style="padding: 10px; border: 1px solid #ddd;">Unit Price</th>'
+            html += '<th style="padding: 10px; border: 1px solid #ddd;">Subtotal</th>'
+            html += '</tr></thead><tbody>'
+            for idx, item in enumerate(items, 1):
+                img_html = ''
+                if item.product and item.product.image:
+                    img_html = format_html(
+                        '<img src="{}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;" />',
+                        item.product.image.url
+                    )
+                product_name = item.product.name if item.product else 'Unknown Product'
+                generic_name = item.product.generic_name if item.product else ''
+                category = item.product.get_category_display() if item.product else '-'
+                quantity = item.quantity
+                unit_price = item.product.price if item.product else 0
+                subtotal = float(unit_price) * quantity
+                
+                html += '<tr>'
+                html += f'<td style="padding: 10px; border: 1px solid #ddd; text-align: center; color: #666;">{idx}</td>'
+                html += f'<td style="padding: 10px; border: 1px solid #ddd;">{product_name}<br><small style="color: #666;">{generic_name}</small></td>'
+                html += f'<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">{img_html}</td>'
+                html += f'<td style="padding: 10px; border: 1px solid #ddd;">{category}</td>'
+                html += f'<td style="padding: 10px; border: 1px solid #ddd; text-align: center; font-weight: bold;">{quantity}</td>'
+                html += f'<td style="padding: 10px; border: 1px solid #ddd;">Rs. {unit_price}</td>'
+                html += f'<td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; color: green;">Rs. {subtotal}</td>'
+                html += '</tr>'
+            html += '</tbody></table>'
+            html += f'<p style="text-align: right; font-size: 18px; font-weight: bold; margin-top: 15px; padding: 10px; background: #e8f5e9; border-radius: 8px;">Total: Rs. {obj.total_price}</p>'
+        else:
+            html += '<p>No items in this order</p>'
+        html += '</div>'
+        return format_html(html)
+    products_display.short_description = 'All Products Details'
+    
+    def payment_details(self, obj):
+        """Display payment details"""
+        try:
+            payment = userPayment.objects.filter(order=obj).first()
+            if payment:
+                html = '<div style="background: #e8f5e9; padding: 15px; border-radius: 8px;">'
+                html += '<h4>Payment Information</h4>'
+                html += '<table style="width: 100%; border-collapse: collapse;">'
+                html += f'<tr><td style="padding: 8px;"><strong>Transaction ID:</strong></td>'
+                html += f'<td><code style="background: #fff; padding: 4px 8px; border-radius: 4px;">{payment.transaction_uuid}</code></td></tr>'
+                html += f'<tr><td style="padding: 8px;"><strong>Amount:</strong></td>'
+                html += f'<td>Rs. {payment.amount}</td></tr>'
+                html += f'<tr><td style="padding: 8px;"><strong>Tax:</strong></td>'
+                html += f'<td>Rs. {payment.tax_amount}</td></tr>'
+                html += f'<tr><td style="padding: 8px;"><strong>Total Amount:</strong></td>'
+                html += f'<td style="font-weight: bold; color: green;">Rs. {payment.total_amount}</td></tr>'
+                html += f'<tr><td style="padding: 8px;"><strong>Status:</strong></td>'
+                status_color = {'PAID': 'green', 'PENDING': 'orange', 'FAILED': 'red', 'REFUNDED': 'purple'}.get(payment.status, 'gray')
+                html += f'<td><span style="color: {status_color}; font-weight: bold;">{payment.status}</span></td></tr>'
+                html += f'<tr><td style="padding: 8px;"><strong>Payment Method:</strong></td>'
+                html += f'<td>{payment.get_payment_method_display()}</td></tr>'
+                if payment.transaction_code:
+                    html += f'<tr><td style="padding: 8px;"><strong>Transaction Code:</strong></td>'
+                    html += f'<td><code>{payment.transaction_code}</code></td></tr>'
+                html += f'<tr><td style="padding: 8px;"><strong>Created:</strong></td>'
+                html += f'<td>{payment.created_at}</td></tr>'
+                html += '</table></div>'
+                return format_html(html)
+        except Exception:
+            pass
+        return format_html('<span style="color: gray;">No payment information available</span>')
+    payment_details.short_description = 'Payment Details'
+    
+    def transaction_info(self, obj):
+        """Display transaction ID in list view"""
+        try:
+            payment = userPayment.objects.filter(order=obj).first()
+            if payment:
+                return format_html(
+                    '<div style="font-size: 12px;">'
+                    '<code style="background: #e3f2fd; padding: 2px 6px; border-radius: 3px;">{}</code><br>'
+                    '<span style="color: green; font-weight: bold;">{}</span>'
+                    '</div>',
+                    payment.transaction_uuid[:12] + '...' if len(payment.transaction_uuid) > 12 else payment.transaction_uuid,
+                    payment.status
+                )
+        except:
+            pass
+        return format_html('<span style="color: gray;">No transaction</span>')
+    transaction_info.short_description = 'Transaction'
     
     def prescription_tag(self, obj):
         if obj.prescription:
             return format_html(
-                '<a href="{}" target="_blank" style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px;">View Prescription</a>',
+                '<a href="{}" target="_blank" style="background: #4CAF50; color: white; padding: 4px 8px; border-radius: 4px;">View Rx</a>',
                 obj.prescription.url
             )
-        return format_html('<span style="color: #999;">No Prescription</span>')
+        return format_html('<span style="color: #999;">No Rx</span>')
     prescription_tag.short_description = 'Prescription'
     
-    def payment_status_display(self, obj):
+    def payment_method_display(self, obj):
         try:
             payment = userPayment.objects.filter(order=obj).first()
             if payment:
-                if payment.status == 'PAID':
-                    return format_html('<span style="color: green; font-weight: bold;">PAID</span>')
-                elif payment.status == 'PENDING':
-                    return format_html('<span style="color: orange;">PENDING</span>')
-                elif payment.status == 'FAILED':
-                    return format_html('<span style="color: red;">FAILED</span>')
-                elif payment.status == 'REFUNDED':
-                    return format_html('<span style="color: purple;">REFUNDED</span>')
-                else:
-                    return format_html('<span style="color: gray;">{}</span>', payment.status)
+                method_colors = {'ONLINE': '#2196F3', 'CASH_ON_DELIVERY': '#FF9800', 'BANK_TRANSFER': '#9C27B0'}
+                return format_html(
+                    '<span style="color: {}; font-weight: bold;">{}</span>',
+                    method_colors.get(payment.payment_method, '#666'),
+                    payment.get_payment_method_display()
+                )
         except:
             pass
-        return format_html('<span style="color: gray;">No Payment</span>')
-    payment_status_display.short_description = 'Payment'
+        return format_html('<span style="color: gray;">-</span>')
+    payment_method_display.short_description = 'Method'
 
 
 class UserPaymentAdmin(admin.ModelAdmin):

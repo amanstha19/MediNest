@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractUser
 from rest_framework.exceptions import ValidationError
 from django.conf import settings
 
-# Custom User model
+
 class CustomUser(AbstractUser):
     city = models.CharField(max_length=50, blank=True, null=True)
     country = models.CharField(max_length=50, blank=True, null=True)
@@ -19,14 +19,14 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
-# Product model
+
 class Product(models.Model):
     CATEGORIES = (
         ('OTC', 'Over-the-Counter'),
         ('RX', 'Prescription Medicines'),
         ('SUP', 'Supplements & Vitamins'),
-        ('WOM', "Women's Health"),
-        ('MEN', "Men's Health"),
+        ('WOM', 'Womens Health'),
+        ('MEN', 'Mens Health'),
         ('PED', 'Pediatric Medicines'),
         ('HERB', 'Herbal & Ayurvedic'),
         ('DIAG', 'Diagnostics & Medical Devices'),
@@ -122,9 +122,6 @@ class userPayment(models.Model):
         return f"{self.transaction_uuid} - {self.status}"
 
     def get_order_details(self):
-        if self.order:
-            return f"Order ID: {self.order.id}, Status: {self.order.status}, Address: {self.order.address}, Total: {self.order.total_price}"
-        return "No order details available"
         if self.order:
             return f"Order ID: {self.order.id}, Status: {self.order.status}, Address: {self.order.address}, Total: {self.order.total_price}"
         return "No order details available"

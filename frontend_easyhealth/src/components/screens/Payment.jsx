@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
-const EsewaPayment = ({ totalPrice }) => {
+const EsewaPayment = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [transactionUuid, setTransactionUuid] = useState(null);
@@ -12,6 +12,7 @@ const EsewaPayment = ({ totalPrice }) => {
 
     const navigate = useNavigate();
     const location = useLocation();
+    const { orderId, totalPrice } = useParams();
 
     // Validate and format amount
     const formatAmount = (amount) => {
@@ -55,13 +56,18 @@ const EsewaPayment = ({ totalPrice }) => {
                 status: status,
                 data: data,
                 transaction_uuid: transactionUuid
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('authTokens') ? JSON.parse(sessionStorage.getItem('authTokens')).access : ''}`,
+                    'Content-Type': 'application/json'
+                }
             });
 
             if (response.data.message === "Payment successful") {
                 setPaymentStatus('success');
                 setPaymentMessage('Payment successful! Redirecting to order summary...');
                 setTimeout(() => {
-                    navigate('/payment-success');
+                    navigate(`/order-success/${orderId}`);
                 }, 3000);
             } else {
                 throw new Error('Payment verification failed');
@@ -90,12 +96,18 @@ const EsewaPayment = ({ totalPrice }) => {
             const formData = {
                 amount: formattedAmount,
                 tax_amount: formattedTaxAmount,
-                transaction_uuid: transactionUuid
+                transaction_uuid: transactionUuid,
+                order_id: orderId
             };
 
             console.log('Sending payment request with data:', formData); // Debug log
 
-            const response = await axios.post('/api/payment/process/', formData);
+            const response = await axios.post('http://localhost:8000/api/payment/process/', formData, {
+                headers: {
+                    'Authorization': `Bearer ${sessionStorage.getItem('authTokens') ? JSON.parse(sessionStorage.getItem('authTokens')).access : ''}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
             if (response.data) {
                 // Create and submit eSewa form
@@ -132,9 +144,24 @@ const EsewaPayment = ({ totalPrice }) => {
                     <h2 style={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', color: 'red' }}>
                         Invalid Amount
                     </h2>
-                    <p style={{ textAlign: 'center' }}>
+                    <p style={{ textAlign: 'center', marginBottom: '1rem' }}>
                         Please ensure a valid amount is provided before proceeding with payment.
                     </p>
+                    <button
+                        onClick={() => navigate('/checkout')}
+                        style={{
+                            width: '100%',
+                            padding: '0.75rem',
+                            backgroundColor: '#2563eb',
+                            color: 'white',
+                            fontWeight: 'bold',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            border: 'none'
+                        }}
+                    >
+                        Go Back to Checkout
+                    </button>
                 </div>
             </div>
         );

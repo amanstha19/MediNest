@@ -10,13 +10,9 @@ const PaymentSuccess = () => {
   useEffect(() => {
     // Clear the cart after successful payment
     clearCart();
-    
-    // Redirect to home page after 5 seconds
-    const redirectTimer = setTimeout(() => {
-      navigate('/', { replace: true });
-    }, 5000);
 
-    return () => clearTimeout(redirectTimer);
+    // Redirect to home page immediately
+    navigate('/', { replace: true });
   }, [navigate, clearCart]);
 
   return (

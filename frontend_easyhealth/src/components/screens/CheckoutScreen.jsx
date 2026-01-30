@@ -16,7 +16,7 @@ const CheckoutScreen = () => {
   const [prescriptionRequired, setPrescriptionRequired] = useState(false);
   const [loading, setLoading] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [showEsewaPayment, setShowEsewaPayment] = useState(false);
+
 
   useEffect(() => {
     const requiresPrescription = cartItems.some(item => item.prescriptionRequired);
@@ -84,8 +84,8 @@ const CheckoutScreen = () => {
       });
 
       if (paymentMethod === 'online') {
-        // First, ensure stock is reduced by placing the order
-        setShowEsewaPayment(true);
+        // Navigate to payment page with order details
+        navigate(`/payment/${response.data.order_id}/${totalPrice}`);
         return;
       }
 
@@ -99,9 +99,7 @@ const CheckoutScreen = () => {
     }
   };
 
-  if (showEsewaPayment) {
-    return <EsewaPayment totalPrice={totalPrice} />;
-  }
+
 
   if (cartItems.length === 0) {
     return (

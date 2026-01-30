@@ -29,11 +29,11 @@ class ProcessPaymentView(APIView):
                     payment.save()
 
                     # Update order status if payment is successful
-                    if payment.status == 'PAID' and payment.order:
+                    if payment.status in ['PAID', 'SUCCESS'] and payment.order:
                         payment.order.status = 'paid'
                         payment.order.save()
                         logger.info(f"Order {payment.order.id} status updated to paid")
-
+    
                     logger.info(f"Payment callback processed successfully for transaction {transaction_uuid}")
                     return Response({
                         "message": "Payment successful",
@@ -69,10 +69,19 @@ class ProcessPaymentView(APIView):
                 total_amount=total_amount,
                 transaction_uuid=transaction_uuid,
                 status="PENDING",
+                payment_method="ONLINE",
                 user=request.user if request.user.is_authenticated else None,
                 order=order,
             )
-        
+
+            # For online orders, set status to paid immediately
+            if order:
+                order.status = 'paid'
+                payment.status = 'PAID'  # Auto-set payment status to PAID for online payments
+                payment.save()
+                order.save()
+                logger.info(f"Order {order.id} status set to paid for online payment")
+            
             message = f"total_amount={total_amount},transaction_uuid={transaction_uuid},product_code=EPAYTEST"
             secret_key = "8gBm/:&EnhH.1/q"
             signature = base64.b64encode(
@@ -91,7 +100,7 @@ class ProcessPaymentView(APIView):
                 "product_code": "EPAYTEST",
                 "product_service_charge": "0",
                 "product_delivery_charge": "0",
-                "success_url": f"http://localhost:5173/payment-success",
+                "success_url": f"http://localhost:5173/",
                 "failure_url": f"http://localhost:5173/payment-failure",
                 "signed_field_names": "total_amount,transaction_uuid,product_code",
                 "signature": signature
@@ -102,3 +111,4 @@ class ProcessPaymentView(APIView):
         except Exception as e:
             logger.error(f"Payment processing error: {str(e)}")
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+

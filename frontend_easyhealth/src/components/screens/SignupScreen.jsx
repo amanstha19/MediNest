@@ -5,6 +5,7 @@ import axios from 'axios';
 import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
+import { UserPlus } from 'lucide-react';
 import './auth.css';
 
 const Signup = () => {
@@ -83,7 +84,7 @@ const Signup = () => {
               animate={{ scale: 1 }}
               transition={{ type: 'spring', delay: 0.2 }}
             >
-              💊
+              <UserPlus size={40} />
             </motion.div>
             <h1 className="auth-title">Create Account</h1>
             <p className="auth-subtitle">Join MEDINEST today</p>

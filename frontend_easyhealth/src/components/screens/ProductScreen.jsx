@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useCart } from '../../context/CartContext';
 import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
+import { AlertTriangle, ShoppingCart } from 'lucide-react';
 import './pages.css';
 
 function ProductScreen() {
@@ -87,7 +88,10 @@ function ProductScreen() {
                   <strong>Category:</strong> {product.category}
                 </p>
                 {product.prescription_required && (
-                  <p className="prescription-badge">⚠️ Prescription Required</p>
+                  <p className="prescription-badge">
+                    <AlertTriangle size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                    Prescription Required
+                  </p>
                 )}
               </div>
 
@@ -105,7 +109,8 @@ function ProductScreen() {
                   size="lg"
                   onClick={handleAddToCart}
                 >
-                  🛒 Add to Cart
+                  <ShoppingCart size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+                  Add to Cart
                 </Button>
               </div>
             </CardContent>

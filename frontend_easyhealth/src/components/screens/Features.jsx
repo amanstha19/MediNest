@@ -1,45 +1,46 @@
 import React from 'react';
 import { Card, CardContent } from '../ui/card';
+import { Building2, Truck, CreditCard, Lock, MessageCircle, Star, Stethoscope, Ambulance, Sparkles } from 'lucide-react';
 
 const Features = () => {
   const features = [
     {
-      icon: '🏥',
+      icon: <Building2 size={32} />,
       title: 'Expert Healthcare',
       description: 'Access certified healthcare professionals and experienced pharmacists.',
       color: 'var(--eh-primary)',
       bgcolor: 'rgba(0, 102, 204, 0.05)'
     },
     {
-      icon: '🚚',
+      icon: <Truck size={32} />,
       title: 'Fast Delivery',
       description: 'Quick and secure delivery of medicines to your doorstep within 24 hours.',
       color: 'var(--eh-secondary)',
       bgcolor: 'rgba(255, 107, 53, 0.05)'
     },
     {
-      icon: '💳',
+      icon: <CreditCard size={32} />,
       title: 'Flexible Payments',
       description: 'Cash on delivery, cards, mobile wallets, and eSewa payment options.',
       color: 'var(--eh-info)',
       bgcolor: 'rgba(2, 136, 209, 0.05)'
     },
     {
-      icon: '🔒',
+      icon: <Lock size={32} />,
       title: 'Secure & Private',
       description: 'Industry-standard encryption protects your health information.',
       color: 'var(--eh-success)',
       bgcolor: 'rgba(46, 125, 50, 0.05)'
     },
     {
-      icon: '💬',
+      icon: <MessageCircle size={32} />,
       title: 'Expert Support',
       description: 'Free consultations with health experts for personalized recommendations.',
       color: 'var(--eh-purple)',
       bgcolor: 'rgba(106, 27, 154, 0.05)'
     },
     {
-      icon: '⭐',
+      icon: <Star size={32} />,
       title: 'Quality Assured',
       description: 'All products verified and sourced from authorized, trusted suppliers.',
       color: 'var(--eh-teal)',
@@ -50,7 +51,7 @@ const Features = () => {
   const services = [
     {
       title: 'Pharmacy Services',
-      icon: '💊',
+      icon: <Stethoscope size={24} />,
       items: ['Prescription Medicines', 'OTC Medications', 'Health Supplements', 'First Aid Kits'],
       color: 'var(--eh-primary)',
     },
@@ -58,7 +59,7 @@ const Features = () => {
 
     {
       title: 'Emergency Services',
-      icon: '🚑',
+      icon: <Ambulance size={24} />,
       items: ['24/7 Ambulance', 'Emergency Support', 'Quick Consultation', 'Hospital Referral'],
       color: 'var(--eh-accent)',
     },
@@ -68,7 +69,7 @@ const Features = () => {
     <div className="eh-container" style={{ paddingTop: 'var(--eh-spacing-2xl)', paddingBottom: 'var(--eh-spacing-2xl)' }}>
       {/* Hero */}
       <div style={{ marginBottom: 'var(--eh-spacing-3xl)', textAlign: 'center' }}>
-        <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🌟</div>
+        <div style={{ fontSize: '3rem', marginBottom: '16px' }}><Sparkles size={48} style={{ color: 'var(--eh-primary)' }} /></div>
         <h1 style={{ fontSize: '2.8rem', fontWeight: 800, marginBottom: '12px', color: 'var(--eh-text-primary)' }}>
           Why Choose Easy Health?
         </h1>
@@ -83,7 +84,7 @@ const Features = () => {
           {features.map((feature, idx) => (
             <Card key={idx} style={{ background: feature.bgcolor, borderTop: `4px solid ${feature.color}` }}>
               <CardContent style={{ textAlign: 'center', paddingTop: 'var(--eh-spacing-2xl)' }}>
-                <div style={{ fontSize: '3rem', marginBottom: '12px' }}>{feature.icon}</div>
+                <div style={{ fontSize: '3rem', marginBottom: '12px', color: feature.color }}>{feature.icon}</div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '8px', color: feature.color }}>
                   {feature.title}
                 </h3>

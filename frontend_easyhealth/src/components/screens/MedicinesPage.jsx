@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
+import { Pill, Search, ListFilter } from 'lucide-react';
 import './pages.css';
 
 const MedicinesPage = () => {
@@ -62,7 +63,7 @@ const MedicinesPage = () => {
           animate={{ scale: 1 }}
           transition={{ type: 'spring', delay: 0.2 }}
         >
-          💊
+          <Pill size={48} />
         </motion.div>
         <motion.h1
           className="medicines-title"
@@ -91,7 +92,10 @@ const MedicinesPage = () => {
         transition={{ duration: 0.6 }}
       >
         <div className="search-filter-group">
-          <label className="search-filter-label">🔍 Search Medicines</label>
+          <label className="search-filter-label">
+            <Search size={16} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
+            Search Medicines
+          </label>
           <input
             type="text"
             placeholder="Search by name, brand..."
@@ -101,7 +105,10 @@ const MedicinesPage = () => {
           />
         </div>
         <div className="search-filter-group">
-          <label className="search-filter-label">📋 Filter by Category</label>
+          <label className="search-filter-label">
+            <ListFilter size={16} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
+            Filter by Category
+          </label>
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -156,7 +163,7 @@ const MedicinesPage = () => {
                       color: 'var(--text-muted)',
                       fontSize: '1.2rem'
                     }}>
-                      💊
+                      <Pill size={32} />
                     </div>
                   )}
                   <div className="product-badges">
@@ -192,7 +199,9 @@ const MedicinesPage = () => {
           animate={{ opacity: 1, scale: 1 }}
         >
           <Card>
-            <div className="empty-state-icon">🔍</div>
+            <div className="empty-state-icon">
+              <Search size={48} />
+            </div>
             <p className="empty-state-title">No products found</p>
             <p style={{ color: 'var(--eh-text-muted)' }}>
               Try adjusting your search or filter criteria

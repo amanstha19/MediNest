@@ -4,6 +4,7 @@ import { AuthContext } from '../../context/AuthProvider';
 import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
+import { Pill } from 'lucide-react';
 import './auth.css';
 
 const Login = () => {
@@ -45,7 +46,7 @@ const Login = () => {
               animate={{ scale: 1 }}
               transition={{ type: 'spring', delay: 0.2 }}
             >
-              💊
+              <Pill size={40} />
             </motion.div>
             <h1 className="auth-title">Welcome Back</h1>
             <p className="auth-subtitle">

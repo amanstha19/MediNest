@@ -4,31 +4,49 @@ import axios from 'axios';
 import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Pill, Syringe, FlaskConical, HeartPulse, Activity, 
+  Baby, Leaf, Monitor, SquarePlus, Home 
+} from 'lucide-react';
 import './pages.css';
 
-// User-friendly categories with unique visual themes
-const CATEGORIES = [
-  { value: '', label: '🏠 All Products', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', icon: '🏠', desc: 'Browse everything' },
-  { value: 'PAIN', label: '💊 Pain Relief', color: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', icon: '💊', desc: 'Headaches, body pain, fever' },
-  { value: 'COLD', label: '🤧 Cold & Flu', color: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', icon: '🤧', desc: 'Cough, cold, congestion' },
-  { value: 'RX', label: '🦠 Antibiotics', color: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', icon: '🦠', desc: 'Prescription medicines' },
-  { value: 'SUP', label: '💪 Vitamins & Supplements', color: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', icon: '💪', desc: 'Daily nutrition' },
-  { value: 'WOM', label: '🌸 Women\'s Care', color: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', icon: '🌸', desc: 'Women\'s health products' },
-  { value: 'MEN', label: '🧔 Men\'s Care', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', icon: '🧔', desc: 'Men\'s health products' },
-  { value: 'PED', label: '👶 Baby Care', color: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', icon: '👶', desc: 'Baby medicines & products' },
-  { value: 'DENTAL', label: '🦷 Dental Care', color: 'linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%)', icon: '🦷', desc: 'Oral health products' },
-  { value: 'SKIN', label: '🧴 Skin Care', color: 'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)', icon: '🧴', desc: 'Creams, lotions, beauty' },
-  { value: 'EYE', label: '👁️ Eye & Ear Care', color: 'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)', icon: '👁️', desc: 'Eye drops, ear care' },
-  { value: 'FIRST', label: '🩹 First Aid', color: 'linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)', icon: '🩹', desc: 'Bandages, antiseptics' },
-  { value: 'DIAG', label: '🔬 Medical Devices', color: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)', icon: '🔬', desc: 'BP monitors, glucometers' },
-  { value: 'DIAB', label: '💉 Diabetic Care', color: 'linear-gradient(135deg, #f5af19 0%, #f12711 100%)', icon: '💉', desc: 'Insulin, sugar monitors' },
-  { value: 'HERB', label: '🌿 Herbal & Ayurvedic', color: 'linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)', icon: '🌿', desc: 'Natural remedies' },
+// Helper function to render icon by name (uses Lucide React icons)
+const getIconComponent = (iconName) => {
+  const iconComponents = {
+    'Pill': Pill,
+    'Syringe': Syringe,
+    'FlaskConical': FlaskConical,
+    'HeartPulse': HeartPulse,
+    'Activity': Activity,
+    'Baby': Baby,
+    'Leaf': Leaf,
+    'Monitor': Monitor,
+    'SquarePlus': SquarePlus,
+    'Home': Home,
+  };
+  return iconComponents[iconName] || Pill;
+};
+
+// Backend categories will be fetched from API, with fallback to these values
+// These match the backend Category model values exactly
+const FALLBACK_CATEGORIES = [
+  { value: '', label: 'All Products', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', icon: 'Home', desc: 'Browse everything' },
+  { value: 'OTC', label: 'Over-the-Counter', color: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)', icon: 'Pill', desc: 'Medicines without prescription' },
+  { value: 'RX', label: 'Prescription Medicines', color: 'linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%)', icon: 'Syringe', desc: 'Prescription required' },
+  { value: 'SUP', label: 'Vitamins & Supplements', color: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', icon: 'FlaskConical', desc: 'Daily nutrition' },
+  { value: 'WOM', label: "Women's Health", color: 'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)', icon: 'HeartPulse', desc: "Women's health products" },
+  { value: 'MEN', label: "Men's Health", color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', icon: 'Activity', desc: "Men's health products" },
+  { value: 'PED', label: 'Pediatric Medicines', color: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', icon: 'Baby', desc: 'Baby medicines & products' },
+  { value: 'HERB', label: 'Herbal & Ayurvedic', color: 'linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)', icon: 'Leaf', desc: 'Natural remedies' },
+  { value: 'DIAG', label: 'Medical Devices', color: 'linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)', icon: 'Monitor', desc: 'BP monitors, glucometers' },
+  { value: 'FIRST', label: 'First Aid', color: 'linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)', icon: 'SquarePlus', desc: 'Bandages, antiseptics' },
 ];
 
 function HomeScreen() {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [productsByCategory, setProductsByCategory] = useState({});
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -37,6 +55,30 @@ function HomeScreen() {
   const [isSearching, setIsSearching] = useState(false);
   const searchInputRef = useRef(null);
   const categoryRef = useRef(null);
+
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/categories/');
+        const data = await response.json();
+        // Add "All Products" at the beginning
+        const allProductsEntry = {
+          value: '',
+          label: 'All Products',
+          color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          icon: 'Home',
+          description: 'Browse everything'
+        };
+        setCategories([allProductsEntry, ...data]);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+        // Use fallback categories if API fails
+        setCategories(FALLBACK_CATEGORIES);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Debounced search function
   const debouncedSearch = useCallback((query) => {
@@ -165,7 +207,23 @@ function HomeScreen() {
 
   // Get current category info
   const getCurrentCategoryInfo = () => {
-    return CATEGORIES.find(c => c.value === selectedCategory) || CATEGORIES[0];
+    return categories.find(c => c.value === selectedCategory) || categories[0] || FALLBACK_CATEGORIES[0];
+  };
+
+  // Helper function to render icon by name (uses Lucide React icons)
+  const renderIcon = (iconName, size = 16) => {
+    if (!iconName) return null;
+    // If it's already a React component, use it directly
+    if (typeof iconName !== 'string') {
+      const IconComponent = iconName;
+      return <IconComponent size={size} />;
+    }
+    // Look up icon from getIconComponent
+    const IconComponent = getIconComponent(iconName);
+    if (IconComponent) {
+      return <IconComponent size={size} />;
+    }
+    return null;
   };
 
   return (
@@ -263,7 +321,7 @@ function HomeScreen() {
         {/* Category Pills Navigation */}
         <div className="category-pills-container" ref={categoryRef}>
           <div className="category-pills-scroll">
-            {CATEGORIES.map((category, index) => (
+            {categories.map((category, index) => (
               <motion.button
                 key={category.value}
                 data-category={category.value}
@@ -279,7 +337,9 @@ function HomeScreen() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <span className="pill-icon">{category.icon}</span>
+                <span className="pill-icon">
+                  {renderIcon(category.icon, 16)}
+                </span>
                 <span className="pill-label">{category.label}</span>
                 <span className="pill-count">{getCategoryCount(category.value)}</span>
               </motion.button>
@@ -298,7 +358,9 @@ function HomeScreen() {
               style={{ background: getCurrentCategoryInfo().color }}
             >
               <div className="spotlight-content">
-                <span className="spotlight-icon">{getCurrentCategoryInfo().icon}</span>
+                <span className="spotlight-icon">
+                  {renderIcon(getCurrentCategoryInfo().icon, 24)}
+                </span>
                 <div className="spotlight-info">
                   <h3>{getCurrentCategoryInfo().label}</h3>
                   <p>{getCurrentCategoryInfo().desc}</p>

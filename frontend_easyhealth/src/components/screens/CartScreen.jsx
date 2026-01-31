@@ -3,6 +3,7 @@ import { useCart } from '../../context/CartContext';
 import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
+import { ShoppingCart, Trash2, AlertTriangle } from 'lucide-react';
 import './pages.css';
 
 const CartScreen = () => {
@@ -34,7 +35,7 @@ const CartScreen = () => {
             animate={{ scale: 1 }}
             transition={{ type: 'spring', delay: 0.2 }}
           >
-            🛒
+            <ShoppingCart size={64} />
           </motion.div>
           <h1 className="empty-cart-title">
             Your Cart is Empty
@@ -57,7 +58,8 @@ const CartScreen = () => {
         initial={{ opacity: 0, x: -30 }}
         animate={{ opacity: 1, x: 0 }}
       >
-        🛒 Your Cart ({cartItems.length} items)
+        <ShoppingCart size={28} style={{ marginRight: '10px', verticalAlign: 'middle' }} />
+        Your Cart ({cartItems.length} items)
       </motion.h1>
 
       <div className="cart-layout">
@@ -88,7 +90,8 @@ const CartScreen = () => {
                     <p className="cart-item-meta">{item.generic_name}</p>
                     {item.prescriptionRequired && (
                       <span className="prescription-badge">
-                        ⚠️ Prescription Required
+                        <AlertTriangle size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                        Prescription Required
                       </span>
                     )}
                   </div>
@@ -125,7 +128,8 @@ const CartScreen = () => {
                       whileTap={{ scale: 0.98 }}
                       onClick={() => removeFromCart(item.id)}
                     >
-                      🗑️ Remove
+                      <Trash2 size={16} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
+                      Remove
                     </motion.button>
                   </div>
                 </CardContent>

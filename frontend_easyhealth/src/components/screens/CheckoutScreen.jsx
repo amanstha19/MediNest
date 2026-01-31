@@ -6,6 +6,7 @@ import EsewaPayment from '../screens/Payment';
 import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
+import { ShoppingCart, MapPin, FileText, CreditCard, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
 
 const CheckoutScreen = () => {
   const { cartItems } = useCart();
@@ -122,7 +123,7 @@ const CheckoutScreen = () => {
             transition={{ type: 'spring', delay: 0.2 }}
             style={{ fontSize: '5rem', marginBottom: '24px' }}
           >
-            🛒
+            <ShoppingCart size={80} style={{ color: 'var(--eh-primary)' }} />
           </motion.div>
           <h1 style={{
             fontSize: '2rem',
@@ -159,7 +160,7 @@ const CheckoutScreen = () => {
           fontWeight: 800
         }}
       >
-        💳 Complete Your Order
+        <CreditCard size={24} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Complete Your Order
       </motion.h1>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '32px' }}>
@@ -230,16 +231,19 @@ const CheckoutScreen = () => {
                         }}>
                           Quantity: {item.quantity}
                         </p>
-                        {item.prescriptionRequired && (
+                      {item.prescriptionRequired && (
                           <span style={{
                             color: '#f5576c',
                             fontSize: '0.8rem',
                             fontWeight: 600,
                             background: 'rgba(245, 87, 108, 0.1)',
                             padding: '4px 8px',
-                            borderRadius: '12px'
+                            borderRadius: '12px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
                           }}>
-                            ⚠️ Prescription Required
+                            <AlertTriangle size={12} /> Prescription Required
                           </span>
                         )}
                       </div>
@@ -294,7 +298,7 @@ const CheckoutScreen = () => {
                       fontWeight: 600,
                       color: 'var(--eh-text-primary)'
                     }}>
-                      📍 Delivery Address
+                      <MapPin size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Delivery Address
                     </label>
                     <textarea
                       className="input-glass"
@@ -321,7 +325,7 @@ const CheckoutScreen = () => {
                         fontWeight: 600,
                         color: 'var(--eh-text-primary)'
                       }}>
-                        📄 Upload Prescription
+                        <FileText size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Upload Prescription
                       </label>
                       <input
                         type="file"
@@ -353,7 +357,7 @@ const CheckoutScreen = () => {
                       fontWeight: 600,
                       color: 'var(--eh-text-primary)'
                     }}>
-                      💳 Payment Method
+                      <CreditCard size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Payment Method
                     </label>
                     <select
                       className="input-glass"
@@ -431,7 +435,15 @@ const CheckoutScreen = () => {
                       disabled={loading}
                       style={{ width: '100%' }}
                     >
-                      {loading ? '⏳ Processing Order...' : '✅ Place Order'}
+                      {loading ? (
+                        <>
+                          <Loader2 size={20} style={{ marginRight: '8px', verticalAlign: 'middle', animation: 'spin 1s linear infinite' }} /> Processing Order...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Place Order
+                        </>
+                      )}
                     </Button>
                   </motion.div>
                 </form>

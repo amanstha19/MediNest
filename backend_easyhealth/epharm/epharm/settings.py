@@ -148,7 +148,7 @@ DATABASES = {
     }
 }
 
-
+\
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
@@ -273,7 +273,7 @@ CORS_ALLOW_METHODS = [
 UNFOLD = {
     "SITE_HEADER": "MediNest Admin",
     "SITE_TITLE": "MediNest Pharmacy",
-    "INDEX_TITLE": "Welcome to MediNest Dashboard",
+    "INDEX_TITLE": "Dashboard Overview",
     "SITE_URL": "/",
     "SHOW_HISTORY": True,
     "SHOW_VIEW_LINK": True,
@@ -298,7 +298,7 @@ UNFOLD = {
     "LINKS": [
         {
             "title": "📊 Dashboard",
-            "link": "/admin/dashboard/",
+            "link": "/admin/",
             "icon": "dashboard",
         },
         {

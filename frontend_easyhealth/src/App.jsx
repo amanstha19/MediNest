@@ -35,7 +35,7 @@ import './components/ui/modern-ui-2027.css';
 
 const AppContent = () => {
   const location = useLocation();
-  const isAdminPage = location.pathname === '/admin' || location.pathname.startsWith('/admin');
+  const isAdminPage = location.pathname === '/admin' || location.pathname.startsWith('/admin/');
 
   const isAuthenticated = true; // Replace with actual authentication check
 

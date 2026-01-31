@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Card } from '../ui/card';
@@ -48,12 +48,7 @@ function HomeScreen() {
   const [productsByCategory, setProductsByCategory] = useState({});
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const searchInputRef = useRef(null);
   const categoryRef = useRef(null);
 
   // Fetch categories from API
@@ -79,35 +74,6 @@ function HomeScreen() {
     };
     fetchCategories();
   }, []);
-
-  // Debounced search function
-  const debouncedSearch = useCallback((query) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      setShowSearchResults(false);
-      return;
-    }
-
-    setIsSearching(true);
-    const lowerQuery = query.toLowerCase();
-    const results = products.filter(product => 
-      (product.generic_name && product.generic_name.toLowerCase().includes(lowerQuery)) ||
-      (product.name && product.name.toLowerCase().includes(lowerQuery)) ||
-      (product.description && product.description.toLowerCase().includes(lowerQuery)) ||
-      (product.category && product.category.toLowerCase().includes(lowerQuery))
-    ).slice(0, 8);
-    
-    setSearchResults(results);
-    setShowSearchResults(results.length > 0);
-    setIsSearching(false);
-  }, [products]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      debouncedSearch(searchQuery);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery, debouncedSearch]);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -158,9 +124,7 @@ function HomeScreen() {
 
   const clearFilters = () => {
     setSelectedCategory('');
-    setSearchQuery('');
     setFilteredProducts(products);
-    setShowSearchResults(false);
   };
 
   const keyServices = [
@@ -228,96 +192,13 @@ function HomeScreen() {
 
   return (
     <div className="home-page">
-      {/* Search & Category Filter Section - First, below navbar */}
+      {/* Category Pills Section - First, below navbar */}
       <motion.div 
-        className="search-category-section"
-        initial={{ opacity: 0, y: 30 }}
+        className="category-section-only"
+        initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
       >
-        {/* Smart Search Bar */}
-        <div className="search-container">
-          <motion.div 
-            className="search-bar-wrapper"
-            whileFocus={{ scale: 1.02 }}
-          >
-            <span className="search-icon">🔍</span>
-            <input
-              ref={searchInputRef}
-              type="text"
-              placeholder="Search medicines, products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
-            />
-            {isSearching && <div className="search-spinner"></div>}
-            {searchQuery && (
-              <button 
-                className="search-clear-btn"
-                onClick={() => {
-                  setSearchQuery('');
-                  setShowSearchResults(false);
-                  searchInputRef.current?.focus();
-                }}
-              >
-                ✕
-              </button>
-            )}
-          </motion.div>
-          
-          {/* Search Results Dropdown */}
-          <AnimatePresence>
-            {showSearchResults && (
-              <motion.div 
-                className="search-results-dropdown"
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-              >
-                <div className="search-results-header">
-                  <span>🔍 Search Results for "{searchQuery}"</span>
-                  <span className="results-count">{searchResults.length} products</span>
-                </div>
-                <div className="search-results-list">
-                  {searchResults.map((product) => (
-                    <Link 
-                      key={product.id} 
-                      to={`/product/${product.id}`}
-                      className="search-result-item"
-                      onClick={() => {
-                        setSearchQuery('');
-                        setShowSearchResults(false);
-                      }}
-                    >
-                      <div className="result-image">
-                        {product.image ? (
-                          <img src={`http://127.0.0.1:8000${product.image}`} alt={product.generic_name || product.name} />
-                        ) : (
-                          <span>💊</span>
-                        )}
-                      </div>
-                      <div className="result-info">
-                        <span className="result-name">{product.generic_name || product.name}</span>
-                        <span className="result-price">NPR {product.price?.toLocaleString() || 'N/A'}</span>
-                      </div>
-                      <span className={`result-badge ${product.prescription_required ? 'badge-rx' : 'badge-otc'}`}>
-                        {product.prescription_required ? 'Rx' : 'OTC'}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-                <Link 
-                  to={`/medicines?search=${encodeURIComponent(searchQuery)}`}
-                  className="view-all-results"
-                  onClick={() => setShowSearchResults(false)}
-                >
-                  View all results →
-                </Link>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
         {/* Category Pills Navigation */}
         <div className="category-pills-container" ref={categoryRef}>
           <div className="category-pills-scroll">
@@ -329,7 +210,6 @@ function HomeScreen() {
                 style={{ '--pill-color': category.color }}
                 onClick={() => {
                   setSelectedCategory(category.value === selectedCategory ? '' : category.value);
-                  setShowSearchResults(false);
                 }}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -373,37 +253,36 @@ function HomeScreen() {
         </AnimatePresence>
       </motion.div>
 
-      {/* Hero Section - Second, after search/category */}
+      {/* Hero Section - Compact version */}
       <motion.div
-        className="hero-section"
+        className="hero-section-compact"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1}}
         transition={{ duration: 0.1 }}
       >
         <div className="hero-content">
-          <motion.div className="hero-icon" animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
+          <motion.div className="hero-icon-small" animate={{ rotate: [0, 5, -5, 0] }} transition={{ duration: 2, repeat: Infinity }}>
             ⚕️
           </motion.div>
-          <motion.h1 className="hero-title" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <motion.h1 className="hero-title-compact" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             Your Healthcare Revolution
           </motion.h1>
-          <p className="hero-subtitle">
-            Medicines • Emergency Services<br />
-            Everything for your health, delivered instantly
+          <p className="hero-subtitle-compact">
+            Medicines • Emergency Services • Delivered
           </p>
 
-          <div className="hero-stats">
-            <div className="hero-stat">
-              <div className="hero-stat-value" style={{ color: '#93c5fd' }}>24/7</div>
-              <div className="hero-stat-label">Available</div>
+          <div className="hero-stats-compact">
+            <div className="hero-stat-compact">
+              <div className="hero-stat-value-compact">24/7</div>
+              <div className="hero-stat-label-compact">Available</div>
             </div>
-            <div className="hero-stat">
-              <div className="hero-stat-value" style={{ color: '#93c5fd' }}>5000+</div>
-              <div className="hero-stat-label">Medicines</div>
+            <div className="hero-stat-compact">
+              <div className="hero-stat-value-compact">5000+</div>
+              <div className="hero-stat-label-compact">Medicines</div>
             </div>
-            <div className="hero-stat">
-              <div className="hero-stat-value" style={{ color: '#86efac' }}>fast</div>
-              <div className="hero-stat-label">Delivery</div>
+            <div className="hero-stat-compact">
+              <div className="hero-stat-value-compact">Fast</div>
+              <div className="hero-stat-label-compact">Delivery</div>
             </div>
           </div>
         </div>
@@ -411,20 +290,17 @@ function HomeScreen() {
 
       <div className="eh-container">
         {/* Filtered Products Grid */}
-        {(searchQuery || selectedCategory) && (
+        {selectedCategory && (
           <motion.div 
             className="filtered-products-section"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
             <h2 className="section-title">
-              {searchQuery ? `🔍 Search Results` : `📦 ${getCurrentCategoryInfo().label}`}
+              📦 {getCurrentCategoryInfo().label}
             </h2>
             <p className="section-subtitle">
-              {searchQuery 
-                ? `Found ${filteredProducts.length} products matching "${searchQuery}"`
-                : `Showing ${filteredProducts.length} products in ${getCurrentCategoryInfo().label}`
-              }
+              Showing {filteredProducts.length} products in {getCurrentCategoryInfo().label}
             </p>
             
             {loading ? (
@@ -482,14 +358,14 @@ function HomeScreen() {
               <div className="no-products-found">
                 <div className="no-products-icon">🔍</div>
                 <h3>No products found</h3>
-                <p>Try adjusting your search or category filter</p>
+                <p>Try selecting a different category</p>
                 <Button variant="primary" onClick={clearFilters}>Clear Filters</Button>
               </div>
             )}
             
             {filteredProducts.length > 12 && (
               <div className="load-more-container">
-                <Link to={`/medicines${selectedCategory ? `?category=${selectedCategory}` : ''}${searchQuery ? `?search=${searchQuery}` : ''}`}>
+                <Link to={`/medicines${selectedCategory ? `?category=${selectedCategory}` : ''}`}>
                   <Button variant="glass" size="lg">
                     View All {filteredProducts.length} Products →
                   </Button>
@@ -525,7 +401,7 @@ function HomeScreen() {
         </motion.div>
 
         {/* Netflix-Style Recommendations */}
-        {!searchQuery && !selectedCategory && (
+        {!selectedCategory && (
           <motion.div
             className="recommendations-section"
             initial={{ opacity: 0, y: 30 }}

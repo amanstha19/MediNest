@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthProvider';
 import { motion } from 'framer-motion';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Search, X } from 'lucide-react';
 import Button from './ui/button';
 import './layout.css';
 
@@ -10,6 +10,8 @@ function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -23,6 +25,20 @@ function Navbar() {
 
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/medicines?search=${encodeURIComponent(searchQuery.trim())}`);
+      setSearchQuery('');
+      setIsSearchFocused(false);
+      closeMobileMenu();
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchQuery('');
   };
 
   const navLinks = [
@@ -41,13 +57,34 @@ function Navbar() {
             className="navbar-logo-icon"
             whileHover={{ scale: 1.05 }}
           >
-        
           </motion.span>
           <span className="navbar-logo-text">MEDINEST</span>
-
-          
-
         </Link>
+
+        {/* Compact Search Bar */}
+        <div className={`navbar-search ${isSearchFocused ? 'focused' : ''}`}>
+          <form onSubmit={handleSearch} className="navbar-search-form">
+            <Search size={16} className="navbar-search-icon" />
+            <input
+              type="text"
+              placeholder="Search medicines..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+              className="navbar-search-input"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                className="navbar-search-clear"
+                onClick={clearSearch}
+              >
+                <X size={14} />
+              </button>
+            )}
+          </form>
+        </div>
 
         {/* Hamburger Menu Button */}
         <button 
@@ -79,7 +116,7 @@ function Navbar() {
           {/* Cart */}
           <Link to="/cart" className="navbar-cart" onClick={closeMobileMenu}>
             <Button variant="primary">
-              <ShoppingCart size={18} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
+              <ShoppingCart size={16} style={{ marginRight: '5px', verticalAlign: 'middle' }} />
               Cart
             </Button>
           </Link>

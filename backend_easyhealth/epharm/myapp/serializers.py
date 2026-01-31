@@ -3,31 +3,30 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from .models import Product, CustomUser, Cart, CartItem, Order
+from .models import Product, CustomUser, Cart, CartItem, Order, Category, userPayment
 from rest_framework import generics
 
 
 # User Serializer for creating and managing users (register)
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    first_name = serializers.CharField(required=False, allow_blank=True)  # Optional first name
-    last_name = serializers.CharField(required=False, allow_blank=True)   # Optional last name
+    first_name = serializers.CharField(required=False, allow_blank=True)
+    last_name = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
-        model = CustomUser  # Use CustomUser model here
-        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'city', 'phone']  # Specify fields
+        model = CustomUser
+        fields = ['username', 'email', 'password', 'first_name', 'last_name', 'city', 'phone']
         extra_kwargs = {'password': {'write_only': True}}
     
     def create(self, validated_data):
-        # Create user using the validated data
         user = CustomUser.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password'],
-            first_name=validated_data.get('first_name', ''),  # Use empty string if no first name
-            last_name=validated_data.get('last_name', ''),     # Use empty string if no last name
-            city=validated_data.get('city', ''),              # Use empty string if no city
-            phone=validated_data.get('phone', '')             # Use empty string if no phone
+            first_name=validated_data.get('first_name', ''),
+            last_name=validated_data.get('last_name', ''),
+            city=validated_data.get('city', ''),
+            phone=validated_data.get('phone', '')
         )
         return user
     
@@ -35,7 +34,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 # User Serializer (for listing user data)
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser  # Ensure this is CustomUser if you're using it
+        model = CustomUser
         fields = ['id', 'username', 'email', 'first_name', 'last_name']
 
 
@@ -44,12 +43,11 @@ class UserSerializerWithToken(serializers.ModelSerializer):
     token = serializers.SerializerMethodField()
 
     class Meta:
-        model = CustomUser  # Use CustomUser model
+        model = CustomUser
         fields = ['id', 'username', 'email', 'token', 'first_name', 'last_name']
 
     @staticmethod
     def get_token(obj: CustomUser) -> str:
-        # Generate JWT access token for the user
         token = RefreshToken.for_user(obj)
         return str(token.access_token)
 
@@ -61,7 +59,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         username = attrs.get('username')
         password = attrs.get('password')
         
-        # Try to find user by username first, then by email
         user = None
         try:
             user = CustomUser.objects.get(username=username)
@@ -71,7 +68,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             except CustomUser.DoesNotExist:
                 pass
         
-        # Handle authentication errors with clear messages
         if user is None:
             raise serializers.ValidationError({
                 'non_field_errors': ['No account found with this username or email.']
@@ -87,7 +83,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                 'non_field_errors': ['This account has been deactivated.']
             })
         
-        # If everything is valid, set the username and call parent validation
         attrs['username'] = user.username
         
         return super().validate(attrs)
@@ -96,15 +91,25 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 # Custom User Serializer for detailed profile data
 class CustomUserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser  # Ensure this is your custom user model
+        model = CustomUser
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'city', 'country', 'phone']
 
 
-# Product Serializer
+# Product Serializer - Returns category as string value for frontend compatibility
 class ProductSerializer(serializers.ModelSerializer):
+    # Return category as just the value string for frontend compatibility
+    category = serializers.SerializerMethodField()
+    
     class Meta:
         model = Product
-        fields = ['id', 'name', 'price', 'image', 'prescription_required', 'category', 'description']
+        fields = ['id', 'name', 'generic_name', 'price', 'image', 'prescription_required', 'category', 'description', 'stock']
+    
+    def get_category(self, obj):
+        """Return category value code (e.g., 'OTC', 'RX') instead of object"""
+        if obj.category:
+            return obj.category.value
+        return None
+
 
 # CartItem Serializer
 class CartItemSerializer(serializers.ModelSerializer):
@@ -133,24 +138,12 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'items', 'total_price', 'status', 'created_at']
 
     def get_items(self, obj):
-        # Fetch related CartItems for the order
         cart_items = CartItem.objects.filter(order=obj)
         return CartItemSerializer(cart_items, many=True).data
 
 
-
-
-
-
-from rest_framework import serializers
-from .models import userPayment
-
-
-
-
 class UserPaymentSerializer(serializers.ModelSerializer):
-    
-    order = OrderSerializer(read_only=True)  # Nested OrderSerializer for detailed order info
+    order = OrderSerializer(read_only=True)
 
     class Meta:
         model = userPayment
@@ -162,7 +155,7 @@ class UserPaymentSerializer(serializers.ModelSerializer):
             'total_amount',
             'transaction_code',
             'status',
-            'order',  # This will include all order details
+            'order',
             'user',
             'created_at'
         ]
@@ -212,3 +205,10 @@ class OrderPaymentStatusSerializer(serializers.ModelSerializer):
             'status',
             'created_at',
         ]
+
+
+# Category Serializer
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'value', 'label', 'icon', 'color', 'description', 'order', 'is_active']

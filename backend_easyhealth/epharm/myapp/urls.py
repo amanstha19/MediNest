@@ -43,9 +43,10 @@ urlpatterns = [
     path('user/profile/', UserProfileView.as_view(), name='user-profile'),
     path('verify-admin/', verify_admin_access, name='verify-admin'),
 
-    # Product Routes
+# Product Routes
     path('products/', views.getProducts, name='products'),
     path('product/<int:pk>/', views.getProduct, name='product-detail'),
+    path('categories/', views.getCategories, name='categories'),
 
     # Cart Routes
     path('cart/', ViewCart.as_view(), name='cart'),

@@ -7,21 +7,24 @@ import './pages.css';
 
 const MedicinesPage = () => {
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const CATEGORIES = [
-    { value: 'OTC', label: 'Over-the-Counter' },
-    { value: 'RX', label: 'Prescription Medicines' },
-    { value: 'SUP', label: 'Supplements & Vitamins' },
-    { value: 'WOM', label: "Women's Health" },
-    { value: 'MEN', label: "Men's Health" },
-    { value: 'PED', label: 'Pediatric Medicines' },
-    { value: 'HERB', label: 'Herbal & Ayurvedic' },
-    { value: 'DIAG', label: 'Diagnostics & Medical Devices' },
-    { value: 'FIRST', label: 'First Aid' },
-  ];
+  // Fetch categories from API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/categories/');
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -105,7 +108,7 @@ const MedicinesPage = () => {
             className="input-glass"
           >
             <option value="">All Categories</option>
-            {CATEGORIES.map(category => (
+            {categories.map(category => (
               <option key={category.value} value={category.value}>
                 {category.label}
               </option>

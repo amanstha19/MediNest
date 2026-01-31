@@ -8,7 +8,7 @@ from django.urls import path
 from django.shortcuts import render
 from datetime import timedelta
 from unfold.sites import UnfoldAdminSite
-from .models import Product, CustomUser, Cart, CartItem, Order, userPayment
+from .models import Product, CustomUser, Cart, CartItem, Order, userPayment, Category
 
 
 class MediNestAdminSite(UnfoldAdminSite):
@@ -30,13 +30,9 @@ class MediNestAdminSite(UnfoldAdminSite):
         delivered_orders = Order.objects.filter(status='delivered').count()
         paid_orders = Order.objects.filter(status='paid').count()
         
-        # Recent orders
         recent_orders = Order.objects.select_related('user').prefetch_related('cartitem_set').order_by('-created_at')[:10]
-        
-        # Low stock products
         low_stock_products = Product.objects.filter(stock__lt=10).order_by('stock')[:10]
         
-        # Sales data for last 7 days
         labels = []
         sales_data = []
         for i in range(6, -1, -1):
@@ -71,17 +67,47 @@ class MediNestAdminSite(UnfoldAdminSite):
 admin_site = MediNestAdminSite(name='admin')
 
 
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'icon', 'value', 'label', 'order', 'is_active', 'product_count', 'created_at')
+    list_filter = ('is_active',)
+    search_fields = ('value', 'label', 'description')
+    list_editable = ('order', 'is_active')
+    ordering = ['order', 'label']
+    
+    def icon(self, obj):
+        if obj.icon:
+            return format_html('<span style="font-size:20px;">{}</span>', obj.icon)
+        return '-'
+    icon.short_description = 'Icon'
+    
+    def product_count(self, obj):
+        count = obj.products.count()
+        return f"{count} products"
+    product_count.short_description = 'Products'
+
+
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'thumbnail', 'name', 'category', 'price', 'stock', 'prescription_required', 'created_at')
+    list_display = ('id', 'thumbnail', 'name', 'category_display', 'price', 'stock', 'prescription_required', 'created_at')
     list_filter = ('category', 'prescription_required')
     search_fields = ('name', 'generic_name', 'description')
-    list_editable = ('stock', 'price')
+    list_editable = ('stock', 'price', 'prescription_required')
     
     def thumbnail(self, obj):
         if obj.image:
             return format_html('<img src="{}" style="width:50px;height:50px;object-fit:cover;border-radius:5px;" />', obj.image.url)
         return '-'
     thumbnail.short_description = 'Image'
+    
+    def category_display(self, obj):
+        if obj.category:
+            return obj.category.label
+        return '-'
+    category_display.short_description = 'Category'
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "category":
+            kwargs["queryset"] = Category.objects.filter(is_active=True).order_by('order', 'label')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class CustomUserAdmin(admin.ModelAdmin):
@@ -107,7 +133,10 @@ class CartItemAdmin(admin.ModelAdmin):
             return format_html('<img src="{}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" />', obj.product.image.url)
         return '-'
     product_img.short_description = 'Img'
-    def product_category(self, obj): return obj.product.get_category_display() if obj.product else '-'
+    def product_category(self, obj): 
+        if obj.product and obj.product.category:
+            return obj.product.category.label
+        return '-'
     product_category.short_description = 'Cat'
     def product_price(self, obj): return obj.product.price if obj.product else '-'
     product_price.short_description = 'Price'
@@ -295,12 +324,13 @@ class OrderAdmin(admin.ModelAdmin):
                 img_html = ''
                 if p and p.image:
                     img_html = format_html('<img src="{}" style="width:50px;height:50px;object-fit:cover;border-radius:4px;" />', p.image.url)
+                cat_label = p.category.label if p and p.category else '-'
                 html += '<tr>'
                 html += f'<td>{img_html}</td>'
                 html += f'<td>{idx}</td>'
                 html += f'<td>{p.id if p else "-"}</td>'
                 html += f'<td><strong>{p.name if p else "Unknown"}</strong></td>'
-                html += f'<td>{p.get_category_display() if p else "-"}</td>'
+                html += f'<td>{cat_label}</td>'
                 html += f'<td>Rs.{p.price if p else 0}</td>'
                 html += f'<td>{p.stock if p else 0}</td>'
                 html += f'<td><strong>{item.quantity}</strong></td>'
@@ -364,13 +394,14 @@ class OrderAdmin(admin.ModelAdmin):
                 img_html = ''
                 if p and p.image:
                     img_html = format_html('<img src="{}" style="width:50px;height:50px;object-fit:cover;border-radius:4px;" />', p.image.url)
+                cat_label = p.category.label if p and p.category else '-'
                 cart_user = item.cart.user.username if item.cart and item.cart.user else 'N/A'
                 html += '<tr>'
                 html += f'<td>{img_html}</td>'
                 html += f'<td>{item.id}</td>'
                 html += f'<td>{p.id if p else "-"}</td>'
                 html += f'<td><strong>{p.name if p else "Unknown"}</strong></td>'
-                html += f'<td>{p.get_category_display() if p else "-"}</td>'
+                html += f'<td>{cat_label}</td>'
                 html += f'<td>Rs.{p.price if p else 0}</td>'
                 html += f'<td><strong>{item.quantity}</strong></td>'
                 subtotal = float(p.price) * item.quantity if p else 0
@@ -436,10 +467,11 @@ class UserPaymentAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
+# Register all models with the custom admin site
 admin_site.register(Product, ProductAdmin)
 admin_site.register(CustomUser, CustomUserAdmin)
 admin_site.register(Cart, CartAdmin)
 admin_site.register(CartItem, CartItemAdmin)
 admin_site.register(Order, OrderAdmin)
 admin_site.register(userPayment, UserPaymentAdmin)
-
+admin_site.register(Category, CategoryAdmin)

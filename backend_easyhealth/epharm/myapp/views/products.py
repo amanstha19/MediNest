@@ -7,8 +7,8 @@ from django.shortcuts import get_object_or_404
 from django.core.cache import cache
 import logging
 
-from ..serializers import ProductSerializer
-from ..models import Product
+from ..serializers import ProductSerializer, CategorySerializer
+from ..models import Product, Category
 
 logger = logging.getLogger(__name__)
 
@@ -67,17 +67,38 @@ def getProduct(request, pk):
         return Response({'error': 'Product not found'}, status=404)
 
 
+@api_view(['GET'])
+def getCategories(request):
+    """Get all categories for the frontend"""
+    cache_key = "all_categories"
+    data = cache.get(cache_key)
+
+    if data:
+        print("➡️ CACHE HIT: Categories List")
+        return Response(data)
+
+    print("❌ CACHE MISS: Categories List")
+    categories = Category.objects.filter(is_active=True).order_by('order', 'label')
+    serializer = CategorySerializer(categories, many=True)
+    data = serializer.data
+
+    # Cache for 10 minutes
+    cache.set(cache_key, data, timeout=600)
+
+    return Response(data)
+
+
 class ProductSearchAPIView(APIView):
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get('search', '').strip()
-        category = request.GET.get('category', '').strip()
+        category_value = request.GET.get('category', '').strip()
 
         # Basic query for filtering by name and description (case-insensitive)
-        filters = Q(name__icontains=search_query) | Q(description__icontains=search_query)
+        filters = Q(name__icontains=search_query) | Q(description__icontains=search_query) | Q(generic_name__icontains=search_query)
 
-        # Apply category filter if provided
-        if category:
-            filters &= Q(category=category)
+        # Apply category filter if provided (filter by category__value since it's now a ForeignKey)
+        if category_value:
+            filters &= Q(category__value=category_value)
 
         # Get products with applied filters
         products = Product.objects.filter(filters)
@@ -87,9 +108,10 @@ class ProductSearchAPIView(APIView):
             "id": product.id,
             "name": product.name,
             "generic_name": product.generic_name,
-            "category": product.category,
+            "category": product.category_value,
+            "category_label": product.category_label,
             "description": product.description,
-            "price": product.price,
+            "price": float(product.price) if product.price else 0,
             "stock": product.stock,
             "prescription_required": product.prescription_required,
             "image": product.image.url if product.image else None,

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Pill, MapPin, Phone, Mail } from 'lucide-react';
 import './layout.css';
 
 function Footer() {
@@ -12,7 +13,7 @@ function Footer() {
           {/* Brand */}
           <div className="footer-section">
             <h3 className="footer-brand">
-              <span className="footer-brand-icon">💊</span>
+              <span className="footer-brand-icon"><Pill size={24} /></span>
               <span className="footer-brand-text">MEDINEST</span>
             </h3>
             <p className="footer-description">
@@ -56,9 +57,9 @@ function Footer() {
           <div className="footer-section">
             <h4 className="footer-title">Contact</h4>
             <ul className="footer-contact">
-              <li>📍 Kathmandu, Nepal</li>
-              <li>📞 +977-01-XXXXXXX</li>
-              <li>✉️ support@medinest.com</li>
+              <li><MapPin size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Kathmandu, Nepal</li>
+              <li><Phone size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> +977-01-XXXXXXX</li>
+              <li><Mail size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> support@medinest.com</li>
             </ul>
           </div>
         </div>

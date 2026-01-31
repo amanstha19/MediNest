@@ -4,6 +4,7 @@ import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { User, RefreshCw, Package, Clock, CheckCircle, MapPin } from 'lucide-react';
 import './pages.css';
 
 const Profile = () => {
@@ -52,7 +53,7 @@ const Profile = () => {
     switch (status.toLowerCase()) {
       case 'pending':
         return {
-          icon: '⏳',
+          icon: <Clock size={14} />,
           color: '#856404',
           bg: '#fff3cd',
           label: 'Pending',
@@ -60,7 +61,7 @@ const Profile = () => {
         };
       case 'shipped':
         return {
-          icon: '📦',
+          icon: <Package size={14} />,
           color: '#004085',
           bg: '#cce5ff',
           label: 'Shipped',
@@ -68,7 +69,7 @@ const Profile = () => {
         };
       case 'delivered':
         return {
-          icon: '✅',
+          icon: <CheckCircle size={14} />,
           color: '#155724',
           bg: '#d4edda',
           label: 'Delivered',
@@ -76,7 +77,7 @@ const Profile = () => {
         };
       default:
         return {
-          icon: '📋',
+          icon: <Package size={14} />,
           color: '#333',
           bg: '#f8f9fa',
           label: status,
@@ -158,7 +159,7 @@ const Profile = () => {
                   color: 'white',
                   boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)'
                 }}>
-                  👤
+                  <User size={48} />
                 </div>
                 <div style={{ flex: 1, minWidth: '200px' }}>
                   <h1 style={{ fontSize: '1.75rem', marginBottom: '8px' }}>
@@ -168,7 +169,7 @@ const Profile = () => {
                   <p style={{ color: 'var(--text-muted)' }}>{user.email}</p>
                 </div>
                 <Button variant="secondary" onClick={handleRefresh} disabled={refreshing}>
-                  {refreshing ? '🔄 Refreshing...' : '🔄 Refresh'}
+                  {refreshing ? <RefreshCw size={16} style={{ animation: 'spin 1s linear infinite', marginRight: '8px' }} /> : <RefreshCw size={16} style={{ marginRight: '8px' }} />} Refresh
                 </Button>
               </div>
             </div>
@@ -214,7 +215,7 @@ const Profile = () => {
               marginBottom: '20px'
             }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>
-                📦 Your Orders ({user.orders?.length || 0})
+                <Package size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Your Orders ({user.orders?.length || 0})
               </h2>
               <Button variant="secondary" size="sm" onClick={handleRefresh} disabled={refreshing}>
                 {refreshing ? '...' : '↻'}
@@ -265,7 +266,7 @@ const Profile = () => {
                                 </span>
                               </div>
                               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', margin: 0 }}>
-                                📍 {order.address}
+                                <MapPin size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> {order.address}
                               </p>
                             </div>
                             <div style={{ textAlign: 'right' }}>
@@ -355,7 +356,7 @@ const Profile = () => {
             ) : (
               <Card>
                 <div style={{ padding: '60px 40px', textAlign: 'center' }}>
-                  <div style={{ fontSize: '4rem', marginBottom: '16px' }}>📦</div>
+                  <div style={{ fontSize: '4rem', marginBottom: '16px' }}><Package size={64} style={{ color: 'var(--eh-primary)' }} /></div>
                   <h3 style={{ marginBottom: '8px', color: 'var(--text-primary)' }}>No Orders Yet</h3>
                   <p style={{ color: 'var(--text-muted)', marginBottom: '24px' }}>
                     Start shopping to see your orders here!

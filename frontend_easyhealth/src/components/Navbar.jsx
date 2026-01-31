@@ -2,6 +2,7 @@ import { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthProvider';
 import { motion } from 'framer-motion';
+import { ShoppingCart } from 'lucide-react';
 import Button from './ui/button';
 import './layout.css';
 
@@ -77,7 +78,10 @@ function Navbar() {
         <div className="navbar-actions">
           {/* Cart */}
           <Link to="/cart" className="navbar-cart" onClick={closeMobileMenu}>
-            <Button variant="primary">🛒 Cart</Button>
+            <Button variant="primary">
+              <ShoppingCart size={18} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
+              Cart
+            </Button>
           </Link>
 
           {/* User Section */}

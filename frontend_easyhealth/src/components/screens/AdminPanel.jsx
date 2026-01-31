@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Settings, Package, CreditCard, CheckCircle, XCircle, AlertCircle, Edit, Phone } from 'lucide-react';
 import './pages.css';
 
 const AdminPanel = () => {
@@ -177,14 +178,14 @@ const AdminPanel = () => {
         animate={{ opacity: 1, y: 0 }}
       >
         <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '8px' }}>
-          🔧 Admin Panel
+          <Settings size={32} style={{ marginRight: '12px', verticalAlign: 'middle' }} /> Admin Panel
         </h1>
         <p style={{ color: 'var(--text-muted)', marginBottom: '32px' }}>
           Manage orders, track deliveries, update inventory, and handle payments
         </p>
 
         {/* Success/Error Messages */}
-        <AnimatePresence>
+            <AnimatePresence>
           {success && (
             <motion.div
               initial={{ opacity: 0, y: -10 }}
@@ -196,10 +197,13 @@ const AdminPanel = () => {
                 borderRadius: '12px',
                 padding: '16px',
                 marginBottom: '20px',
-                color: '#155724'
+                color: '#155724',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
               }}
             >
-              ✅ {success}
+              <CheckCircle size={20} /> {success}
             </motion.div>
           )}
           {error && (
@@ -213,10 +217,13 @@ const AdminPanel = () => {
                 borderRadius: '12px',
                 padding: '16px',
                 marginBottom: '20px',
-                color: '#721c24'
+                color: '#721c24',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
               }}
             >
-              ❌ {error}
+              <XCircle size={20} /> {error}
             </motion.div>
           )}
         </AnimatePresence>
@@ -227,19 +234,19 @@ const AdminPanel = () => {
             variant={activeTab === 'orders' ? 'primary' : 'secondary'}
             onClick={() => setActiveTab('orders')}
           >
-            📦 Orders ({orders.length})
+            <Package size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Orders ({orders.length})
           </Button>
           <Button
             variant={activeTab === 'inventory' ? 'primary' : 'secondary'}
             onClick={() => setActiveTab('inventory')}
           >
-            💊 Inventory ({products.length})
+            <CreditCard size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Inventory ({products.length})
           </Button>
           <Button
             variant={activeTab === 'payments' ? 'primary' : 'secondary'}
             onClick={() => setActiveTab('payments')}
           >
-            💰 Payments ({payments.length})
+            <Settings size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Payments ({payments.length})
           </Button>
         </div>
 
@@ -292,7 +299,7 @@ const AdminPanel = () => {
                                 {order.email}
                               </div>
                               <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                                📞 {order.phone || 'N/A'}
+                                <Phone size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> {order.phone || 'N/A'}
                               </div>
                             </td>
                             <td style={{ padding: '16px' }}>
@@ -463,7 +470,7 @@ const AdminPanel = () => {
                                     setNewStockValue(product.stock.toString());
                                   }}
                                 >
-                                  ✏️ Edit
+                                  <Edit size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Edit
                                 </Button>
                               )}
                             </td>

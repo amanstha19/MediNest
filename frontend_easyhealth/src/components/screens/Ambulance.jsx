@@ -5,6 +5,7 @@ import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
 import axios from 'axios';
 import L from 'leaflet';
+import { Ambulance as AmbulanceIcon, MapPin, Ruler, Phone, AlertTriangle } from 'lucide-react';
 
 // Fix for default markers in react-leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -20,20 +21,30 @@ const AmbulanceCard = ({ service }) => (
   <Card>
     <CardContent>
       <h3 style={{ fontSize: '1.1rem', marginBottom: '12px', color: 'var(--eh-primary)' }}>
-        🚑 {service.name}
+        <AmbulanceIcon size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+        {service.name}
       </h3>
       <div style={{ display: 'grid', gap: '8px', marginBottom: 'var(--eh-spacing-lg)' }}>
         <div>
           <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.85rem', marginBottom: '4px' }}>Location</p>
-          <p style={{ fontSize: '0.95rem', fontWeight: 500 }}>📍 {service.location}</p>
+          <p style={{ fontSize: '0.95rem', fontWeight: 500 }}>
+            <MapPin size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+            {service.location}
+          </p>
         </div>
         <div>
           <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.85rem', marginBottom: '4px' }}>Distance</p>
-          <p style={{ fontSize: '0.95rem', fontWeight: 500 }}>📏 {service.distance.toFixed(1)} km away</p>
+          <p style={{ fontSize: '0.95rem', fontWeight: 500 }}>
+            <Ruler size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+            {service.distance.toFixed(1)} km away
+          </p>
         </div>
         <div>
           <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.85rem', marginBottom: '4px' }}>Contact</p>
-          <p style={{ fontSize: '0.95rem', fontWeight: 500 }}>📞 {service.contact}</p>
+          <p style={{ fontSize: '0.95rem', fontWeight: 500 }}>
+            <Phone size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+            {service.contact}
+          </p>
         </div>
       </div>
       <a href={`tel:${service.phone.split(',')[0]}`} style={{ textDecoration: 'none' }}>
@@ -187,7 +198,9 @@ function Ambulance() {
   return (
     <div className="eh-container" style={{ paddingTop: 'var(--eh-spacing-2xl)', paddingBottom: 'var(--eh-spacing-2xl)' }}>
       <div className="eh-hero" style={{ marginBottom: 'var(--eh-spacing-2xl)' }}>
-        <div style={{ fontSize: '3rem', marginBottom: '12px' }}>🚑</div>
+        <div style={{ fontSize: '3rem', marginBottom: '12px' }}>
+          <AmbulanceIcon size={48} />
+        </div>
         <h1 style={{ fontSize: '2rem', marginBottom: '12px' }}>Emergency Ambulance Services</h1>
         <p>Quick access to emergency ambulance services near you. Save these numbers for emergency.</p>
       </div>
@@ -196,7 +209,9 @@ function Ambulance() {
 
       <div style={{ marginBottom: 'var(--eh-spacing-2xl)', padding: 'var(--eh-spacing-lg)', background: 'var(--eh-surface)', borderRadius: 'var(--eh-radius)', border: '2px solid var(--eh-accent)' }}>
         <div style={{ display: 'flex', alignItems: 'start', gap: 'var(--eh-spacing-md)' }}>
-          <div style={{ fontSize: '1.5rem' }}>⚠️</div>
+          <div style={{ fontSize: '1.5rem' }}>
+            <AlertTriangle size={24} style={{ color: 'var(--eh-accent)' }} />
+          </div>
           <div>
             <h3 style={{ fontSize: '1.1rem', marginBottom: '8px', color: 'var(--eh-accent)' }}>In Case of Emergency</h3>
             <p style={{ color: 'var(--eh-text-secondary)', marginBottom: '8px' }}>Call the nearest ambulance service immediately. Emergency response time may vary based on location and traffic conditions.</p>

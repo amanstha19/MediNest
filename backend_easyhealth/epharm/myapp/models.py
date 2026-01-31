@@ -6,6 +6,7 @@ from django.contrib.auth.models import AbstractUser
 from rest_framework.exceptions import ValidationError
 from django.conf import settings
 
+
 # Custom User model
 class CustomUser(AbstractUser):
     city = models.CharField(max_length=50, blank=True, null=True)
@@ -19,25 +20,35 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username
 
-# Product model
-class Product(models.Model):
-    CATEGORIES = (
-        ('OTC', 'Over-the-Counter'),
-        ('RX', 'Prescription Medicines'),
-        ('SUP', 'Supplements & Vitamins'),
-        ('WOM', "Women's Health"),
-        ('MEN', "Men's Health"),
-        ('PED', 'Pediatric Medicines'),
-        ('HERB', 'Herbal & Ayurvedic'),
-        ('DIAG', 'Diagnostics & Medical Devices'),
-        ('FIRST', 'First Aid'),
-    )
 
+# Category Model - For managing product categories in backend
+class Category(models.Model):
+    value = models.CharField(max_length=50, unique=True)  # e.g., 'OTC', 'RX', 'SUP'
+    label = models.CharField(max_length=100)  # e.g., '💊 Over-the-Counter'
+    icon = models.CharField(max_length=50, blank=True, null=True)  # Emoji icon
+    color = models.CharField(max_length=200, default='linear-gradient(135deg, #667eea 0%, #764ba2 100%)')
+    description = models.TextField(blank=True, null=True)
+    order = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
+        ordering = ['order', 'label']
+
+    def __str__(self):
+        return self.label
+
+
+# Product model - Uses ForeignKey to Category (real-world pattern)
+class Product(models.Model):
     id = models.AutoField(primary_key=True)
     generic_name = models.CharField(max_length=200, null=True, blank=True)
     name = models.CharField(max_length=200, blank=True, null=True)
     image = models.ImageField(upload_to='products/', null=True, blank=True)
-    category = models.CharField(max_length=50, choices=CATEGORIES)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     stock = models.IntegerField(default=0)
@@ -47,6 +58,20 @@ class Product(models.Model):
 
     def __str__(self):
         return self.generic_name if self.generic_name else self.name if self.name else "Unnamed Product"
+    
+    @property
+    def category_value(self):
+        """Return the category value code for backward compatibility"""
+        if self.category:
+            return self.category.value
+        return None
+    
+    @property
+    def category_label(self):
+        """Return the category label for display"""
+        if self.category:
+            return self.category.label
+        return None
 
 
 class Order(models.Model):
@@ -125,6 +150,4 @@ class userPayment(models.Model):
         if self.order:
             return f"Order ID: {self.order.id}, Status: {self.order.status}, Address: {self.order.address}, Total: {self.order.total_price}"
         return "No order details available"
-        if self.order:
-            return f"Order ID: {self.order.id}, Status: {self.order.status}, Address: {self.order.address}, Total: {self.order.total_price}"
-        return "No order details available"
+

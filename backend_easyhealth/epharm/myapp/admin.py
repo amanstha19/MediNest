@@ -5,7 +5,7 @@ from django.utils.html import format_html
 from django.db.models import Sum, Count
 from django.utils import timezone
 from django.urls import path
-from django.http import HttpResponse
+from django.shortcuts import render
 from datetime import timedelta
 from unfold.sites import UnfoldAdminSite
 from .models import Product, CustomUser, Cart, CartItem, Order, userPayment
@@ -14,36 +14,58 @@ from .models import Product, CustomUser, Cart, CartItem, Order, userPayment
 class MediNestAdminSite(UnfoldAdminSite):
     def get_urls(self):
         urls = super().get_urls()
-        custom_urls = [path('dashboard/', self.admin_view(self.dashboard_view), name='dashboard')]
+        custom_urls = [
+            path('', self.admin_view(self.dashboard_view), name='index'),
+        ]
         return custom_urls + urls
 
     def dashboard_view(self, request):
-        from datetime import timedelta
         today = timezone.now()
         total_products = Product.objects.count()
         total_users = CustomUser.objects.count()
         total_orders = Order.objects.count()
-        total_revenue = userPayment.objects.filter(status='PAID').aggregate(total=Sum('amount'))['total'] or 0
+        total_revenue = userPayment.objects.filter(status='PAID').aggregate(total=Sum('total_amount'))['total'] or 0
         pending_orders = Order.objects.filter(status='pending').count()
         shipped_orders = Order.objects.filter(status='shipped').count()
         delivered_orders = Order.objects.filter(status='delivered').count()
         paid_orders = Order.objects.filter(status='paid').count()
         
-        html = f'''<!DOCTYPE html><html><head><title>MediNest Dashboard</title></head>
-<body style="font-family:-apple-system,sans-serif;padding:20px;background:#f8f9fa;text-align:center;">
-<h1>MediNest Dashboard</h1>
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:15px;max-width:800px;margin:0 auto;">
-<div style="background:white;padding:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><h3 style="color:#667eea;margin:0;">{total_products}</h3><p>Products</p></div>
-<div style="background:white;padding:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><h3 style="color:#38ef7d;margin:0;">{total_users}</h3><p>Users</p></div>
-<div style="background:white;padding:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><h3 style="color:#f093fb;margin:0;">{total_orders}</h3><p>Orders</p></div>
-<div style="background:white;padding:20px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.08);"><h3 style="color:#4facfe;margin:0;">${total_revenue:.2f}</h3><p>Revenue</p></div>
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:15px;max-width:800px;margin:20px auto;">
-<div style="background:#fff3cd;padding:15px;border-radius:10px;"><h3 style="color:#856404;margin:0;">{pending_orders}</h3><p>Pending</p></div>
-<div style="background:#cce5ff;padding:15px;border-radius:10px;"><h3 style="color:#004085;margin:0;">{shipped_orders}</h3><p>Shipped</p></div>
-<div style="background:#d4edda;padding:15px;border-radius:10px;"><h3 style="color:#155724;margin:0;">{delivered_orders}</h3><p>Delivered</p></div>
-<div style="background:#e2d5f1;padding:15px;border-radius:10px;"><h3 style="color:#6f42c1;margin:0;">{paid_orders}</h3><p>Paid</p></div>
-</body></html>'''
-        return HttpResponse(html)
+        # Recent orders
+        recent_orders = Order.objects.select_related('user').prefetch_related('cartitem_set').order_by('-created_at')[:10]
+        
+        # Low stock products
+        low_stock_products = Product.objects.filter(stock__lt=10).order_by('stock')[:10]
+        
+        # Sales data for last 7 days
+        labels = []
+        sales_data = []
+        for i in range(6, -1, -1):
+            date = today - timedelta(days=i)
+            labels.append(date.strftime('%Y-%m-%d'))
+            day_revenue = userPayment.objects.filter(
+                status='PAID',
+                created_at__date=date.date()
+            ).aggregate(total=Sum('total_amount'))['total'] or 0
+            sales_data.append(float(day_revenue))
+        
+        context = {
+            'total_products': total_products,
+            'total_users': total_users,
+            'total_orders': total_orders,
+            'total_revenue': f"{float(total_revenue):.2f}",
+            'pending_orders': pending_orders,
+            'shipped_orders': shipped_orders,
+            'delivered_orders': delivered_orders,
+            'paid_orders': paid_orders,
+            'recent_orders': recent_orders,
+            'low_stock_products': low_stock_products,
+            'labels': labels,
+            'sales_data': sales_data,
+            'title': 'Dashboard',
+        }
+        
+        request.current_app = self.name
+        return TemplateResponse(request, 'admin/dashboard.html', context)
 
 
 admin_site = MediNestAdminSite(name='admin')
@@ -420,3 +442,4 @@ admin_site.register(Cart, CartAdmin)
 admin_site.register(CartItem, CartItemAdmin)
 admin_site.register(Order, OrderAdmin)
 admin_site.register(userPayment, UserPaymentAdmin)
+

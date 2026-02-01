@@ -198,6 +198,12 @@
         >💊 Manage Products</a
       >
       <a
+        href="/admin/myapp/prescriptionverification/"
+        class="sidebar-link"
+        style="display: inline-block; margin-bottom: 1.5rem; margin-left: 10px"
+        >📋 Verify Prescriptions</a
+      >
+      <a
         href="/admin/myapp/userpayment/"
         class="sidebar-link"
         style="display: inline-block; margin-bottom: 1.5rem; margin-left: 10px"
@@ -234,6 +240,15 @@
           <div class="stat-value">{{ pending_orders }}</div>
           <div class="stat-label">Pending Orders</div>
         </div>
+        <a
+          href="/admin/myapp/prescriptionverification/"
+          style="text-decoration: none; color: inherit"
+        >
+          <div class="stat-card cyan">
+            <div class="stat-value">{{ pending_prescriptions }}</div>
+            <div class="stat-label">Pending Rx Verifications</div>
+          </div>
+        </a>
         <div class="stat-card cyan">
           <div class="stat-value">{{ shipped_orders }}</div>
           <div class="stat-label">Shipped Orders</div>

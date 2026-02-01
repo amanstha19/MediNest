@@ -261,12 +261,12 @@ button:focus {
   pointer-events: none;
 }
 .hero-content { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; text-align: center; }
-.hero-icon-wrapper { width: 70px; height: 70px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.2); }
+.hero-icon-wrapper { width: 70px; height: 70px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.2); }
 .hero-icon-large { font-size: 36px; display: block; }
 .hero-title-professional { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 900; margin-bottom: 10px; letter-spacing: -0.02em; background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 50%, #dbeafe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 .hero-subtitle-professional { font-size: 1rem; opacity: 0.95; margin-bottom: 24px; }
 .hero-stats-professional { display: flex; justify-content: center; align-items: center; gap: 28px; flex-wrap: wrap; }
-.hero-stat-item { text-align: center; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 16px 20px; }
+.hero-stat-item { text-align: center; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 16px 20px; }
 .hero-stat-number { display: block; font-size: 1.4rem; font-weight: 900; color: #fbbf24; margin-bottom: 4px; }
 .hero-stat-label { font-size: 0.8rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.5px; }
 .hero-stat-divider { width: 1px; height: 36px; background: rgba(255,255,255,0.2); }
@@ -478,6 +478,7 @@ button:focus {
 .hero-stat-compact {
   background: rgba(255,255,255,0.15);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.25);
   border-radius: 12px;
   padding: 0.75rem 1rem;
@@ -1488,6 +1489,10 @@ button:focus {
   opacity: 1;
 }
 
+.advanced-product-card:hover .product-image-container img {
+  transform: scale(1.1);
+}
+
 .product-image-container {
   width: 100%;
   aspect-ratio: 4/5;
@@ -1794,7 +1799,8 @@ button:focus {
   gap: 1.25rem;
   padding: 1.4rem;
   border-radius: var(--radius-lg);
-  backdrop-filter: var(--glass-blur);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
 }
 
@@ -1814,7 +1820,8 @@ button:focus {
   top: 90px;
   padding: 1.75rem;
   border-radius: var(--radius-lg);
-  backdrop-filter: var(--glass-blur);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
 }
 
@@ -1850,7 +1857,8 @@ button:focus {
 .product-detail-card {
   padding: 2.25rem;
   border-radius: var(--radius-xl);
-  backdrop-filter: var(--glass-blur);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
 }
 

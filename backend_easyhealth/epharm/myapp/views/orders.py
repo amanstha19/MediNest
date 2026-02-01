@@ -9,9 +9,13 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 import json
 import logging
+import os
+import tempfile
+from pathlib import Path
 
-from ..models import Cart, CartItem, Order, Product
+from ..models import Cart, CartItem, Order, Product, PrescriptionVerification
 from ..serializers import OrderSerializer
+from ..ocr_utils import analyze_prescription
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +54,6 @@ class PlaceOrderView(APIView):
         try:
             cart_items_data = request.data.get('cart_items')
             address = request.data.get('address')
-            prescription = request.data.get('prescription', None)
             payment_method = request.data.get('payment_method')
 
             if not cart_items_data or not address:
@@ -88,12 +91,71 @@ class PlaceOrderView(APIView):
                 order.total_price = total_price
                 order.save()
 
-                # Handle prescription upload
-                if prescription:
-                    prescription_file = request.FILES.get('prescription')
-                    if prescription_file:
-                        order.prescription = prescription_file
-                        order.save()
+                # Handle prescription upload with automatic OCR
+                prescription_file = request.FILES.get('prescription')
+                if prescription_file:
+                    # Save prescription to order
+                    order.prescription = prescription_file
+                    order.save()
+
+                    # Check if file is supported for OCR
+                    file_name = prescription_file.name.lower()
+                    supported_formats = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.tif', '.pdf']
+                    is_supported = any(file_name.endswith(ext) for ext in supported_formats)
+
+                    if not is_supported:
+                        # For unsupported formats (like HEIC), create record without OCR
+                        PrescriptionVerification.objects.create(
+                            order=order,
+                            prescription_image=prescription_file,
+                            status='pending',
+                            verification_notes=f"Prescription uploaded ({prescription_file.name}). Manual verification required - unsupported file format for OCR."
+                        )
+                        logger.info(f"Prescription uploaded for order {order.id} - unsupported format: {prescription_file.name}")
+                    else:
+                        # Extract OCR data from the prescription
+                        try:
+                            # Create a temporary file to save the uploaded content
+                            file_extension = Path(file_name).suffix or '.pdf'
+                            with tempfile.NamedTemporaryFile(delete=False, suffix=file_extension) as temp_file:
+                                for chunk in prescription_file.chunks():
+                                    temp_file.write(chunk)
+                                temp_file_path = temp_file.name
+
+                            try:
+                                # Run OCR analysis on the temporary file
+                                ocr_result = analyze_prescription(temp_file_path)
+
+                                # Create PrescriptionVerification record with OCR data
+                                PrescriptionVerification.objects.create(
+                                    order=order,
+                                    prescription_image=prescription_file,
+                                    extracted_nmc_number=ocr_result.get('nmc_number'),
+                                    doctor_name=ocr_result.get('doctor_name'),
+                                    hospital_name=ocr_result.get('hospital_name'),
+                                    department=ocr_result.get('department'),
+                                    status='pending',
+                                    ocr_confidence=ocr_result.get('confidence', 'low'),
+                                    ocr_raw_text=ocr_result.get('raw_text', '')[:2000] if ocr_result.get('raw_text') else '',
+                                    verification_notes=f"OCR extracted: NMC={ocr_result.get('nmc_number')}, Doctor={ocr_result.get('doctor_name')}, Hospital={ocr_result.get('hospital_name')}, Dept={ocr_result.get('department')}, Confidence={ocr_result.get('confidence')}"
+                                )
+
+                                logger.info(f"OCR completed for order {order.id}: NMC={ocr_result.get('nmc_number')}, Doctor={ocr_result.get('doctor_name')}, Hospital={ocr_result.get('hospital_name')}, Dept={ocr_result.get('department')}")
+
+                            finally:
+                                # Clean up temporary file
+                                if os.path.exists(temp_file_path):
+                                    os.unlink(temp_file_path)
+
+                        except Exception as ocr_error:
+                            logger.error(f"OCR processing failed for order {order.id}: {str(ocr_error)}")
+                            # Still save prescription even if OCR fails
+                            PrescriptionVerification.objects.create(
+                                order=order,
+                                prescription_image=prescription_file,
+                                status='pending',
+                                verification_notes=f"Prescription uploaded but OCR processing failed: {str(ocr_error)}"
+                            )
 
                 # Check payment method
                 if payment_method == "online":

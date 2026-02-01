@@ -8,7 +8,7 @@ from django.urls import path
 from django.shortcuts import render
 from datetime import timedelta
 from unfold.sites import UnfoldAdminSite
-from .models import Product, CustomUser, Cart, CartItem, Order, userPayment, Category
+from .models import Product, CustomUser, Cart, CartItem, Order, userPayment, Category, PrescriptionVerification
 
 
 class MediNestAdminSite(UnfoldAdminSite):
@@ -29,6 +29,7 @@ class MediNestAdminSite(UnfoldAdminSite):
         shipped_orders = Order.objects.filter(status='shipped').count()
         delivered_orders = Order.objects.filter(status='delivered').count()
         paid_orders = Order.objects.filter(status='paid').count()
+        pending_prescriptions = PrescriptionVerification.objects.filter(status='pending').count()
         
         recent_orders = Order.objects.select_related('user').prefetch_related('cartitem_set').order_by('-created_at')[:10]
         low_stock_products = Product.objects.filter(stock__lt=10).order_by('stock')[:10]
@@ -53,6 +54,7 @@ class MediNestAdminSite(UnfoldAdminSite):
             'shipped_orders': shipped_orders,
             'delivered_orders': delivered_orders,
             'paid_orders': paid_orders,
+            'pending_prescriptions': pending_prescriptions,
             'recent_orders': recent_orders,
             'low_stock_products': low_stock_products,
             'labels': labels,
@@ -117,9 +119,13 @@ class CustomUserAdmin(admin.ModelAdmin):
 
 class CartAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'items_count', 'created')
-    def items_count(self, obj): return obj.cart_items.count()
+    
+    def items_count(self, obj):
+        return obj.cart_items.count()
     items_count.short_description = 'Items'
-    def created(self, obj): return obj.user.date_joined if obj.user else '-'
+    
+    def created(self, obj):
+        return obj.user.date_joined if obj.user else '-'
     created.short_description = 'User Since'
 
 
@@ -133,20 +139,31 @@ class CartItemAdmin(admin.ModelAdmin):
             return format_html('<img src="{}" style="width:40px;height:40px;object-fit:cover;border-radius:4px;" />', obj.product.image.url)
         return '-'
     product_img.short_description = 'Img'
+    
     def product_category(self, obj): 
         if obj.product and obj.product.category:
             return obj.product.category.label
         return '-'
     product_category.short_description = 'Cat'
-    def product_price(self, obj): return obj.product.price if obj.product else '-'
+    
+    def product_price(self, obj):
+        return obj.product.price if obj.product else '-'
     product_price.short_description = 'Price'
-    def subtotal(self, obj): return float(obj.product.price) * obj.quantity if obj.product else '-'
+    
+    def subtotal(self, obj):
+        return float(obj.product.price) * obj.quantity if obj.product else '-'
     subtotal.short_description = 'Subtotal'
-    def user(self, obj): return obj.cart.user.username if obj.cart and obj.cart.user else '-'
+    
+    def user(self, obj):
+        return obj.cart.user.username if obj.cart and obj.cart.user else '-'
     user.short_description = 'User'
-    def order_id(self, obj): return f"#{obj.order.id}" if obj.order else 'Cart'
+    
+    def order_id(self, obj):
+        return f"#{obj.order.id}" if obj.order else 'Cart'
     order_id.short_description = 'Order'
-    def prescription(self, obj): return 'Yes' if obj.prescription_file else 'No'
+    
+    def prescription(self, obj):
+        return 'Yes' if obj.prescription_file else 'No'
     prescription.short_description = 'Rx'
 
 
@@ -161,12 +178,15 @@ class CartItemInline(admin.TabularInline):
             return format_html('<img src="{}" style="width:60px;height:60px;object-fit:cover;border-radius:5px;" />', obj.product.image.url)
         return '-'
     product_image.short_description = 'Image'
+    
     def line_total(self, obj):
         if obj.product and obj.quantity:
             return f"Rs. {float(obj.product.price) * obj.quantity}"
         return "-"
     line_total.short_description = 'Subtotal'
-    def has_add_permission(self, request, obj=None): return False
+    
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 class OrderAdmin(admin.ModelAdmin):
@@ -175,7 +195,7 @@ class OrderAdmin(admin.ModelAdmin):
         'user_username', 'user_email', 'user_phone', 'user_city',
         'products_with_images', 'item_count',
         'payment_status', 'payment_method', 'transaction_id', 'amount', 'tax', 'total_amount',
-        'address', 'has_prescription', 'created_at'
+        'address', 'has_prescription', 'prescription_thumbnail', 'created_at'
     )
     
     list_filter = ('status', 'created_at')
@@ -191,21 +211,30 @@ class OrderAdmin(admin.ModelAdmin):
                           colors.get(obj.status, '#333'), obj.status.upper())
     delivery_status.short_description = 'DELIVERY STATUS'
     
-    def user_username(self, obj): return obj.user.username if obj.user else '-'
+    def user_username(self, obj):
+        return obj.user.username if obj.user else '-'
     user_username.short_description = 'User'
-    def user_email(self, obj): return obj.user.email if obj.user else '-'
+    
+    def user_email(self, obj):
+        return obj.user.email if obj.user else '-'
     user_email.short_description = 'Email'
-    def user_phone(self, obj): return obj.user.phone if obj.user else '-'
+    
+    def user_phone(self, obj):
+        return obj.user.phone if obj.user else '-'
     user_phone.short_description = 'Phone'
-    def user_city(self, obj): return obj.user.city if obj.user else '-'
+    
+    def user_city(self, obj):
+        return obj.user.city if obj.user else '-'
     user_city.short_description = 'City'
     
-    def item_count(self, obj): return obj.cartitem_set.count()
+    def item_count(self, obj):
+        return obj.cartitem_set.count()
     item_count.short_description = 'Items'
     
     def products_with_images(self, obj):
         items = obj.cartitem_set.all()
-        if not items: return "No items"
+        if not items:
+            return "No items"
         html = '<div style="display:flex;flex-wrap:wrap;gap:5px;">'
         for item in items:
             if item.product and item.product.image:
@@ -230,47 +259,71 @@ class OrderAdmin(admin.ModelAdmin):
                 colors = {'PAID': '#28a745', 'PENDING': '#ffc107', 'FAILED': '#dc3545', 'REFUNDED': '#6f42c1'}
                 return format_html('<span style="background:{};color:white;padding:4px 12px;border-radius:15px;font-size:11px;font-weight:600;">{}</span>', 
                                   colors.get(p.status, '#333'), p.status)
-        except: pass
+        except:
+            pass
         return format_html('<span style="background:#999;color:white;padding:4px 12px;border-radius:15px;font-size:11px;">NO PAYMENT</span>')
     payment_status.short_description = 'PAYMENT STATUS'
     
     def payment_method(self, obj):
         try:
             p = userPayment.objects.filter(order=obj).first()
-            if p: return p.get_payment_method_display()
-        except: pass
+            if p:
+                return p.get_payment_method_display()
+        except:
+            pass
         return '-'
     payment_method.short_description = 'Method'
+    
     def transaction_id(self, obj):
         try:
             p = userPayment.objects.filter(order=obj).first()
-            if p: return p.transaction_uuid[:16] + '...' if len(p.transaction_uuid) > 16 else p.transaction_uuid
-        except: pass
+            if p:
+                return p.transaction_uuid[:16] + '...' if len(p.transaction_uuid) > 16 else p.transaction_uuid
+        except:
+            pass
         return '-'
     transaction_id.short_description = 'TxnID'
+    
     def amount(self, obj):
         try:
             p = userPayment.objects.filter(order=obj).first()
-            if p: return f"Rs.{p.amount}"
-        except: pass
+            if p:
+                return f"Rs.{p.amount}"
+        except:
+            pass
         return '-'
     amount.short_description = 'Amt'
+    
     def tax(self, obj):
         try:
             p = userPayment.objects.filter(order=obj).first()
-            if p: return f"Rs.{p.tax_amount}"
-        except: pass
+            if p:
+                return f"Rs.{p.tax_amount}"
+        except:
+            pass
         return '-'
     tax.short_description = 'Tax'
+    
     def total_amount(self, obj):
         try:
             p = userPayment.objects.filter(order=obj).first()
-            if p: return f"Rs.{p.total_amount}"
-        except: pass
+            if p:
+                return f"Rs.{p.total_amount}"
+        except:
+            pass
         return '-'
     total_amount.short_description = 'Total'
-    def has_prescription(self, obj): return 'YES' if obj.prescription else 'NO'
+    
+    def has_prescription(self, obj):
+        return 'YES' if obj.prescription else 'NO'
     has_prescription.short_description = 'Rx'
+    
+    def prescription_thumbnail(self, obj):
+        if obj.prescription:
+            return format_html('<a href="{}" target="_blank"><img src="{}" style="width:50px;height:50px;object-fit:cover;border-radius:4px;border:2px solid #dc3545;" /></a>', 
+                              obj.prescription.url, obj.prescription.url)
+        return '-'
+    prescription_thumbnail.short_description = 'Rx Image'
     
     def complete_order_details(self, obj):
         items = obj.cartitem_set.all()
@@ -297,7 +350,8 @@ class OrderAdmin(admin.ModelAdmin):
                 html += f'<tr><td>Amount</td><td>Rs. {p.amount}</td></tr>'
                 html += f'<tr><td>Tax</td><td>Rs. {p.tax_amount}</td></tr>'
                 html += f'<tr><td>Total Paid</td><td><strong>Rs. {p.total_amount}</strong></td></tr>'
-        except: pass
+        except:
+            pass
         
         if obj.user:
             html += '<tr style="background:#fff3cd;"><td colspan="2"><strong>CUSTOMER DATA</strong></td></tr>'
@@ -360,7 +414,8 @@ class OrderAdmin(admin.ModelAdmin):
                 html += f'<tr><td>Created</td><td>{p.created_at}</td></tr>'
                 html += '</table>'
                 return format_html(html)
-        except: pass
+        except:
+            pass
         return format_html('<p>No payment data</p>')
     all_payment_detail.short_description = 'Complete Payment Data'
     
@@ -422,35 +477,56 @@ class UserPaymentAdmin(admin.ModelAdmin):
     readonly_fields = ('transaction_uuid', 'created_at', 'updated_at')
     list_editable = ('status', 'payment_method')
     
-    def txn_uuid(self, obj): return obj.transaction_uuid[:30] + '...' if len(obj.transaction_uuid) > 30 else obj.transaction_uuid
+    def txn_uuid(self, obj):
+        return obj.transaction_uuid[:30] + '...' if len(obj.transaction_uuid) > 30 else obj.transaction_uuid
     txn_uuid.short_description = 'TransactionID'
+    
     def user_data(self, obj):
-        if obj.user: return f"{obj.user.username} | {obj.user.email}"
+        if obj.user:
+            return f"{obj.user.username} | {obj.user.email}"
         return "N/A"
     user_data.short_description = 'User'
-    def order_data(self, obj): return f"#{obj.order.id}" if obj.order else "N/A"
+    
+    def order_data(self, obj):
+        return f"#{obj.order.id}" if obj.order else "N/A"
     order_data.short_description = 'Order'
+    
     def payment_status(self, obj):
         colors = {'PAID': '#28a745', 'PENDING': '#ffc107', 'FAILED': '#dc3545', 'REFUNDED': '#6f42c1'}
         return format_html('<span style="background:{};color:white;padding:3px 10px;border-radius:15px;font-size:11px;">{}</span>', colors.get(obj.status, '#333'), obj.status)
     payment_status.short_description = 'PayStatus'
-    def method(self, obj): return obj.get_payment_method_display()
+    
+    def method(self, obj):
+        return obj.get_payment_method_display()
     method.short_description = 'Method'
-    def amount(self, obj): return f"Rs.{obj.amount}"
+    
+    def amount(self, obj):
+        return f"Rs.{obj.amount}"
     amount.short_description = 'Amt'
-    def tax(self, obj): return f"Rs.{obj.tax_amount}"
+    
+    def tax(self, obj):
+        return f"Rs.{obj.tax_amount}"
     tax.short_description = 'Tax'
-    def total(self, obj): return f"Rs.{obj.total_amount}"
+    
+    def total(self, obj):
+        return f"Rs.{obj.total_amount}"
     total.short_description = 'Total'
-    def txn_code(self, obj): return obj.transaction_code or '-'
+    
+    def txn_code(self, obj):
+        return obj.transaction_code or '-'
     txn_code.short_description = 'Code'
-    def created(self, obj): return obj.created_at.strftime('%Y-%m-%d %H:%M')
+    
+    def created(self, obj):
+        return obj.created_at.strftime('%Y-%m-%d %H:%M')
     created.short_description = 'Created'
     
     def get_readonly_fields(self, request, obj=None):
-        if obj: return ('transaction_uuid', 'created_at', 'updated_at')
+        if obj:
+            return ('transaction_uuid', 'created_at', 'updated_at')
         return ('created_at', 'updated_at')
-    def has_add_permission(self, request): return False
+    
+    def has_add_permission(self, request):
+        return False
     
     def save_model(self, request, obj, form, change):
         if not change and obj.payment_method == 'ONLINE':
@@ -459,12 +535,97 @@ class UserPaymentAdmin(admin.ModelAdmin):
             try:
                 original = userPayment.objects.get(pk=obj.pk)
                 if obj.status != original.status:
-                    if obj.status == 'PAID': obj.order.status = 'paid'
-                    elif obj.status == 'FAILED': obj.order.status = 'pending'
-                    elif obj.status == 'REFUNDED': obj.order.status = 'refunded'
+                    if obj.status == 'PAID':
+                        obj.order.status = 'paid'
+                    elif obj.status == 'FAILED':
+                        obj.order.status = 'pending'
+                    elif obj.status == 'REFUNDED':
+                        obj.order.status = 'refunded'
                     obj.order.save()
-            except: pass
+            except:
+                pass
         super().save_model(request, obj, form, change)
+
+
+class PrescriptionVerificationAdmin(admin.ModelAdmin):
+    list_display = (
+        'id', 'status', 'order_link', 'prescription_thumbnail',
+        'extracted_nmc_number', 'doctor_name', 'hospital_name', 'department',
+        'ocr_confidence', 'verified_by', 'created_at'
+    )
+    list_filter = ('status', 'ocr_confidence', 'created_at')
+    search_fields = ('order__id', 'extracted_nmc_number', 'doctor_name', 'hospital_name', 'department', 'verification_notes')
+    readonly_fields = ('created_at', 'updated_at', 'order_link', 'prescription_image_display', 'ocr_raw_text')
+    list_editable = ('status',)
+    actions = ['approve_prescriptions', 'reject_prescriptions']
+    
+    fieldsets = (
+        ('Order Information', {
+            'fields': ('order', 'order_link')
+        }),
+        ('Prescription Image', {
+            'fields': ('prescription_image', 'prescription_image_display')
+        }),
+        ('OCR Extracted Data', {
+            'fields': ('extracted_nmc_number', 'doctor_name', 'hospital_name', 'department'),
+            'classes': ('collapse',)
+        }),
+        ('OCR Metadata', {
+            'fields': ('ocr_confidence', 'ocr_raw_text'),
+            'classes': ('collapse',)
+        }),
+        ('Verification', {
+            'fields': ('status', 'verified_by', 'verification_notes', 'verified_at')
+        }),
+    )
+    
+    def order_link(self, obj):
+        if obj.order:
+            url = f"/admin/myapp/order/{obj.order.id}/change/"
+            return format_html('<a href="{}">Order #{}</a>', url, obj.order.id)
+        return '-'
+    order_link.short_description = 'Order'
+    
+    def prescription_thumbnail(self, obj):
+        if obj.prescription_image:
+            return format_html('<a href="{}" target="_blank"><img src="{}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:2px solid #667eea;" /></a>', 
+                              obj.prescription_image.url, obj.prescription_image.url)
+        return '-'
+    prescription_thumbnail.short_description = 'Rx Image'
+    
+    def prescription_image_display(self, obj):
+        if obj.prescription_image:
+            return format_html('<a href="{}" target="_blank"><img src="{}" style="max-width:400px;max-height:400px;border-radius:8px;border:2px solid #667eea;" /></a>', 
+                              obj.prescription_image.url, obj.prescription_image.url)
+        return 'No image uploaded'
+    prescription_image_display.short_description = 'Prescription Image'
+    
+    def status_badge(self, obj):
+        colors = {
+            'pending': '#ffc107',
+            'approved': '#28a745',
+            'rejected': '#dc3545',
+        }
+        return format_html(
+            '<span style="background:{};color:white;padding:4px 12px;border-radius:15px;font-size:11px;font-weight:600;">{}</span>',
+            colors.get(obj.status, '#6c757d'), obj.status.upper()
+        )
+    status_badge.short_description = 'Status'
+    
+    def approve_prescriptions(self, request, queryset):
+        from django.utils import timezone
+        updated = queryset.update(status='approved', verified_by=request.user, verified_at=timezone.now())
+        self.message_user(request, f'{updated} prescriptions approved.')
+    approve_prescriptions.short_description = 'Approve selected prescriptions'
+    
+    def reject_prescriptions(self, request, queryset):
+        from django.utils import timezone
+        updated = queryset.update(status='rejected', verified_by=request.user, verified_at=timezone.now())
+        self.message_user(request, f'{updated} prescriptions rejected.')
+    reject_prescriptions.short_description = 'Reject selected prescriptions'
+    
+    def has_add_permission(self, request):
+        return True
 
 
 # Register all models with the custom admin site
@@ -475,3 +636,4 @@ admin_site.register(CartItem, CartItemAdmin)
 admin_site.register(Order, OrderAdmin)
 admin_site.register(userPayment, UserPaymentAdmin)
 admin_site.register(Category, CategoryAdmin)
+admin_site.register(PrescriptionVerification, PrescriptionVerificationAdmin)

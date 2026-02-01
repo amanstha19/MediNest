@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
+import { useToast } from '../../components/ui/Toast';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import EsewaPayment from '../screens/Payment';
@@ -10,6 +11,7 @@ import { ShoppingCart, MapPin, FileText, CreditCard, Loader2, CheckCircle, Alert
 
 const CheckoutScreen = () => {
   const { cartItems } = useCart();
+  const { addToast } = useToast();
   const navigate = useNavigate();
   const [prescription, setPrescription] = useState(null);
   const [address, setAddress] = useState('');
@@ -36,17 +38,17 @@ const CheckoutScreen = () => {
     e.preventDefault();
 
     if (cartItems.length === 0) {
-      alert('Your cart is empty. Please add items before proceeding to checkout.');
+      addToast('Your cart is empty. Please add items before proceeding to checkout.', 'warning');
       return;
     }
 
     if (prescriptionRequired && !prescription) {
-      alert('Please upload your prescription.');
+      addToast('Please upload your prescription.', 'warning');
       return;
     }
 
     if (!address.trim()) {
-      alert('Please enter a delivery address.');
+      addToast('Please enter a delivery address.', 'warning');
       return;
     }
 
@@ -55,7 +57,7 @@ const CheckoutScreen = () => {
     try {
       const userToken = sessionStorage.getItem('authTokens');
       if (!userToken) {
-        alert('You must be logged in to proceed with the checkout.');
+        addToast('You must be logged in to proceed with the checkout.', 'error');
         navigate('/login');
         return;
       }
@@ -64,7 +66,7 @@ const CheckoutScreen = () => {
       const token = parsedToken?.access;
 
       if (!token) {
-        alert('Invalid token. Please login again.');
+        addToast('Invalid token. Please login again.', 'error');
         navigate('/login');
         return;
       }
@@ -84,6 +86,8 @@ const CheckoutScreen = () => {
         },
       });
 
+      addToast('Order placed successfully!', 'success');
+
       if (paymentMethod === 'online') {
         // Navigate to payment page with order details
         navigate(`/payment/${response.data.order_id}/${totalPrice}`);
@@ -94,7 +98,7 @@ const CheckoutScreen = () => {
 
     } catch (error) {
       console.error('Error during checkout:', error);
-      alert('There was an error processing your checkout. Please try again.');
+      addToast('There was an error processing your checkout. Please try again.', 'error');
     } finally {
       setLoading(false);
     }

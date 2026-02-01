@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthProvider';
+import { useToast } from '../../components/ui/Toast';
 import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
@@ -13,6 +14,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useContext(AuthContext);
+  const { addToast } = useToast();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -22,9 +24,11 @@ const Login = () => {
 
     try {
       await login({ username, password });
+      addToast('Welcome back! Login successful.', 'success');
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.detail || 'Login failed. Please check your credentials.');
+      addToast('Login failed. Please check your credentials.', 'error');
     } finally {
       setLoading(false);
     }

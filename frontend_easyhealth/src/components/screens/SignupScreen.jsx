@@ -1,5 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../../context/AuthProvider';
+import { useToast } from '../../components/ui/Toast';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Card } from '../ui/card';
@@ -21,6 +22,7 @@ const Signup = () => {
   const [generalError, setGeneralError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signup } = useContext(AuthContext);
+  const { addToast } = useToast();
   const navigate = useNavigate();
 
   const checkEmailUniqueness = async () => {
@@ -31,10 +33,12 @@ const Signup = () => {
         return true;
       } else {
         setEmailError(response.data.error || 'This email is already registered.');
+        addToast('This email is already registered.', 'error');
         return false;
       }
     } catch (err) {
       setEmailError(err.response?.data?.error || 'Error checking email. Please try again.');
+      addToast('Error checking email. Please try again.', 'error');
       return false;
     }
   };
@@ -54,15 +58,18 @@ const Signup = () => {
     const passwordRegex = /^(?=.*[!@#$%^&*])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passwordRegex.test(password)) {
       setPasswordError('Password must be 8+ characters with at least 1 special character (!@#$%^&*)');
+      addToast('Password must be 8+ characters with at least 1 special character.', 'warning');
       setLoading(false);
       return;
     }
 
     try {
       await signup({ email, password, username, firstName, lastName, city, phone });
+      addToast('Account created successfully! Please login.', 'success');
       navigate('/login');
     } catch (err) {
       setGeneralError(err.message || 'Signup failed. Please try again.');
+      addToast('Signup failed. Please try again.', 'error');
     } finally {
       setLoading(false);
     }

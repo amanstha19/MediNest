@@ -151,3 +151,44 @@ class userPayment(models.Model):
             return f"Order ID: {self.order.id}, Status: {self.order.status}, Address: {self.order.address}, Total: {self.order.total_price}"
         return "No order details available"
 
+
+# Prescription Verification Model
+class PrescriptionVerification(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    ]
+    
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='verification')
+    
+    # OCR extracted fields
+    prescription_image = models.ImageField(upload_to='prescription_verifications/', null=True, blank=True)
+    extracted_nmc_number = models.CharField(max_length=50, blank=True, null=True)
+    doctor_name = models.CharField(max_length=100, blank=True, null=True)
+    hospital_name = models.CharField(max_length=200, blank=True, null=True)  # Hospital/Clinic name
+    department = models.CharField(max_length=100, blank=True, null=True)  # Department (e.g., Cardiology)
+    
+    # OCR metadata
+    ocr_confidence = models.CharField(max_length=20, default='low')  # high, medium, low
+    ocr_raw_text = models.TextField(blank=True, null=True)
+    
+    # Verification status
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    verified_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='verified_prescriptions')
+    verification_notes = models.TextField(blank=True, null=True)
+    verified_at = models.DateTimeField(null=True, blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return f"Prescription Verification for Order #{self.order.id} - {self.status}"
+    
+    def get_status_badge(self):
+        colors = {
+            'pending': '#ffc107',
+            'approved': '#28a745',
+            'rejected': '#dc3545',
+        }
+        return colors.get(self.status, '#6c757d')

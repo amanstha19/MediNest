@@ -1,11 +1,14 @@
 import React, { useState, createContext, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useToast } from '../components/ui/Toast';
 
 const CartContext = createContext();
 
 export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
+  const { addToast } = useToast();
+  
   const [cartItems, setCartItems] = useState(() => {
     // Always try to load cart from localStorage regardless of login status
     const savedCart = localStorage.getItem('cartItems');
@@ -46,10 +49,13 @@ export const CartProvider = ({ children }) => {
       }
       return [...prevItems, { ...item, quantity: 1 }];
     });
+    // Show success toast
+    addToast(`${item.name} added to cart!`, 'success');
   };
 
   const removeFromCart = (id) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    addToast('Item removed from cart', 'info');
   };
 
   const updateQuantity = (id, action) => {

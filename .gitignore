@@ -33,3 +33,18 @@ yarn-error.log*
 .vscode/
 *.swp
 *.DS_Store
+
+
+
+# User uploads / prescriptions
+backend_easyhealth/epharm/static/images/prescriptions/
+
+# PDFs
+*.pdf
+
+# Large media (optional but smart)
+*.zip
+*.mp4
+*.mov
+*.tar
+*.gz

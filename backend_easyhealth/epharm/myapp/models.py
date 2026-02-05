@@ -105,12 +105,11 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, related_name='cart_items', on_delete=models.CASCADE, default=1)
+    
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
     prescription_file = models.FileField(upload_to='cart_prescriptions/', null=True, blank=True)
-
     def __str__(self):
         return f"{self.quantity} x {self.product.name}"
 
@@ -168,6 +167,14 @@ class PrescriptionVerification(models.Model):
     doctor_name = models.CharField(max_length=100, blank=True, null=True)
     hospital_name = models.CharField(max_length=200, blank=True, null=True)  # Hospital/Clinic name
     department = models.CharField(max_length=100, blank=True, null=True)  # Department (e.g., Cardiology)
+    
+    # Enhanced OCR fields
+    medicine_list = models.JSONField(default=list, blank=True, null=True)  # List of prescribed medicines
+    patient_name = models.CharField(max_length=100, blank=True, null=True)  # Patient name
+    patient_age = models.CharField(max_length=20, blank=True, null=True)  # Patient age
+    patient_gender = models.CharField(max_length=20, blank=True, null=True)  # Patient gender
+    chief_complaints = models.TextField(blank=True, null=True)  # Chief complaints
+    followup_date = models.CharField(max_length=50, blank=True, null=True)  # Follow-up date
     
     # OCR metadata
     ocr_confidence = models.CharField(max_length=20, default='low')  # high, medium, low

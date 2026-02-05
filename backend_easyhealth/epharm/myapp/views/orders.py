@@ -15,7 +15,7 @@ from pathlib import Path
 
 from ..models import Cart, CartItem, Order, Product, PrescriptionVerification
 from ..serializers import OrderSerializer
-from ..ocr_utils import analyze_prescription
+from ..ocr_utils_enhanced import analyze_prescription
 
 logger = logging.getLogger(__name__)
 
@@ -123,10 +123,20 @@ class PlaceOrderView(APIView):
                                 temp_file_path = temp_file.name
 
                             try:
-                                # Run OCR analysis on the temporary file
+# Run OCR analysis on the temporary file
                                 ocr_result = analyze_prescription(temp_file_path)
 
-                                # Create PrescriptionVerification record with OCR data
+                                # Create PrescriptionVerification record with enhanced OCR data
+                                patient_info = ocr_result.get('patient_info', {})
+                                verification_notes = (
+                                    f"OCR extracted: NMC={ocr_result.get('nmc_number')}, "
+                                    f"Doctor={ocr_result.get('doctor_name')}, "
+                                    f"Hospital={ocr_result.get('hospital_name')}, "
+                                    f"Dept={ocr_result.get('department')}, "
+                                    f"Medicines={len(ocr_result.get('medicines', []))}, "
+                                    f"Confidence={ocr_result.get('confidence')}"
+                                )
+                                
                                 PrescriptionVerification.objects.create(
                                     order=order,
                                     prescription_image=prescription_file,
@@ -134,13 +144,19 @@ class PlaceOrderView(APIView):
                                     doctor_name=ocr_result.get('doctor_name'),
                                     hospital_name=ocr_result.get('hospital_name'),
                                     department=ocr_result.get('department'),
+                                    medicine_list=ocr_result.get('medicines', []),
+                                    patient_name=patient_info.get('name'),
+                                    patient_age=patient_info.get('age'),
+                                    patient_gender=patient_info.get('gender'),
+                                    chief_complaints=ocr_result.get('complaints'),
+                                    followup_date=ocr_result.get('followup_date'),
                                     status='pending',
                                     ocr_confidence=ocr_result.get('confidence', 'low'),
                                     ocr_raw_text=ocr_result.get('raw_text', '')[:2000] if ocr_result.get('raw_text') else '',
-                                    verification_notes=f"OCR extracted: NMC={ocr_result.get('nmc_number')}, Doctor={ocr_result.get('doctor_name')}, Hospital={ocr_result.get('hospital_name')}, Dept={ocr_result.get('department')}, Confidence={ocr_result.get('confidence')}"
+                                    verification_notes=verification_notes
                                 )
 
-                                logger.info(f"OCR completed for order {order.id}: NMC={ocr_result.get('nmc_number')}, Doctor={ocr_result.get('doctor_name')}, Hospital={ocr_result.get('hospital_name')}, Dept={ocr_result.get('department')}")
+                                logger.info(f"OCR completed for order {order.id}: NMC={ocr_result.get('nmc_number')}, Doctor={ocr_result.get('doctor_name')}, Hospital={ocr_result.get('hospital_name')}, Dept={ocr_result.get('department')}, Medicines={len(ocr_result.get('medicines', []))}, Confidence={ocr_result.get('confidence')}")
 
                             finally:
                                 # Clean up temporary file

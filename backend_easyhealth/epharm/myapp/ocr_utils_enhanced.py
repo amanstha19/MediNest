@@ -10,38 +10,79 @@ import json
 from pathlib import Path
 
 
+def preprocess_text(text):
+    """
+    Clean and normalize extracted text for better processing
+
+    Args:
+        text: Raw OCR extracted text
+
+    Returns:
+        str: Cleaned and normalized text
+    """
+    if not text:
+        return ""
+
+    # Remove extra whitespace
+    text = re.sub(r'\s+', ' ', text)
+
+    # Fix common OCR errors
+    text = re.sub(r'\b1\b', 'I', text)  # 1 -> I (common in handwriting)
+    text = re.sub(r'\b0\b', 'O', text)  # 0 -> O (common in handwriting)
+    text = re.sub(r'\b5\b', 'S', text)  # 5 -> S (common in handwriting)
+
+    # Remove non-printable characters
+    text = re.sub(r'[^\x20-\x7E\n]', '', text)
+
+    return text.strip()
+
+
 def extract_text_from_image(image_path, psm_mode='6'):
     """
-    Extract text from an image using Tesseract OCR with enhanced settings
-    
+    Extract text from an image using Tesseract OCR with enhanced settings and multiple PSM modes
+
     Args:
         image_path: Path to the prescription image
         psm_mode: Page segmentation mode (6 = uniform block of text)
-        
+
     Returns:
         str: Extracted text from the image
     """
     if not os.path.exists(image_path):
         return ""
-    
-    try:
-        # Run tesseract with enhanced settings for better handwriting recognition
-        result = subprocess.run(
-            [
-                'tesseract', image_path, 'stdout', 
+
+    # Try multiple PSM modes for better results
+    psm_modes = ['6', '3', '4', '8']  # Different page segmentation modes
+    best_text = ""
+    max_length = 0
+
+    for mode in psm_modes:
+        try:
+            # Enhanced Tesseract settings for handwriting
+            result = subprocess.run([
+                'tesseract', image_path, 'stdout',
                 '-l', 'eng',  # English language
-                '--psm', str(psm_mode),  # Page segmentation mode
+                '--psm', mode,  # Page segmentation mode
                 '--oem', '3',  # OCR Engine Mode (default + LSTM)
-                '-c', 'preserve_interword_spaces=1'
-            ],
-            capture_output=True,
-            text=True,
-            timeout=60
-        )
-        return result.stdout.strip()
-    except Exception as e:
-        print(f"OCR Error: {e}")
-        return ""
+                '-c', 'preserve_interword_spaces=1',
+                '-c', 'tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,:;-()[]{}@#$/&%+*=\n ',
+                '-c', 'tessedit_write_images=false'
+            ], capture_output=True, text=True, timeout=30)
+
+            if result.returncode == 0:
+                text = result.stdout.strip()
+                text = preprocess_text(text)
+
+                # Choose the result with most meaningful content
+                if len(text) > max_length and len(text.split()) > 2:
+                    best_text = text
+                    max_length = len(text)
+
+        except Exception as e:
+            print(f"OCR Error with PSM {mode}: {e}")
+            continue
+
+    return best_text
 
 
 def extract_nmc_number(text):

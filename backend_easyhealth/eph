@@ -1,0 +1,482 @@
+"""
+Ultimate Prescription OCR Module - Maximum Accuracy Version
+Combines multiple OCR strategies with comprehensive medicine and doctor name extraction
+"""
+
+import subprocess
+import re
+import os
+import logging
+from typing import Dict, List, Optional, Tuple
+
+logger = logging.getLogger(__name__)
+
+
+# ============================================================================
+# MEDICINE DATABASE - Comprehensive list of Nepali and international medicines
+# ============================================================================
+MEDICINE_DATABASE = {
+    # Antibiotics
+    'amoxicillin': {'name': 'Amoxicillin', 'strengths': ['250mg', '500mg', '750mg']},
+    'azithromycin': {'name': 'Azithromycin', 'strengths': ['250mg', '500mg']},
+    'ciprofloxacin': {'name': 'Ciprofloxacin', 'strengths': ['250mg', '500mg']},
+    'ceftriaxone': {'name': 'Ceftriaxone', 'strengths': ['1g', '500mg']},
+    'cefixime': {'name': 'Cefixime', 'strengths': ['200mg', '400mg']},
+    'doxycycline': {'name': 'Doxycycline', 'strengths': ['100mg']},
+    'erythromycin': {'name': 'Erythromycin', 'strengths': ['250mg', '500mg']},
+    'levofloxacin': {'name': 'Levofloxacin', 'strengths': ['250mg', '500mg', '750mg']},
+    'metronidazole': {'name': 'Metronidazole', 'strengths': ['400mg', '500mg']},
+    'norfloxacin': {'name': 'Norfloxacin', 'strengths': ['400mg']},
+    'ofloxacin': {'name': 'Ofloxacin', 'strengths': ['200mg', '400mg']},
+    'roxithromycin': {'name': 'Roxithromycin', 'strengths': ['150mg', '300mg']},
+    'clarithromycin': {'name': 'Clarithromycin', 'strengths': ['250mg', '500mg']},
+    'cephalexin': {'name': 'Cephalexin', 'strengths': ['250mg', '500mg']},
+    'cefadroxil': {'name': 'Cefadroxil', 'strengths': ['500mg']},
+    'cefuroxime': {'name': 'Cefuroxime', 'strengths': ['250mg', '500mg']},
+    
+    # Pain relievers / NSAIDs
+    'paracetamol': {'name': 'Paracetamol', 'strengths': ['500mg', '650mg', '1g']},
+    'acetaminophen': {'name': 'Acetaminophen', 'strengths': ['500mg', '650mg']},
+    'ibuprofen': {'name': 'Ibuprofen', 'strengths': ['200mg', '400mg', '600mg']},
+    'diclofenac': {'name': 'Diclofenac', 'strengths': ['25mg', '50mg']},
+    'naproxen': {'name': 'Naproxen', 'strengths': ['250mg', '500mg']},
+    'aspirin': {'name': 'Aspirin', 'strengths': ['75mg', '150mg', '325mg']},
+    'tramadol': {'name': 'Tramadol', 'strengths': ['50mg', '100mg']},
+    'meloxicam': {'name': 'Meloxicam', 'strengths': ['7.5mg', '15mg']},
+    'nimesulide': {'name': 'Nimesulide', 'strengths': ['100mg']},
+    'ketorolac': {'name': 'Ketorolac', 'strengths': ['10mg']},
+    
+    # PPIs and Antacids
+    'omeprazole': {'name': 'Omeprazole', 'strengths': ['20mg', '40mg']},
+    'pantoprazole': {'name': 'Pantoprazole', 'strengths': ['20mg', '40mg']},
+    'esomeprazole': {'name': 'Esomeprazole', 'strengths': ['20mg', '40mg']},
+    'rabeprazole': {'name': 'Rabeprazole', 'strengths': ['20mg']},
+    'lansoprazole': {'name': 'Lansoprazole', 'strengths': ['30mg']},
+    'ranitidine': {'name': 'Ranitidine', 'strengths': ['150mg', '300mg']},
+    'famotidine': {'name': 'Famotidine', 'strengths': ['20mg', '40mg']},
+    'domperidone': {'name': 'Domperidone', 'strengths': ['10mg']},
+    'ondansetron': {'name': 'Ondansetron', 'strengths': ['4mg', '8mg']},
+    
+    # Vitamins and supplements
+    'multivitamin': {'name': 'Multivitamin', 'strengths': []},
+    'calcium': {'name': 'Calcium', 'strengths': ['500mg', '600mg']},
+    'iron': {'name': 'Iron', 'strengths': ['60mg', '100mg']},
+    'folic': {'name': 'Folic Acid', 'strengths': ['0.5mg', '5mg']},
+    'vitamin b12': {'name': 'Vitamin B12', 'strengths': ['500mcg', '1000mcg']},
+    'vitamin d': {'name': 'Vitamin D', 'strengths': ['1000IU', '2000IU', '60000IU']},
+    'vitamin c': {'name': 'Vitamin C', 'strengths': ['500mg', '1000mg']},
+    'zinc': {'name': 'Zinc', 'strengths': ['10mg', '20mg', '50mg']},
+    
+    # Cardiovascular
+    'amlodipine': {'name': 'Amlodipine', 'strengths': ['2.5mg', '5mg', '10mg']},
+    'atenolol': {'name': 'Atenolol', 'strengths': ['25mg', '50mg', '100mg']},
+    'metoprolol': {'name': 'Metoprolol', 'strengths': ['25mg', '50mg']},
+    'enalapril': {'name': 'Enalapril', 'strengths': ['2.5mg', '5mg', '10mg']},
+    'losartan': {'name': 'Losartan', 'strengths': ['25mg', '50mg', '100mg']},
+    'telmisartan': {'name': 'Telmisartan', 'strengths': ['40mg', '80mg']},
+    'clopidogrel': {'name': 'Clopidogrel', 'strengths': ['75mg']},
+    'rosuvastatin': {'name': 'Rosuvastatin', 'strengths': ['5mg', '10mg', '20mg']},
+    'atorvastatin': {'name': 'Atorvastatin', 'strengths': ['10mg', '20mg', '40mg']},
+    
+    # Respiratory
+    'salbutamol': {'name': 'Salbutamol', 'strengths': ['2.5mg', '4mg']},
+    'budesonide': {'name': 'Budesonide', 'strengths': ['100mcg', '200mcg']},
+    'montelukast': {'name': 'Montelukast', 'strengths': ['4mg', '5mg', '10mg']},
+    'theophylline': {'name': 'Theophylline', 'strengths': ['100mg', '200mg', '400mg']},
+    'cetirizine': {'name': 'Cetirizine', 'strengths': ['5mg', '10mg']},
+    'loratadine': {'name': 'Loratadine', 'strengths': ['10mg']},
+    
+    # Diabetes
+    'metformin': {'name': 'Metformin', 'strengths': ['250mg', '500mg', '850mg', '1000mg']},
+    'glibenclamide': {'name': 'Glibenclamide', 'strengths': ['2.5mg', '5mg']},
+    'glimepiride': {'name': 'Glimepiride', 'strengths': ['1mg', '2mg', '3mg', '4mg']},
+    'gliclazide': {'name': 'Gliclazide', 'strengths': ['30mg', '60mg', '80mg']},
+    'sitagliptin': {'name': 'Sitagliptin', 'strengths': ['25mg', '50mg', '100mg']},
+    'glipizide': {'name': 'Glipizide', 'strengths': ['2.5mg', '5mg', '10mg']},
+    
+    # CNS
+    'diazepam': {'name': 'Diazepam', 'strengths': ['2mg', '5mg', '10mg']},
+    'alprazolam': {'name': 'Alprazolam', 'strengths': ['0.25mg', '0.5mg', '1mg']},
+    'clonazepam': {'name': 'Clonazepam', 'strengths': ['0.5mg', '1mg', '2mg']},
+    'sertraline': {'name': 'Sertraline', 'strengths': ['25mg', '50mg', '100mg']},
+    'fluoxetine': {'name': 'Fluoxetine', 'strengths': ['20mg', '40mg']},
+    'amitriptyline': {'name': 'Amitriptyline', 'strengths': ['10mg', '25mg', '50mg']},
+    
+    # Gastrointestinal
+    'loperamide': {'name': 'Loperamide', 'strengths': ['2mg']},
+    'propranolol': {'name': 'Propranolol', 'strengths': ['10mg', '20mg', '40mg']},
+    
+    # Nepali brands
+    'napa': {'name': 'Napa (Paracetamol)', 'strengths': ['500mg', '650mg']},
+    'neumer': {'name': 'Neumer (Nimesulide)', 'strengths': ['100mg']},
+    'ketof': {'name': 'Ketof (Ketorolac)', 'strengths': ['10mg']},
+    'flexon': {'name': 'Flexon (Ibuprofen)', 'strengths': ['400mg']},
+    'ranit': {'name': 'Ranit (Ranitidine)', 'strengths': ['150mg']},
+    'domstal': {'name': 'Domstal (Domperidone)', 'strengths': ['10mg']},
+    'montair': {'name': 'Montair (Montelukast)', 'strengths': ['10mg']},
+}
+
+
+# ============================================================================
+# COMMON NEPALI DOCTOR NAMES (for fuzzy matching)
+# ============================================================================
+DOCTOR_NAMES = [
+    'sharma', 'poudel', 'kc', 'joshi', 'bhandari', 'adhikari',
+    'rai', 'lama', 'gurung', 'magar', 'thapa', 'bhatta',
+    'acharya', 'baral', 'dhakal', 'subedi', 'paudel',
+    'kumar', 'singh', 'pandey', 'shrestha', 'tamang',
+    'mainali', 'regmi', 'baniya', 'neupane', 'basnet',
+    'karki', 'sapkota', 'gyawali', 'maharjan', 'nakarmi',
+    'manandhar', 'dangol', 'pradhan', 'mishra',
+    'ram', 'sita', 'hari', 'gopal', 'mina', 'rajesh',
+    'deepa', 'arun', 'suman', 'nabin', 'prabin',
+    'bibek', 'sandeep', 'prashant', 'amit', 'ajay',
+]
+
+
+# ============================================================================
+# DOSAGE PATTERNS
+# ============================================================================
+DOSAGE_PATTERNS = [
+    r'(\d+\s*(?:mg|ml|mcg|g|iu|IU|%)?)',
+    r'(\d+\s*(?:tablet|capsule|syp|drop|injection)?)',
+]
+
+FREQUENCY_PATTERNS = [
+    r'(od|bd|tid|qid|prn|stat)',
+    r'(\d+[-–]?\d+[-–]?\d+)',
+    r'(once|twice|thrice|daily|at night|at morning|evening)',
+]
+
+DURATION_PATTERNS = [
+    r'(\d+\s*(?:days?|dys?|d|d\.?)?)',
+    r'(\d+\s*(?:weeks?|wks?|w|w\.?)?)',
+    r'(\d+\s*(?:months?|mos?|m|m\.?)?)',
+]
+
+
+# ============================================================================
+# TEXT PREPROCESSING
+# ============================================================================
+def clean_ocr_text(text: str) -> str:
+    """Clean and normalize OCR text"""
+    if not text:
+        return ""
+    text = re.sub(r'\s+', ' ', text)
+    replacements = {'0': 'o', '1': 'l', 'l': '1', 'O': '0', 'rn': 'm'}
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    return text.strip()
+
+
+def extract_lines(text: str) -> List[str]:
+    """Extract non-empty lines from text"""
+    return [line.strip() for line in text.split('\n') if line.strip()]
+
+
+# ============================================================================
+# NAME EXTRACTION
+# ============================================================================
+def extract_doctor_name(text: str) -> Tuple[Optional[str], float]:
+    """Extract doctor name with fuzzy matching"""
+    lines = extract_lines(text)
+    text_lower = text.lower()
+    
+    patterns = [
+        r'(?:dr\.?|doctor)\s*:?\s*([A-Za-z][A-Za-z\s]+)',
+        r'(?:dr\.?|doctor)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)',
+        r'name\s*:?\s*(?:dr\.?|doctor)?\s*([A-Za-z][A-Za-z\s]+)',
+    ]
+    
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            name = match.group(1).strip()
+            name = re.sub(r'[^\w\s]', '', name)
+            name = re.sub(r'\s+', ' ', name)
+            
+            confidence = 0.5
+            name_lower = name.lower()
+            for known_name in DOCTOR_NAMES:
+                if known_name in name_lower:
+                    confidence = 0.9
+                    break
+            
+            words = name.split()
+            if len(words) >= 2:
+                confidence += 0.1
+            
+            if len(name) >= 3:
+                return name, min(confidence, 1.0)
+    
+    # Look for names in first few lines
+    for line in lines[:5]:
+        line_clean = re.sub(r'[^\w\s]', '', line)
+        words = line_clean.split()
+        if len(words) >= 2:
+            potential_name = ' '.join(words[:2])
+            if potential_name[0].isupper():
+                name_lower = potential_name.lower()
+                for known in DOCTOR_NAMES:
+                    if known in name_lower:
+                        return potential_name, 0.8
+    
+    return None, 0.0
+
+
+# ============================================================================
+# MEDICINE EXTRACTION
+# ============================================================================
+def extract_medicines(text: str) -> List[Dict]:
+    """Extract medicines with fuzzy matching"""
+    medicines = []
+    text_lower = text.lower()
+    
+    # Strategy 1: Look for known medicines in database
+    for med_key, med_info in MEDICINE_DATABASE.items():
+        if med_key in text_lower:
+            dosage = ""
+            for pattern in DOSAGE_PATTERNS:
+                match = re.search(pattern, text, re.IGNORECASE)
+                if match:
+                    dosage = match.group(1).strip()
+                    break
+            
+            frequency = ""
+            for pattern in FREQUENCY_PATTERNS:
+                match = re.search(pattern, text, re.IGNORECASE)
+                if match:
+                    frequency = match.group(1).strip()
+                    break
+            
+            duration = ""
+            for pattern in DURATION_PATTERNS:
+                match = re.search(pattern, text, re.IGNORECASE)
+                if match:
+                    duration = match.group(1).strip()
+                    break
+            
+            medicines.append({
+                'name': med_info['name'],
+                'dosage': dosage,
+                'frequency': frequency,
+                'duration': duration,
+                'confidence': 0.85,
+                'source': 'database_match'
+            })
+    
+    # Strategy 2: Look for numbered list patterns
+    numbered_pattern = r'^(\d+[\.\)]\s*)([A-Za-z\s]+?)(?:\d|mg|ml|$|,)'
+    for line in text.split('\n'):
+        line = line.strip()
+        match = re.match(numbered_pattern, line, re.IGNORECASE)
+        if match:
+            med_name = match.group(2).strip()
+            if len(med_name) > 2:
+                exists = any(m['name'].lower() == med_name.lower() for m in medicines)
+                if not exists:
+                    medicines.append({
+                        'name': med_name.title(),
+                        'dosage': '',
+                        'frequency': '',
+                        'duration': '',
+                        'confidence': 0.5,
+                        'source': 'numbered_list'
+                    })
+    
+    return medicines
+
+
+# ============================================================================
+# NMC NUMBER EXTRACTION
+# ============================================================================
+def extract_nmc_number(text: str) -> Optional[str]:
+    """Extract NMC number with multiple patterns"""
+    patterns = [
+        r'nmc[-\s]*(?:no\.?|registration)?\s*:?\s*(\d{4,7})',
+        r'nmc\s+(\d{4,7})',
+        r'registration\s*(?:no\.?)?\s*:?\s*(\d{4,7})',
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            nmc = match.group(1)
+            if len(nmc) >= 4 and len(nmc) <= 7:
+                return nmc
+    return None
+
+
+# ============================================================================
+# HOSPITAL NAME EXTRACTION
+# ============================================================================
+def extract_hospital_name(text: str) -> Optional[str]:
+    """Extract hospital/clinic name"""
+    patterns = [
+        r'(?:hospital|clinic|medical\s*center|health\s*center|institute)[\s:]*([A-Z][A-Za-z\s&]+)',
+        r'([A-Z][A-Za-z\s&]+(?:hospital|clinic|medical|center|health))',
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            name = match.group(1).strip()
+            name = re.sub(r'\s+', ' ', name)
+            if len(name) > 3 and len(name) < 100:
+                return name
+    return None
+
+
+# ============================================================================
+# DEPARTMENT EXTRACTION
+# ============================================================================
+DEPARTMENTS = [
+    'Cardiology', 'Orthopedics', 'Neurology', 'Pediatrics',
+    'Dermatology', 'Psychiatry', 'Ophthalmology', 'ENT',
+    'Gynecology', 'Urology', 'Nephrology', 'Gastroenterology',
+    'Oncology', 'Radiology', 'Surgery', 'Medicine',
+    'General Medicine', 'Emergency', 'Gynae', 'Ortho',
+    'Neuro', 'Eye', 'Chest', 'Skin', 'Dental',
+]
+
+
+def extract_department(text: str) -> Optional[str]:
+    """Extract department/specialty"""
+    text_lower = text.lower()
+    for dept in DEPARTMENTS:
+        pattern = r'\b' + re.escape(dept.lower()) + r'\b'
+        if re.search(pattern, text_lower):
+            return dept
+    return None
+
+
+# ============================================================================
+# DATE EXTRACTION
+# ============================================================================
+def extract_date(text: str) -> Optional[str]:
+    """Extract date from prescription"""
+    patterns = [
+        r'(\d{1,2}[/-]\d{1,2}[/-]\d{2,4})',
+        r'(\d{1,2}\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{2,4})',
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE)
+        if match:
+            return match.group(1)
+    return None
+
+
+# ============================================================================
+# MAIN OCR FUNCTION
+# ============================================================================
+def analyze_prescription(image_path: str) -> Dict:
+    """Analyze prescription image with highest possible accuracy"""
+    logger.info(f"Starting OCR analysis for: {image_path}")
+    
+    if not os.path.exists(image_path):
+        logger.error(f"Image file not found: {image_path}")
+        return {
+            'success': False,
+            'error': 'Image file not found',
+            'raw_text': '',
+            'doctor_name': None,
+            'nmc_number': None,
+            'hospital_name': None,
+            'department': None,
+            'medicines': [],
+            'confidence': 'low'
+        }
+    
+    # Run Tesseract with multiple PSM modes for best results
+    best_result = None
+    best_confidence = 0
+    psm_modes = ['6', '3', '4', '11']
+    
+    for psm in psm_modes:
+        try:
+            result = subprocess.run(
+                [
+                    'tesseract', image_path, 'stdout',
+                    '-l', 'eng',
+                    '--psm', psm,
+                    '--oem', '3',
+                ],
+                capture_output=True,
+                text=True,
+                timeout=60
+            )
+            text = result.stdout.strip()
+            if text:
+                words = len(text.split())
+                if words > best_confidence:
+                    best_confidence = words
+                    best_result = text
+        except Exception as e:
+            logger.warning(f"OCR with PSM {psm} failed: {e}")
+            continue
+    
+    raw_text = best_result or ""
+    logger.info(f"OCR extracted {len(raw_text)} chars, {len(raw_text.split())} words")
+    
+    # Extract all fields
+    doctor_name, doc_conf = extract_doctor_name(raw_text)
+    nmc_number = extract_nmc_number(raw_text)
+    hospital_name = extract_hospital_name(raw_text)
+    department = extract_department(raw_text)
+    medicines = extract_medicines(raw_text)
+    date = extract_date(raw_text)
+    
+    # Calculate overall confidence
+    found_items = sum(1 for x in [doctor_name, nmc_number, hospital_name, department, medicines, date] if x)
+    
+    if found_items >= 4:
+        confidence = 'high'
+    elif found_items >= 2:
+        confidence = 'medium'
+    else:
+        confidence = 'low'
+    
+    result = {
+        'success': bool(raw_text),
+        'raw_text': raw_text,
+        'doctor_name': doctor_name,
+        'doctor_confidence': doc_conf,
+        'nmc_number': nmc_number,
+        'hospital_name': hospital_name,
+        'department': department,
+        'medicines': medicines,
+        'medicine_count': len(medicines),
+        'date': date,
+        'confidence': confidence,
+        'error': None
+    }
+    
+    logger.info(f"OCR Result: NMC={nmc_number}, Doctor={doctor_name}, "
+                f"Hospital={hospital_name}, Dept={department}, "
+                f"Medicines={len(medicines)}, Confidence={confidence}")
+    
+    return result
+
+
+def batch_analyze(image_paths: List[str]) -> List[Dict]:
+    """Analyze multiple prescription images"""
+    results = []
+    for path in image_paths:
+        result = analyze_prescription(path)
+        result['image_path'] = str(path)
+        results.append(result)
+    return results
+
+
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) > 1:
+        result = analyze_prescription(sys.argv[1])
+        print(f"Success: {result['success']}")
+        print(f"Doctor: {result['doctor_name']} ({result['doctor_confidence']})")
+        print(f"NMC: {result['nmc_number']}")
+        print(f"Hospital: {result['hospital_name']}")
+        print(f"Department: {result['department']}")
+        print(f"Medicines ({result['medicine_count']}): {result['medicines']}")
+        print(f"Date: {result['date']}")
+        print(f"Confidence: {result['confidence']}")
+    else:
+        print("Usage: python ocr_utils_final.py <image_path>")

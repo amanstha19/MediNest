@@ -549,9 +549,9 @@ class UserPaymentAdmin(admin.ModelAdmin):
 
 class PrescriptionVerificationAdmin(admin.ModelAdmin):
     list_display = (
-        'id', 'status', 'order_link', 'prescription_thumbnail',
+        'id', 'status_badge', 'status', 'order_link', 'prescription_thumbnail',
         'extracted_nmc_number', 'doctor_name', 'hospital_name', 'department',
-        'ocr_confidence', 'verified_by', 'created_at'
+        'ocr_confidence_badge', 'medicine_count', 'ocr_processing_time', 'verified_by', 'created_at'
     )
     list_filter = ('status', 'ocr_confidence', 'created_at')
     search_fields = ('order__id', 'extracted_nmc_number', 'doctor_name', 'hospital_name', 'department', 'verification_notes')
@@ -611,6 +611,38 @@ class PrescriptionVerificationAdmin(admin.ModelAdmin):
             colors.get(obj.status, '#6c757d'), obj.status.upper()
         )
     status_badge.short_description = 'Status'
+    
+    def ocr_confidence_badge(self, obj):
+        colors = {
+            'high': '#28a745',
+            'medium': '#ffc107',
+            'low': '#dc3545',
+        }
+        return format_html(
+            '<span style="background:{};color:white;padding:4px 12px;border-radius:15px;font-size:11px;font-weight:600;">{}</span>',
+            colors.get(obj.ocr_confidence, '#6c757d'), obj.ocr_confidence.upper()
+        )
+    ocr_confidence_badge.short_description = 'OCR Confidence'
+    
+    def medicine_count(self, obj):
+        if obj.medicine_list:
+            count = len(obj.medicine_list) if isinstance(obj.medicine_list, list) else 0
+            return format_html('<span style="background:#17a2b8;color:white;padding:4px 12px;border-radius:15px;font-size:11px;font-weight:600;">{} meds</span>', count)
+        return format_html('<span style="background:#6c757d;color:white;padding:4px 12px;border-radius:15px;font-size:11px;font-weight:600;">0 meds</span>')
+    medicine_count.short_description = 'Medicines'
+    
+    def ocr_processing_time(self, obj):
+        if obj.created_at and obj.updated_at:
+            diff = obj.updated_at - obj.created_at
+            seconds = diff.total_seconds()
+            if seconds < 60:
+                return f"{int(seconds)}s"
+            elif seconds < 3600:
+                return f"{int(seconds/60)}m"
+            else:
+                return f"{int(seconds/3600)}h"
+        return '-'
+    ocr_processing_time.short_description = 'Processing Time'
     
     def approve_prescriptions(self, request, queryset):
         from django.utils import timezone

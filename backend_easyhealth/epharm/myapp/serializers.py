@@ -132,16 +132,26 @@ class CartSerializer(serializers.ModelSerializer):
 # Order Serializer (includes CartItem details for the order)
 class OrderSerializer(serializers.ModelSerializer):
     items = serializers.SerializerMethodField()
+    payment_method_display = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'items', 'total_price', 'status', 'created_at']
+        fields = ['id', 'user', 'items', 'total_price', 'status', 'payment_method', 'payment_method_display', 'created_at']
 
     def get_items(self, obj):
         cart_items = CartItem.objects.filter(order=obj)
         return CartItemSerializer(cart_items, many=True).data
+    
+    def get_payment_method_display(self, obj):
+        """Return human-readable payment method"""
+        if obj.payment_method == 'CASH_ON_DELIVERY':
+            return 'Cash on Delivery'
+        elif obj.payment_method == 'ONLINE':
+            return 'Online Payment (eSewa)'
+        return obj.payment_method
 
 
+# UserPayment Serializer
 class UserPaymentSerializer(serializers.ModelSerializer):
     order = OrderSerializer(read_only=True)
 
@@ -212,3 +222,4 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = ['id', 'value', 'label', 'icon', 'color', 'description', 'order', 'is_active']
+

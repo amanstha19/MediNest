@@ -82,14 +82,20 @@ class Order(models.Model):
         ('delivered', 'Delivered'),
     ]
     
+    PAYMENT_METHOD_CHOICES = [
+        ('ONLINE', 'Online Payment'),
+        ('CASH_ON_DELIVERY', 'Cash on Delivery'),
+    ]
+    
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='pending')
     address = models.TextField(null=False, default="Unknown Address")
     prescription = models.FileField(upload_to='prescriptions/', null=True, blank=True)
+    payment_method = models.CharField(max_length=50, choices=PAYMENT_METHOD_CHOICES, default='CASH_ON_DELIVERY')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    
     def __str__(self):
         cart_items = self.cartitem_set.all()
         cart_items_str = ", ".join([f"{item.quantity} x {item.product.name}" for item in cart_items])
@@ -105,11 +111,11 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, null=True, blank=True)
     prescription_file = models.FileField(upload_to='cart_prescriptions/', null=True, blank=True)
+    
     def __str__(self):
         return f"{self.quantity} x {self.product.name}"
 
@@ -199,3 +205,4 @@ class PrescriptionVerification(models.Model):
             'rejected': '#dc3545',
         }
         return colors.get(self.status, '#6c757d')
+

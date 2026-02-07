@@ -98,6 +98,19 @@ const OrderSuccessScreen = () => {
                   </span>
                 </div>
 
+                <div style={{ paddingBottom: 'var(--eh-spacing-lg)', borderBottom: '1px solid var(--eh-border)' }}>
+                  <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>Payment Method</p>
+                  <span style={{ 
+                    background: orderDetails.payment_method === 'CASH_ON_DELIVERY' ? 'var(--eh-success)' : 'var(--eh-primary)', 
+                    color: 'white', 
+                    padding: '6px 12px', 
+                    borderRadius: 'var(--eh-radius-sm)', 
+                    fontWeight: 600 
+                  }}>
+                    {orderDetails.payment_method_display || (orderDetails.payment_method === 'CASH_ON_DELIVERY' ? 'Cash on Delivery' : 'Online Payment (eSewa)')}
+                  </span>
+                </div>
+
                 <div>
                   <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>Shipping Address</p>
                   <p style={{ fontSize: '1rem' }}>{orderDetails.address || 'Address not provided'}</p>

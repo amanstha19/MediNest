@@ -11,11 +11,12 @@ import json
 import logging
 import os
 import tempfile
+import uuid
 from pathlib import Path
 
-from ..models import Cart, CartItem, Order, Product, PrescriptionVerification
+from ..models import Cart, CartItem, Order, Product, PrescriptionVerification, userPayment
 from ..serializers import OrderSerializer
-from ..ocr_utils_enhanced import analyze_prescription
+from ..advanced_ocr_handwriting import enhanced_analyze_prescription as analyze_prescription
 
 logger = logging.getLogger(__name__)
 
@@ -62,9 +63,12 @@ class PlaceOrderView(APIView):
             cart_items = json.loads(cart_items_data)
             total_price = 0
 
+            # Map frontend payment method to backend format
+            backend_payment_method = 'ONLINE' if payment_method == 'online' else 'CASH_ON_DELIVERY'
+
             with transaction.atomic():
                 # Create the order first
-                order = Order.objects.create(user=request.user, total_price=0, address=address)
+                order = Order.objects.create(user=request.user, total_price=0, address=address, payment_method=backend_payment_method)
 
                 for item in cart_items:
                     product = get_object_or_404(Product, id=item['id'])
@@ -123,7 +127,7 @@ class PlaceOrderView(APIView):
                                 temp_file_path = temp_file.name
 
                             try:
-# Run OCR analysis on the temporary file
+                                # Run OCR analysis on the temporary file
                                 ocr_result = analyze_prescription(temp_file_path)
 
                                 # Create PrescriptionVerification record with enhanced OCR data
@@ -173,6 +177,21 @@ class PlaceOrderView(APIView):
                                 verification_notes=f"Prescription uploaded but OCR processing failed: {str(ocr_error)}"
                             )
 
+                # Create payment record for COD orders
+                if backend_payment_method == 'CASH_ON_DELIVERY':
+                    transaction_uuid = f"COD-{uuid.uuid4().hex[:12].upper()}"
+                    userPayment.objects.create(
+                        amount=total_price,
+                        tax_amount=0,
+                        total_amount=total_price,
+                        transaction_uuid=transaction_uuid,
+                        status='PENDING',
+                        payment_method='CASH_ON_DELIVERY',
+                        user=request.user if request.user.is_authenticated else None,
+                        order=order,
+                    )
+                    logger.info(f"COD payment record created for order {order.id}: {transaction_uuid}")
+
                 # Check payment method
                 if payment_method == "online":
                     return Response({
@@ -218,3 +237,4 @@ def update_order_status(request, order_id):
     order.save()
 
     return Response({"message": "Order status updated successfully.", "order_id": order.id}, status=status.HTTP_200_OK)
+

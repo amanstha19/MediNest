@@ -9,6 +9,7 @@ from django.conf import settings
 
 # Custom User model
 class CustomUser(AbstractUser):
+    email = models.EmailField(unique=True)
     city = models.CharField(max_length=50, blank=True, null=True)
     country = models.CharField(max_length=50, blank=True, null=True)
     phone = models.CharField(max_length=50, blank=True, null=True)
@@ -157,6 +158,26 @@ class userPayment(models.Model):
         return "No order details available"
 
 
+# Password Reset Token Model
+class PasswordResetToken(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='password_reset_tokens')
+    token = models.CharField(max_length=100, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    
+    class Meta:
+        verbose_name = 'Password Reset Token'
+        verbose_name_plural = 'Password Reset Tokens'
+    
+    def __str__(self):
+        return f"Password Reset Token for {self.user.email}"
+    
+    def is_valid(self):
+        from django.utils import timezone
+        return not self.is_used and self.expires_at > timezone.now()
+
+
 # Prescription Verification Model
 class PrescriptionVerification(models.Model):
     STATUS_CHOICES = [
@@ -205,4 +226,3 @@ class PrescriptionVerification(models.Model):
             'rejected': '#dc3545',
         }
         return colors.get(self.status, '#6c757d')
-

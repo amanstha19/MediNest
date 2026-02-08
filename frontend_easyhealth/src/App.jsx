@@ -9,6 +9,8 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import Login from './components/screens/Login';
 import SignupScreen from './components/screens/SignupScreen';
+import ForgotPassword from './components/screens/ForgotPassword';
+import ResetPassword from './components/screens/ResetPassword';
 import HomeScreen from './components/screens/HomeScreen';
 import ProductScreen from './components/screens/ProductScreen';
 import Ambulance from './components/screens/Ambulance';
@@ -49,6 +51,8 @@ const AppContent = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignupScreen />} />
           <Route path="/signin" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/ambulance" element={<Ambulance />} />
           <Route 
             path="/profile" 

@@ -1,0 +1,23 @@
+# Docker Compose Override for Data Persistence
+# This file adds automatic database backup service
+
+services:
+  db-backup:
+    image: postgres:15
+    volumes:
+      - pgdata:/var/lib/postgresql/data:ro
+      - ./backups:/backups
+    environment:
+      - PGHOST=db
+      - PGUSER=drf_user
+      - PGDATABASE=drf_pharmacy
+      - PGPASSWORD=drf123
+    command: >
+      sh -c "
+        echo 'Backup service ready. Run: docker-compose exec db-backup pg_dump -h db -U drf_user -d drf_pharmacy > /backups/backup_$$(date +%Y%m%d_%H%M%S).sql'
+        tail -f /dev/null
+      "
+    depends_on:
+      - db
+    profiles:
+      - backup

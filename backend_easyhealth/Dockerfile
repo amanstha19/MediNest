@@ -25,8 +25,11 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 # Copy all backend project files
 COPY . .
 
+# Make entrypoint script executable
+RUN chmod +x /app/entrypoint.sh
+
 # Expose Django default port
 EXPOSE 8000
 
-# Default command to run Django server
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Use entrypoint script to run migrations and start server
+ENTRYPOINT ["/app/entrypoint.sh"]

@@ -40,6 +40,7 @@ export const AuthProvider = ({ children }) => {
       axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.tokens.access}`;
     } catch (err) {
       setError(err.response?.data?.detail || 'Signup failed');
+      throw err;
     }
   };
 
@@ -58,6 +59,7 @@ export const AuthProvider = ({ children }) => {
       setError(null);
     } catch (err) {
       setError(err.response?.data?.detail || 'Login failed');
+      throw err;
     }
   };
 

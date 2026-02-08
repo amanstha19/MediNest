@@ -98,6 +98,12 @@ const Login = () => {
                 />
               </div>
 
+              <div className="forgot-password-link" style={{ textAlign: 'right', marginBottom: '1rem' }}>
+                <Link to="/forgot-password" style={{ color: '#667eea', fontSize: '0.9rem', textDecoration: 'none' }}>
+                  Forgot Password?
+                </Link>
+              </div>
+
               <Button
                 variant="primary"
                 size="lg"
@@ -126,4 +132,3 @@ const Login = () => {
 };
 
 export default Login;
-

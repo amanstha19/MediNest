@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from django.shortcuts import get_object_or_404
+from django.core.mail import send_mail
+from django.conf import settings
 from django.db import transaction
 import json
 import logging
@@ -19,6 +21,70 @@ from ..serializers import OrderSerializer
 from ..advanced_ocr_handwriting import enhanced_analyze_prescription as analyze_prescription
 
 logger = logging.getLogger(__name__)
+
+
+def send_delivery_email(order):
+    """Send email notification when order is delivered"""
+    try:
+        user = order.user
+        if not user or not user.email:
+            logger.warning(f"Cannot send delivery email - no user/email for order {order.id}")
+            return False
+        
+        # Get order items
+        cart_items = CartItem.objects.filter(order=order)
+        items_list = ""
+        for item in cart_items:
+            items_list += f"• {item.product.name} x {item.quantity} - Rs. {item.product.price * item.quantity}\n"
+        
+        subject = f'📦 Your MediNest Order #{order.id} Has Been Delivered!'
+        
+        message = f"""
+Dear {user.first_name or user.username},
+
+Great news! Your order #{order.id} has been delivered!
+
+ORDER DETAILS
+{'='*40}
+Order ID: #{order.id}
+Delivery Address: {order.address}
+Total Amount: Rs. {order.total_price}
+
+ITEMS DELIVERED
+{'='*40}
+{items_list}
+{'='*40}
+
+Your medicines have been successfully delivered to your address.
+
+If you have any questions or concerns about your order, please don't hesitate to contact our support team.
+
+Thank you for choosing MediNest for your healthcare needs!
+
+Best regards,
+The MediNest Team
+
+---
+This is an automated message. Please do not reply to this email.
+MediNest - Your Trusted Online Pharmacy
+"""
+        
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@medinest.com')
+        
+        send_mail(
+            subject,
+            message,
+            from_email,
+            [user.email],
+            fail_silently=False,
+        )
+        
+        logger.info(f"Delivery email sent successfully for order {order.id} to {user.email}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Failed to send delivery email for order {order.id}: {str(e)}")
+        return False
 
 
 @api_view(['POST'])
@@ -228,13 +294,47 @@ def update_order_status(request, order_id):
     except Order.DoesNotExist:
         return Response({"message": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
 
-    status = request.data.get('status')
+    new_status = request.data.get('status')
 
-    if status not in ['pending', 'shipped', 'delivered']:  # Example statuses
+    if new_status not in ['pending', 'shipped', 'delivered']:
         return Response({"message": "Invalid status."}, status=status.HTTP_400_BAD_REQUEST)
 
-    order.status = status
+    order.status = new_status
     order.save()
 
+    # Send email notification when order is delivered
+    if new_status == 'delivered':
+        send_delivery_email(order)
+
     return Response({"message": "Order status updated successfully.", "order_id": order.id}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def mark_order_delivered(request, order_id):
+    """Mark an order as delivered and send email notification"""
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return Response({"message": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+
+    # Update order status to delivered
+    order.status = 'delivered'
+    order.save()
+
+    # Send delivery email
+    email_sent = send_delivery_email(order)
+
+    if email_sent:
+        return Response({
+            "message": "Order marked as delivered and customer notified via email.",
+            "order_id": order.id,
+            "email_sent": True
+        }, status=status.HTTP_200_OK)
+    else:
+        return Response({
+            "message": "Order marked as delivered but email could not be sent.",
+            "order_id": order.id,
+            "email_sent": False
+        }, status=status.HTTP_200_OK)
 

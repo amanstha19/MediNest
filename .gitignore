@@ -11,6 +11,11 @@ venv/
 media/
 staticfiles/
 
+# Environment variables (contains sensitive data)
+.env
+backend_easyhealth/epharm/.env
+backend_easyhealth/.env
+
 # Ignore Django migrations (keep __init__.py)
 */migrations/*.py
 !*/migrations/__init__.py

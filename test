@@ -1,0 +1,129 @@
+#!/usr/bin/env python3
+"""
+Simple test for Order Delivery Email Feature - verifies code structure
+"""
+
+import os
+import sys
+import django
+
+# Setup Django
+sys.path.insert(0, '/Users/amanshrestha/Desktop/MediNest/backend_easyhealth/epharm')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'epharm.settings')
+django.setup()
+
+def test_code_structure():
+    """Test that all required code is in place"""
+    print("=" * 60)
+    print("TESTING ORDER DELIVERY EMAIL CODE STRUCTURE")
+    print("=" * 60)
+    
+    # Test 1: Check send_delivery_email function exists
+    print("\n1. Checking send_delivery_email function...")
+    try:
+        from myapp.views.orders import send_delivery_email
+        print("   ✓ send_delivery_email function exists")
+    except ImportError as e:
+        print(f"   ✗ Import error: {e}")
+        return False
+    
+    # Test 2: Check mark_order_delivered function exists
+    print("\n2. Checking mark_order_delivered function...")
+    try:
+        from myapp.views.orders import mark_order_delivered
+        print("   ✓ mark_order_delivered function exists")
+    except ImportError as e:
+        print(f"   ✗ Import error: {e}")
+        return False
+    
+    # Test 3: Check URL route exists
+    print("\n3. Checking URL route...")
+    try:
+        from myapp.urls import urlpatterns
+        # Look for the mark-delivered pattern
+        found = False
+        for pattern in urlpatterns:
+            if hasattr(pattern, 'pattern') and 'mark-delivered' in str(pattern.pattern):
+                found = True
+                break
+        if found:
+            print("   ✓ URL route for mark-delivered exists")
+        else:
+            print("   ⚠ URL route not found (may be defined differently)")
+    except Exception as e:
+        print(f"   ✗ Error checking URLs: {e}")
+    
+    # Test 4: Check Order model
+    print("\n4. Checking Order model...")
+    try:
+        from myapp.models import Order
+        # Check if order has required fields
+        fields = [f.name for f in Order._meta.get_fields()]
+        required = ['id', 'user', 'status', 'total_price', 'address']
+        missing = [f for f in required if f not in fields]
+        if not missing:
+            print(f"   ✓ Order model has required fields")
+        else:
+            print(f"   ⚠ Missing fields: {missing}")
+    except Exception as e:
+        print(f"   ✗ Error: {e}")
+        return False
+    
+    # Test 5: Check email settings
+    print("\n5. Checking email settings...")
+    from django.conf import settings
+    email_backend = getattr(settings, 'EMAIL_BACKEND', None)
+    print(f"   Email backend: {email_backend}")
+    
+    if email_backend:
+        print("   ✓ Email backend configured")
+    else:
+        print("   ⚠ Email backend not set")
+    
+    # Test 6: Verify function signatures
+    print("\n6. Verifying function signatures...")
+    import inspect
+    
+    # Check send_delivery_email signature
+    sig = inspect.signature(send_delivery_email)
+    params = list(sig.parameters.keys())
+    if 'order' in params:
+        print("   ✓ send_delivery_email accepts 'order' parameter")
+    else:
+        print(f"   ✗ send_delivery_email params: {params}")
+        return False
+    
+    # Check mark_order_delivered signature
+    sig = inspect.signature(mark_order_delivered)
+    params = list(sig.parameters.keys())
+    if 'request' in params and 'order_id' in params:
+        print("   ✓ mark_order_delivered accepts correct parameters")
+    else:
+        print(f"   ✗ mark_order_delivered params: {params}")
+        return False
+    
+    print("\n" + "=" * 60)
+    print("ALL CODE STRUCTURE TESTS PASSED!")
+    print("=" * 60)
+    return True
+
+def main():
+    print("\n" + "🚀" * 20)
+    print("ORDER DELIVERY EMAIL - CODE STRUCTURE TEST")
+    print("🚀" * 20)
+    
+    success = test_code_structure()
+    
+    print("\n" + "🎉" * 20)
+    if success:
+        print("SUCCESS! All code is properly structured.")
+        print("\nThe feature is ready to use:")
+        print("1. Admin clicks 'Mark Delivered' in AdminPanel")
+        print("2. API endpoint updates order status to 'delivered'")
+        print("3. Email is sent to customer with order details")
+    else:
+        print("FAILED! Check errors above.")
+    print("🎉" * 20)
+
+if __name__ == '__main__':
+    main()

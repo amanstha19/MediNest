@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+"""
+Script to restore products from backup to PostgreSQL database
+"""
+import subprocess
+import sys
+
+def run_command(cmd):
+    """Run a shell command and return output"""
+    try:
+        result = subprocess.run(
+            cmd, 
+            shell=True, 
+            capture_output=True, 
+            text=True
+        )
+        return result.returncode == 0, result.stdout + result.stderr
+    except Exception as e:
+        return False, str(e)
+
+def main():
+    print("🔄 Restoring products to database...")
+    
+    # Product SQL statements
+    products = [
+        (5, 'Tylenol', 'Pantoprazole', 'Pantoprazole is a proton pump inhibitor that decreases the amount of acid produced in the stomach.', 10.00, 960, False),
+        (6, 'Amoxil', 'Amoxicillin', 'Amoxicillin is used to treat a wide variety of bacterial infections.', 200.00, 1999, False),
+        (7, 'Azistra', 'Azithromycin', 'Azithromycin is used to treat certain bacterial infections.', 150.00, 222, True),
+        (8, 'Vitamin C', 'Vitamin C', 'Vitamin C helps the body make collagen, a protein that is used to create skin, cartilage, tendons, ligaments, and blood vessels.', 50.00, 898, False),
+    ]
+    
+    success_count = 0
+    
+    for pid, name, generic, desc, price, stock, rx in products:
+        sql = f"""INSERT INTO myapp_product (id, name, generic_name, description, price, stock, prescription_required, created_at, updated_at)
+VALUES ({pid}, '{name}', '{generic}', '{desc}', {price}, {stock}, {rx}, NOW(), NOW())
+ON CONFLICT (id) DO NOTHING;"""
+        
+        cmd = f'docker compose exec -T db psql -U drf_user -d drf_pharmacy -c "{sql}"'
+        
+        success, output = run_command(cmd)
+        
+        if success:
+            print(f"✅ Added: {name} (ID: {pid})")
+            success_count += 1
+        else:
+            print(f"❌ Failed: {name} - {output}")
+    
+    print(f"\n🎉 Restored {success_count}/4 products!")
+    
+    # Verify
+    print("\n📋 Current products in database:")
+    cmd = 'docker compose exec db psql -U drf_user -d drf_pharmacy -c "SELECT id, name, generic_name, price FROM myapp_product ORDER BY id;"'
+    _, output = run_command(cmd)
+    print(output)
+
+if __name__ == "__main__":
+    main()

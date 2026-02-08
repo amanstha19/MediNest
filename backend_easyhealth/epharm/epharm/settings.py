@@ -258,6 +258,30 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 SITE_URL = 'http://localhost:8000'
 
+# Email Configuration
+# Option 1: Console (Development - prints to terminal)
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Option 2: Gmail SMTP (Free - 500 emails/day)
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')  # Your Gmail address
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')  # App password (not regular password)
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@medinest.com')
+
+# Option 3: Mailtrap (For testing - emails go to Mailtrap inbox)
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-mailtrap-username'
+# EMAIL_HOST_PASSWORD = 'your-mailtrap-password'
+
+# Password Reset Settings
+PASSWORD_RESET_TIMEOUT = 3600  # 1 hour in seconds
+
 
 
 CORS_ALLOW_METHODS = [
@@ -318,8 +342,3 @@ UNFOLD = {
 ADMIN_SITE_HEADER = "MediNest Pharmacy Admin"
 ADMIN_SITE_TITLE = "MediNest"
 ADMIN_INDEX_TITLE = "Dashboard Overview"
-
-
-
-
-

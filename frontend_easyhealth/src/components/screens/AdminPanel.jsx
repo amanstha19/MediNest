@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Package, CreditCard, CheckCircle, XCircle, AlertCircle, Edit, Phone } from 'lucide-react';
+import { Settings, Package, CreditCard, CheckCircle, XCircle, Edit, Phone } from 'lucide-react';
 import './pages.css';
 
 const AdminPanel = () => {
@@ -85,6 +85,29 @@ const AdminPanel = () => {
       fetchOrders();
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to update order status');
+    } finally {
+      setUpdatingOrder(null);
+    }
+  };
+
+  const markOrderDelivered = async (orderId) => {
+    setUpdatingOrder(orderId);
+    setError('');
+    setSuccess('');
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/api/order/${orderId}/mark-delivered/`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (response.data.email_sent) {
+        setSuccess(`Order #${orderId} marked as delivered! Customer notified via email.`);
+      } else {
+        setSuccess(`Order #${orderId} marked as delivered! (Email could not be sent)`);
+      }
+      fetchOrders();
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to mark order as delivered');
     } finally {
       setUpdatingOrder(null);
     }
@@ -332,7 +355,17 @@ const AdminPanel = () => {
                             </td>
                             <td style={{ padding: '16px' }}>
                               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                {['pending', 'processing', 'paid', 'shipped', 'delivered'].map((status) => (
+                                {order.status !== 'delivered' && (
+                                  <Button
+                                    size="sm"
+                                    variant="primary"
+                                    disabled={updatingOrder === order.id}
+                                    onClick={() => markOrderDelivered(order.id)}
+                                  >
+                                    {updatingOrder === order.id ? '...' : '📧 Mark Delivered'}
+                                  </Button>
+                                )}
+                                {['pending', 'processing', 'paid', 'shipped'].map((status) => (
                                   <Button
                                     key={status}
                                     size="sm"
@@ -344,6 +377,18 @@ const AdminPanel = () => {
                                     {updatingOrder === order.id ? '...' : status}
                                   </Button>
                                 ))}
+                                {order.status === 'delivered' && (
+                                  <span style={{
+                                    padding: '6px 12px',
+                                    borderRadius: '20px',
+                                    fontSize: '0.85rem',
+                                    fontWeight: 600,
+                                    background: '#d4edda',
+                                    color: '#155724'
+                                  }}>
+                                    ✓ Delivered
+                                  </span>
+                                )}
                               </div>
                             </td>
                           </tr>

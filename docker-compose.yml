@@ -28,21 +28,20 @@ services:
     depends_on:
       - redis
       - db
+    env_file:
+      - ./backend_easyhealth/epharm/.env
     environment:
       - DJANGO_SETTINGS_MODULE=epharm.settings
       - DEBUG=True
-      - DJANGO_SECRET_KEY=your-secret-key-here
-      - ESEWA_SECRET_KEY=your-esewa-key-here
       - POSTGRES_DB=drf_pharmacy
       - POSTGRES_USER=drf_user
       - POSTGRES_PASSWORD=drf123
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
     volumes:
-      - ./backend_easyhealth/epharm:/app
-      - ./backend_easyhealth/epharm/staticfiles:/app/staticfiles
-      - ./backend_easyhealth/epharm/static/images:/app/static/images
-    command: python manage.py runserver 0.0.0.0:8000
+      - ./backend_easyhealth/epharm:/app/epharm
+      - ./backend_easyhealth/epharm/staticfiles:/app/epharm/staticfiles
+      - ./backend_easyhealth/epharm/static/images:/app/epharm/static/images
 
   frontend:
     build:

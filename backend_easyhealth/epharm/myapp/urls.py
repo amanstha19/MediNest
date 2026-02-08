@@ -6,6 +6,7 @@ from .views import (
     PlaceOrderView,
     update_cart_item_quantity,
     update_order_status,
+    mark_order_delivered,
     OrderDetailView,
     ViewCart,
     RegisterAPIView, 
@@ -19,6 +20,9 @@ from .views import (
     AdminPaymentsView,
     AdminPaymentStatusUpdateView,
     OrderPaymentStatusView,
+    forgot_password,
+    verify_reset_token,
+    reset_password,
 )
 
 from rest_framework_simplejwt.views import (
@@ -42,6 +46,11 @@ urlpatterns = [
     path('check-email/', views.check_email, name='check_email'),
     path('user/profile/', UserProfileView.as_view(), name='user-profile'),
     path('verify-admin/', verify_admin_access, name='verify-admin'),
+    
+    # Password Reset Routes
+    path('forgot-password/', forgot_password, name='forgot-password'),
+    path('verify-reset-token/<str:token>/', verify_reset_token, name='verify-reset-token'),
+    path('reset-password/', reset_password, name='reset-password'),
 
 # Product Routes
     path('products/', views.getProducts, name='products'),
@@ -59,6 +68,7 @@ urlpatterns = [
     path('order/place/', PlaceOrderView.as_view(), name='order-place'),
     path('order/<int:pk>/', OrderDetailView.as_view(), name='order-detail'),
     path('order/<int:order_id>/status/', update_order_status, name='order-status-update'),
+    path('order/<int:order_id>/mark-delivered/', mark_order_delivered, name='order-mark-delivered'),
 
     # Search Routes
     path('products/search/', ProductSearchAPIView.as_view(), name='product-search'),

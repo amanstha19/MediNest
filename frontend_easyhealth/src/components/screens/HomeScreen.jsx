@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Card } from '../ui/card';
 import Button from '../ui/button';
+import AISearchModal from '../ui/AISearchModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Pill, Syringe, FlaskConical, HeartPulse, Activity, 
-  Baby, Leaf, Monitor, SquarePlus, Home 
+  Baby, Leaf, Monitor, SquarePlus, Home, Search, Sparkles 
 } from 'lucide-react';
 import './pages.css';
 
@@ -40,7 +41,9 @@ function HomeScreen() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchParams] = useSearchParams();
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const categoryRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category');
@@ -124,6 +127,22 @@ function HomeScreen() {
 
   const getCurrentCategoryInfo = () => categories.find(c => c.value === selectedCategory) || categories[0] || FALLBACK_CATEGORIES[0];
 
+  const handleAISearch = (searchData) => {
+    const { query, category, aiEnhanced, synonyms } = searchData;
+    
+    // Build search URL with AI enhancements
+    let searchUrl = '/medicines?';
+    const params = new URLSearchParams();
+    
+    if (query) params.append('search', query);
+    if (category) params.append('category', category);
+    if (aiEnhanced) params.append('ai', 'true');
+    if (synonyms?.length) params.append('synonyms', synonyms.join(','));
+    
+    searchUrl += params.toString();
+    navigate(searchUrl);
+  };
+
   const renderIcon = (iconName, size = 16) => {
     if (!iconName) return null;
     if (typeof iconName !== 'string') {
@@ -146,6 +165,30 @@ function HomeScreen() {
               </motion.div>
               <motion.h1 className="hero-title-professional" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>Your Healthcare Revolution</motion.h1>
               <motion.p className="hero-subtitle-professional" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>Premium medicines • 24/7 Emergency Services • Fast delivery</motion.p>
+              
+              {/* AI Search Trigger */}
+              <motion.div 
+                className="ai-search-trigger-container"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.25 }}
+              >
+                <button 
+                  className="ai-search-trigger"
+                  onClick={() => setIsSearchModalOpen(true)}
+                >
+                  <Search size={20} />
+                  <span>Search medicines, symptoms...</span>
+                  <div className="ai-search-trigger-badges">
+                    <span className="ai-badge-small">
+                      <Sparkles size={10} />
+                      AI
+                    </span>
+                    <kbd className="kbd-cmd">⌘K</kbd>
+                  </div>
+                </button>
+              </motion.div>
+
               <motion.div className="hero-stats-professional" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
                 <div className="hero-stat-item"><span className="hero-stat-number">5000+</span><span className="hero-stat-label">Medicines</span></div>
                 <div className="hero-stat-divider"></div>
@@ -157,6 +200,15 @@ function HomeScreen() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* AI Search Modal */}
+      <AISearchModal 
+        isOpen={isSearchModalOpen}
+        onClose={() => setIsSearchModalOpen(false)}
+        onSearch={handleAISearch}
+        products={products}
+        categories={categories}
+      />
 
       <motion.div className="category-section-professional" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
         <div className="category-scroll-wrapper" ref={categoryRef}>

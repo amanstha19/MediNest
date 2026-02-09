@@ -118,3 +118,193 @@ class ProductSearchAPIView(APIView):
         } for product in products]
 
         return Response(product_data, status=status.HTTP_200_OK)
+
+
+class AISearchAPIView(APIView):
+    """
+    AI-Powered Search API with semantic understanding, synonym matching,
+    and category intent detection.
+    """
+    
+    # Medical term synonyms for AI understanding
+    MEDICAL_SYNONYMS = {
+        'pain': ['analgesic', 'painkiller', 'relief', 'ache', 'discomfort', 'pain reliever'],
+        'headache': ['migraine', 'head pain', 'cephalalgia', 'head ache'],
+        'fever': ['pyrexia', 'temperature', 'febrile', 'high temperature'],
+        'cold': ['flu', 'influenza', 'cough', 'congestion', 'runny nose', 'common cold'],
+        'stomach': ['gastric', 'abdominal', 'digestive', 'acid', 'ulcer', 'stomach pain'],
+        'baby': ['infant', 'pediatric', 'child', 'newborn', 'toddler', 'kids'],
+        'skin': ['dermatology', 'rash', 'acne', 'eczema', 'topical', 'skin care'],
+        'heart': ['cardiac', 'cardiovascular', 'blood pressure', 'hypertension', 'bp'],
+        'eye': ['ophthalmic', 'vision', 'ocular', 'drops', 'eye care'],
+        'vitamin': ['supplement', 'nutrition', 'mineral', 'multivitamin', 'dietary'],
+        'antibiotic': ['antibacterial', 'infection', 'bacterial', 'antimicrobial'],
+        'allergy': ['antihistamine', 'hypersensitivity', 'allergic', 'allergies'],
+        'sleep': ['insomnia', 'sedative', 'hypnotic', 'rest', 'sleeping'],
+        'stress': ['anxiety', 'calm', 'relaxation', 'mood', 'mental health'],
+        'diabetes': ['blood sugar', 'glucose', 'insulin', 'hypoglycemic', 'sugar'],
+        'cough': ['expectorant', 'suppressant', 'cold', 'throat'],
+        'blood': ['circulation', 'anemia', 'iron', 'hemoglobin'],
+        'bone': ['calcium', 'osteoporosis', 'joint', 'skeletal'],
+        'liver': ['hepatic', 'detox', 'liver care'],
+        'kidney': ['renal', 'urinary', 'kidney care'],
+    }
+    
+    # Category intent mapping
+    CATEGORY_INTENTS = {
+        'baby': 'PED', 'infant': 'PED', 'child': 'PED', 'pediatric': 'PED', 'kids': 'PED',
+        'prescription': 'RX', 'rx': 'RX', 'doctor': 'RX', 'prescribed': 'RX',
+        'otc': 'OTC', 'over the counter': 'OTC', 'general': 'OTC', 'non-prescription': 'OTC',
+        'vitamin': 'SUP', 'supplement': 'SUP', 'nutrition': 'SUP', 'dietary': 'SUP',
+        'woman': 'WOM', 'women': 'WOM', 'female': 'WOM', 'ladies': 'WOM',
+        'man': 'MEN', 'men': 'MEN', 'male': 'MEN', 'gentlemen': 'MEN',
+        'herbal': 'HERB', 'ayurvedic': 'HERB', 'natural': 'HERB', 'organic': 'HERB',
+        'device': 'DIAG', 'monitor': 'DIAG', 'machine': 'DIAG', 'equipment': 'DIAG',
+        'first aid': 'FIRST', 'emergency': 'FIRST', 'bandage': 'FIRST', 'wound': 'FIRST',
+    }
+    
+    def get_synonyms(self, query):
+        """Get all synonyms for a given query"""
+        query_lower = query.lower()
+        synonyms = set()
+        
+        for term, term_synonyms in self.MEDICAL_SYNONYMS.items():
+            if term in query_lower or any(s in query_lower for s in term_synonyms):
+                synonyms.add(term)
+                synonyms.update(term_synonyms)
+        
+        return list(synonyms)
+    
+    def detect_category_intent(self, query):
+        """Detect category intent from query"""
+        query_lower = query.lower()
+        
+        for intent, category in self.CATEGORY_INTENTS.items():
+            if intent in query_lower:
+                return category
+        
+        return None
+    
+    def calculate_relevance_score(self, product, query, synonyms):
+        """Calculate relevance score for a product based on query match"""
+        score = 0
+        query_lower = query.lower()
+        name = (product.generic_name or product.name or '').lower()
+        description = (product.description or '').lower()
+        
+        # Exact match in name (highest priority)
+        if query_lower in name:
+            score += 100
+        
+        # Word match in name
+        query_words = query_lower.split()
+        for word in query_words:
+            if len(word) > 2 and word in name:
+                score += 50
+        
+        # Synonym match in name
+        for synonym in synonyms:
+            if synonym.lower() in name:
+                score += 40
+        
+        # Match in description
+        if query_lower in description:
+            score += 30
+        
+        # Synonym match in description
+        for synonym in synonyms:
+            if synonym.lower() in description:
+                score += 20
+        
+        # Category match bonus
+        detected_category = self.detect_category_intent(query)
+        if detected_category and product.category_value == detected_category:
+            score += 25
+        
+        return score
+    
+    def get(self, request, *args, **kwargs):
+        search_query = request.GET.get('search', '').strip()
+        category_value = request.GET.get('category', '').strip()
+        ai_enhanced = request.GET.get('ai', 'false').lower() == 'true'
+        
+        if not search_query:
+            return Response({
+                'results': [],
+                'ai_enhanced': False,
+                'message': 'No search query provided'
+            }, status=status.HTTP_200_OK)
+        
+        # Get synonyms for AI enhancement
+        synonyms = self.get_synonyms(search_query) if ai_enhanced else []
+        
+        # Detect category intent
+        detected_category = self.detect_category_intent(search_query)
+        if detected_category and not category_value:
+            category_value = detected_category
+        
+        # Build search filters
+        filters = Q()
+        
+        # Main query search
+        filters |= Q(name__icontains=search_query)
+        filters |= Q(generic_name__icontains=search_query)
+        filters |= Q(description__icontains=search_query)
+        
+        # Synonym search (AI enhanced)
+        if ai_enhanced and synonyms:
+            for synonym in synonyms:
+                filters |= Q(name__icontains=synonym)
+                filters |= Q(generic_name__icontains=synonym)
+                filters |= Q(description__icontains=synonym)
+        
+        # Apply category filter
+        if category_value:
+            filters &= Q(category__value=category_value)
+        
+        # Get products
+        products = Product.objects.filter(filters).distinct()
+        
+        # Calculate relevance scores and sort
+        scored_products = []
+        for product in products:
+            score = self.calculate_relevance_score(product, search_query, synonyms)
+            scored_products.append({
+                'product': product,
+                'score': score,
+                'ai_match': score > 0 and (len(synonyms) > 0 or detected_category)
+            })
+        
+        # Sort by relevance score (descending)
+        scored_products.sort(key=lambda x: x['score'], reverse=True)
+        
+        # Prepare response data
+        product_data = [{
+            "id": item['product'].id,
+            "name": item['product'].name,
+            "generic_name": item['product'].generic_name,
+            "category": item['product'].category_value,
+            "category_label": item['product'].category_label,
+            "description": item['product'].description,
+            "price": float(item['product'].price) if item['product'].price else 0,
+            "stock": item['product'].stock,
+            "prescription_required": item['product'].prescription_required,
+            "image": item['product'].image.url if item['product'].image else None,
+            "relevance_score": item['score'],
+            "ai_match": item['ai_match']
+        } for item in scored_products]
+        
+        # Prepare AI insights
+        ai_insights = {
+            'synonyms_used': synonyms if ai_enhanced else [],
+            'detected_category': detected_category,
+            'category_applied': category_value if category_value else None,
+            'total_results': len(product_data),
+            'ai_enhanced': ai_enhanced
+        }
+        
+        return Response({
+            'results': product_data,
+            'ai_insights': ai_insights,
+            'search_query': search_query
+        }, status=status.HTTP_200_OK)

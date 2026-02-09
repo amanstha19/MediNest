@@ -19,7 +19,7 @@ function ProductScreen() {
     async function fetchProductDetails() {
       try {
         setLoading(true);
-        const { data } = await axios.get(`/api/product/${id}`);
+        const { data } = await axios.get(`/api/product/${id}/`);
         setProduct(data);
       } catch (err) {
         console.error('Error fetching product details:', err);

@@ -2054,6 +2054,312 @@ button:focus {
 }
 
 /* ==========================================================================
+   MODERN QUANTITY CONTROLS - CART PAGE
+   ========================================================================== */
+
+/* Quantity Controls Container - Glassmorphism Style */
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(248, 250, 252, 0.95) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  border-radius: 16px;
+  padding: 4px;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quantity-controls:hover {
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
+}
+
+/* Quantity Button Base Style */
+.quantity-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* Minus Button - Red Gradient */
+.quantity-btn.minus {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  color: #dc2626;
+  box-shadow:
+    0 2px 8px rgba(220, 38, 38, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.quantity-btn.minus:hover:not(:disabled) {
+  background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+  box-shadow:
+    0 4px 16px rgba(220, 38, 38, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transform: scale(1.05);
+}
+
+.quantity-btn.minus:active:not(:disabled) {
+  transform: scale(0.95);
+  box-shadow:
+    0 2px 8px rgba(220, 38, 38, 0.15),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Plus Button - Green Gradient */
+.quantity-btn.plus {
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #16a34a;
+  box-shadow:
+    0 2px 8px rgba(22, 163, 74, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.quantity-btn.plus:hover {
+  background: linear-gradient(135deg, #bbf7d0 0%, #86efac 100%);
+  box-shadow:
+    0 4px 16px rgba(22, 163, 74, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transform: scale(1.05);
+}
+
+.quantity-btn.plus:active {
+  transform: scale(0.95);
+  box-shadow:
+    0 2px 8px rgba(22, 163, 74, 0.15),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Disabled State - When quantity is 1 */
+.quantity-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Quantity Value Display */
+.quantity-value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  height: 40px;
+  padding: 0 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  background: transparent;
+  border-left: 1px solid rgba(226, 232, 240, 0.8);
+  border-right: 1px solid rgba(226, 232, 240, 0.8);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Ripple Effect on Button Click */
+.quantity-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+
+.quantity-btn:active::after {
+  opacity: 1;
+  transition: opacity 0s;
+}
+
+/* Hover Glow Effect */
+.quantity-btn.minus:hover:not(:disabled)::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.2) 0%, transparent 50%);
+  border-radius: 14px;
+  z-index: -1;
+  animation: pulse-red 1.5s ease-in-out infinite;
+}
+
+.quantity-btn.plus:hover::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.2) 0%, transparent 50%);
+  border-radius: 14px;
+  z-index: -1;
+  animation: pulse-green 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes pulse-green {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Bounce Animation on Quantity Change */
+@keyframes quantity-bounce {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.15); }
+  50% { transform: scale(0.95); }
+  75% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.quantity-value.updated {
+  animation: quantity-bounce 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Cart Item Actions - Enhanced Layout */
+.cart-item-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  min-width: 160px;
+}
+
+.cart-item-actions .cart-item-price {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #16a34a;
+  margin: 0;
+  order: 1;
+}
+
+.cart-item-actions .quantity-controls {
+  order: 2;
+}
+
+.cart-item-actions .remove-btn {
+  order: 3;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .quantity-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+  }
+  
+  .quantity-value {
+    min-width: 40px;
+    height: 36px;
+    font-size: 1rem;
+    padding: 0 8px;
+  }
+  
+  .quantity-controls {
+    padding: 3px;
+    border-radius: 14px;
+  }
+  
+  .cart-item-actions {
+    min-width: auto;
+    align-items: stretch;
+    gap: 10px;
+  }
+  
+  .cart-item-actions .quantity-controls {
+    align-self: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .quantity-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    border-radius: 8px;
+  }
+  
+  .quantity-value {
+    min-width: 36px;
+    height: 32px;
+    font-size: 0.9rem;
+    padding: 0 6px;
+  }
+  
+  .quantity-controls {
+    padding: 2px;
+    border-radius: 12px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .quantity-controls {
+    background: linear-gradient(
+      135deg,
+      rgba(30, 41, 59, 0.95) 0%,
+      rgba(15, 23, 42, 0.95) 100%
+    );
+    border-color: rgba(51, 65, 85, 0.6);
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  
+  .quantity-value {
+    color: #f1f5f9;
+    border-left-color: rgba(51, 65, 85, 0.8);
+    border-right-color: rgba(51, 65, 85, 0.8);
+  }
+  
+  .quantity-btn.minus {
+    background: linear-gradient(135deg, rgba(153, 27, 27, 0.4) 0%, rgba(127, 29, 29, 0.3) 100%);
+    color: #fca5a5;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  
+  .quantity-btn.plus {
+    background: linear-gradient(135deg, rgba(21, 128, 61, 0.4) 0%, rgba(20, 83, 45, 0.3) 100%);
+    color: #86efac;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  
+  .quantity-btn.minus:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(185, 28, 28, 0.5) 0%, rgba(153, 27, 27, 0.4) 100%);
+  }
+  
+  .quantity-btn.plus:hover {
+    background: linear-gradient(135deg, rgba(22, 101, 52, 0.5) 0%, rgba(21, 128, 61, 0.4) 100%);
+  }
+}
+
+/* ==========================================================================
    SEARCH & CATEGORY FILTER STYLES
    ========================================================================== */
 

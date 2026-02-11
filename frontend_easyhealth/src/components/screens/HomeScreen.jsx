@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { Card } from '../ui/card';
 import Button from '../ui/button';
-import AISearchModal from '../ui/AISearchModal';
+import SimpleSearchModal from '../ui/SimpleSearchModal';
+import ChatbotModal from '../ui/ChatbotModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Pill, Syringe, FlaskConical, HeartPulse, Activity, 
-  Baby, Leaf, Monitor, SquarePlus, Home, Search, Sparkles 
+  Baby, Leaf, Monitor, SquarePlus, Home, Search 
 } from 'lucide-react';
 import './pages.css';
 
@@ -42,8 +43,8 @@ function HomeScreen() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [searchParams] = useSearchParams();
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const categoryRef = useRef(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category');
@@ -127,22 +128,6 @@ function HomeScreen() {
 
   const getCurrentCategoryInfo = () => categories.find(c => c.value === selectedCategory) || categories[0] || FALLBACK_CATEGORIES[0];
 
-  const handleAISearch = (searchData) => {
-    const { query, category, aiEnhanced, synonyms } = searchData;
-    
-    // Build search URL with AI enhancements
-    let searchUrl = '/medicines?';
-    const params = new URLSearchParams();
-    
-    if (query) params.append('search', query);
-    if (category) params.append('category', category);
-    if (aiEnhanced) params.append('ai', 'true');
-    if (synonyms?.length) params.append('synonyms', synonyms.join(','));
-    
-    searchUrl += params.toString();
-    navigate(searchUrl);
-  };
-
   const renderIcon = (iconName, size = 16) => {
     if (!iconName) return null;
     if (typeof iconName !== 'string') {
@@ -164,9 +149,8 @@ function HomeScreen() {
                 <span className="hero-icon-large">⚕️</span>
               </motion.div>
               <motion.h1 className="hero-title-professional" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>Your Healthcare Revolution</motion.h1>
-              <motion.p className="hero-subtitle-professional" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>Premium medicines • 24/7 Emergency Services • Fast delivery</motion.p>
               
-              {/* AI Search Trigger */}
+              {/* Search Trigger */}
               <motion.div 
                 className="ai-search-trigger-container"
                 initial={{ opacity: 0, y: 20 }}
@@ -178,36 +162,79 @@ function HomeScreen() {
                   onClick={() => setIsSearchModalOpen(true)}
                 >
                   <Search size={20} />
-                  <span>Search medicines, symptoms...</span>
+                  <span>Search medicines by name...</span>
                   <div className="ai-search-trigger-badges">
-                    <span className="ai-badge-small">
-                      <Sparkles size={10} />
-                      AI
-                    </span>
                     <kbd className="kbd-cmd">⌘K</kbd>
                   </div>
                 </button>
               </motion.div>
 
-              <motion.div className="hero-stats-professional" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-                <div className="hero-stat-item"><span className="hero-stat-number">5000+</span><span className="hero-stat-label">Medicines</span></div>
-                <div className="hero-stat-divider"></div>
-                <div className="hero-stat-item"><span className="hero-stat-number">24/7</span><span className="hero-stat-label">Available</span></div>
-                <div className="hero-stat-divider"></div>
-                <div className="hero-stat-item"><span className="hero-stat-number">30min</span><span className="hero-stat-label">Delivery</span></div>
+              {/* Health Assistant Chatbot Trigger */}
+              <motion.div 
+                className="chatbot-trigger-container"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                style={{ marginTop: '12px' }}
+              >
+                <button 
+                  className="chatbot-trigger-btn"
+                  onClick={() => setIsChatbotOpen(true)}
+                  style={{
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    border: 'none',
+                    borderRadius: '12px',
+                    padding: '12px 20px',
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    cursor: 'pointer',
+                    fontSize: '0.95rem',
+                    fontWeight: '500',
+                    boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <span style={{ fontSize: '1.2rem' }}>💬</span>
+                  <span>Ask Health Assistant</span>
+                  <span style={{ 
+                    background: 'rgba(255,255,255,0.2)', 
+                    padding: '2px 8px', 
+                    borderRadius: '4px',
+                    fontSize: '0.75rem'
+                  }}>
+                    AI
+                  </span>
+                </button>
+                <p style={{ 
+                  fontSize: '0.8rem', 
+                  color: 'rgba(255,255,255,0.7)', 
+                  marginTop: '6px',
+                  marginLeft: '4px'
+                }}>
+                  Get general health info • Not for diagnosis
+                </p>
               </motion.div>
+
+         
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* AI Search Modal */}
-      <AISearchModal 
+      {/* Simple Search Modal */}
+      <SimpleSearchModal 
         isOpen={isSearchModalOpen}
         onClose={() => setIsSearchModalOpen(false)}
-        onSearch={handleAISearch}
         products={products}
         categories={categories}
+      />
+
+      {/* Health Assistant Chatbot Modal */}
+      <ChatbotModal 
+        isOpen={isChatbotOpen}
+        onClose={() => setIsChatbotOpen(false)}
       />
 
       <motion.div className="category-section-professional" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>

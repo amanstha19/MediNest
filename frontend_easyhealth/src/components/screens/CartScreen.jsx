@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useCart } from '../../context/CartContext';
 import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
@@ -9,15 +10,29 @@ import './pages.css';
 const CartScreen = () => {
   const { cartItems, removeFromCart, updateQuantity } = useCart();
   const navigate = useNavigate();
+  const [updatedItems, setUpdatedItems] = useState(new Set());
 
   const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
+  const triggerUpdateAnimation = (itemId) => {
+    setUpdatedItems(prev => new Set([...prev, itemId]));
+    setTimeout(() => {
+      setUpdatedItems(prev => {
+        const next = new Set(prev);
+        next.delete(itemId);
+        return next;
+      });
+    }, 400);
+  };
+
   const increaseQuantity = (id) => {
     updateQuantity(id, 'increase');
+    triggerUpdateAnimation(id);
   };
 
   const decreaseQuantity = (id) => {
     updateQuantity(id, 'decrease');
+    triggerUpdateAnimation(id);
   };
 
   if (cartItems.length === 0) {
@@ -104,19 +119,24 @@ const CartScreen = () => {
                     
                     <div className="quantity-controls">
                       <motion.button
-                        className="quantity-btn"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
+                        className="quantity-btn minus"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.92 }}
                         onClick={() => decreaseQuantity(item.id)}
+                        disabled={item.quantity <= 1}
+                        aria-label="Decrease quantity"
                       >
                         −
                       </motion.button>
-                      <span className="quantity-value">{item.quantity}</span>
+                      <span className={`quantity-value ${updatedItems.has(item.id) ? 'updated' : ''}`}>
+                        {item.quantity}
+                      </span>
                       <motion.button
-                        className="quantity-btn"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
+                        className="quantity-btn plus"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.92 }}
                         onClick={() => increaseQuantity(item.id)}
+                        aria-label="Increase quantity"
                       >
                         +
                       </motion.button>

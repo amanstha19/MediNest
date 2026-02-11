@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin import AdminSite
 from django.template.response import TemplateResponse
 from django.utils.html import format_html
@@ -9,6 +9,7 @@ from django.shortcuts import render
 from datetime import timedelta
 from unfold.sites import UnfoldAdminSite
 from .models import Product, CustomUser, Cart, CartItem, Order, userPayment, Category, PrescriptionVerification
+from .views.orders import send_delivery_email
 
 
 class MediNestAdminSite(UnfoldAdminSite):

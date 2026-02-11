@@ -8,13 +8,25 @@ import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
 import { ShoppingCart, MapPin, FileText, CreditCard, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
+import AddressForm from '../ui/AddressForm';
 
 const CheckoutScreen = () => {
   const { cartItems } = useCart();
   const { addToast } = useToast();
   const navigate = useNavigate();
   const [prescription, setPrescription] = useState(null);
-  const [address, setAddress] = useState('');
+  const [address, setAddress] = useState({
+    fullName: '',
+    phone: '',
+    email: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    province: '',
+    postalCode: '',
+    landmark: '',
+    deliveryInstructions: ''
+  });
   const [paymentMethod, setPaymentMethod] = useState('cod');
   const [prescriptionRequired, setPrescriptionRequired] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -47,8 +59,8 @@ const CheckoutScreen = () => {
       return;
     }
 
-    if (!address.trim()) {
-      addToast('Please enter a delivery address.', 'warning');
+    if (!address.addressLine1.trim() || !address.city.trim() || !address.province.trim()) {
+      addToast('Please fill in the required delivery address fields.', 'warning');
       return;
     }
 
@@ -71,8 +83,10 @@ const CheckoutScreen = () => {
         return;
       }
 
+      const formattedAddress = `${address.addressLine1}${address.addressLine2 ? ', ' + address.addressLine2 : ''}, ${address.city}, ${address.province}${address.postalCode ? ', ' + address.postalCode : ''}${address.landmark ? ', Near ' + address.landmark : ''}${address.deliveryInstructions ? '. Instructions: ' + address.deliveryInstructions : ''}`;
+
       const formData = new FormData();
-      formData.append('address', address);
+      formData.append('address', formattedAddress);
       formData.append('payment_method', paymentMethod);
       if (prescriptionRequired) {
         formData.append('prescription', prescription);
@@ -296,28 +310,9 @@ const CheckoutScreen = () => {
               <CardContent style={{ padding: '24px' }}>
                 <form onSubmit={handleSubmit}>
                   <div style={{ marginBottom: '20px' }}>
-                    <label style={{
-                      display: 'block',
-                      marginBottom: '8px',
-                      fontWeight: 600,
-                      color: 'var(--eh-text-primary)'
-                    }}>
-                      <MapPin size={18} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Delivery Address
-                    </label>
-                    <textarea
-                      className="input-glass"
-                      placeholder="Enter your complete delivery address"
-                      value={address}
-                      onChange={(e) => setAddress(e.target.value)}
-                      required
-                      disabled={loading}
-                      rows={3}
-                      style={{
-                        width: '100%',
-                        fontSize: '1rem',
-                        padding: '14px 16px',
-                        resize: 'vertical'
-                      }}
+                    <AddressForm
+                      onAddressChange={setAddress}
+                      initialAddress={address}
                     />
                   </div>
 

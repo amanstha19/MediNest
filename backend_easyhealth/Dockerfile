@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
 
 # Copy requirements file and install dependencies
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt && pip install --no-cache-dir --upgrade google-genai
 
 # Copy all backend project files
 COPY . .

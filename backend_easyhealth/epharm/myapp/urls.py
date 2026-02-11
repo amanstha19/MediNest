@@ -24,6 +24,7 @@ from .views import (
     verify_reset_token,
     reset_password,
 )
+from .views.chatbot import HealthChatbotAPIView
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -88,4 +89,7 @@ urlpatterns = [
     
     # Order Payment Status
     path('orders/<int:order_id>/payment-status/', OrderPaymentStatusView.as_view(), name='order-payment-status'),
+    
+    # Chatbot Routes
+    path('chatbot/', HealthChatbotAPIView.as_view(), name='chatbot'),
 ]

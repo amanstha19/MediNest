@@ -30,6 +30,7 @@ LOGGING = {
 # Security Keys
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")  # Fetching secret key
 ESEWA_SECRET_KEY = os.getenv("ESEWA_SECRET_KEY")  # Fetching eSewa key
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")  # Fetching Gemini API key
 
 # Debug mode (Set to False in production)
 DEBUG = True

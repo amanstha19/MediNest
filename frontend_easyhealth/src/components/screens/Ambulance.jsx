@@ -220,32 +220,34 @@ function Ambulance() {
         </div>
       </div>
 
-      <div>
-        <h2 style={{ fontSize: '1.5rem', marginBottom: 'var(--eh-spacing-lg)' }}>Available Ambulance Services</h2>
-        <div className="eh-grid--3">
-          {ambulances.map((service, idx) => (
-            <AmbulanceCard key={idx} service={service} />
-          ))}
+      <div style={{ display: 'flex', gap: 'var(--eh-spacing-2xl)', alignItems: 'flex-start', marginBottom: 'var(--eh-spacing-2xl)' }}>
+        <div style={{ flex: 1 }}>
+          <h2 style={{ fontSize: '1.5rem', marginBottom: 'var(--eh-spacing-lg)' }}>Available Ambulance Services</h2>
+          <div className="eh-grid--2">
+            {ambulances.map((service, idx) => (
+              <AmbulanceCard key={idx} service={service} />
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div style={{ marginTop: 'var(--eh-spacing-2xl)', height: '400px' }}>
-        <MapContainer center={[userLocation.lat, userLocation.lng]} zoom={13} style={{ height: '100%', width: '100%' }}>
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
-          {ambulances.map((service, idx) => (
-            <Marker key={idx} position={[service.lat, service.lng]}>
-              <Popup>
-                <strong>{service.name}</strong><br />
-                Location: {service.location}<br />
-                Contact: {service.contact}<br />
-                {service.phone && <a href={`tel:${service.phone.split(',')[0]}`}>Call Now</a>}
-              </Popup>
-            </Marker>
-          ))}
-        </MapContainer>
+        <div style={{ flex: 1, height: '500px', borderRadius: 'var(--eh-radius)', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}>
+          <MapContainer center={[userLocation.lat, userLocation.lng]} zoom={13} style={{ height: '100%', width: '100%' }}>
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
+            {ambulances.map((service, idx) => (
+              <Marker key={idx} position={[service.lat, service.lng]}>
+                <Popup>
+                  <strong>{service.name}</strong><br />
+                  Location: {service.location}<br />
+                  Contact: {service.contact}<br />
+                  {service.phone && <a href={`tel:${service.phone.split(',')[0]}`}>Call Now</a>}
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
+        </div>
       </div>
 
       <Card style={{ marginTop: 'var(--eh-spacing-2xl)', background: 'rgba(15, 118, 110, 0.05)' }}>

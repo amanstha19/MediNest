@@ -4,7 +4,7 @@ import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, RefreshCw, Package, Clock, CheckCircle, MapPin } from 'lucide-react';
+import { User, RefreshCw, Package, Clock, CheckCircle, MapPin, Heart, Shield, Star } from 'lucide-react';
 import './pages.css';
 
 const Profile = () => {
@@ -130,50 +130,239 @@ const Profile = () => {
   }
 
   return (
-    <motion.div 
-      className="eh-container" 
-      style={{ paddingTop: '48px', paddingBottom: '48px' }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-    >
+    <div className="eh-container" style={{ paddingTop: 'var(--eh-spacing-2xl)', paddingBottom: 'var(--eh-spacing-2xl)' }}>
       {user ? (
         <div>
-          {/* Profile Header */}
-          <Card style={{ marginBottom: '24px' }}>
-            <div style={{ padding: '32px' }}>
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '24px',
-                flexWrap: 'wrap'
+          {/* Hero Section */}
+          <div className="eh-hero" style={{
+            marginBottom: 'var(--eh-spacing-2xl)',
+            background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)',
+            color: 'white',
+            padding: '40px 24px',
+            borderRadius: '24px',
+            textAlign: 'center',
+            position: 'relative',
+            overflow: 'hidden'
+          }}>
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(138, 43, 226, 0.4) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255, 20, 147, 0.3) 0%, transparent 50%)',
+              pointerEvents: 'none'
+            }}></div>
+            <div style={{ position: 'relative', zIndex: 1 }}>
+              <div style={{ fontSize: '3rem', marginBottom: '12px' }}>
+                <User size={48} />
+              </div>
+              <h1 style={{
+                fontSize: 'clamp(1.6rem, 4vw, 2.4rem)',
+                fontWeight: 900,
+                marginBottom: '10px',
+                letterSpacing: '-0.02em',
+                background: 'linear-gradient(135deg, #ffffff 0%, #e0f2fe 50%, #dbeafe 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
               }}>
+                Welcome back, {user.first_name || user.username}!
+              </h1>
+              <p style={{ fontSize: '1rem', opacity: 0.95, marginBottom: '24px' }}>
+                Manage your account, track orders, and access your health information
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
                 <div style={{
-                  width: '100px',
-                  height: '100px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  display: 'flex',
+                  display: 'inline-flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '2.5rem',
-                  color: 'white',
-                  boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)'
+                  gap: '8px',
+                  padding: '8px 16px',
+                  background: 'rgba(255,255,255,0.1)',
+                  borderRadius: '20px',
+                  fontSize: '0.9rem',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)'
                 }}>
-                  <User size={48} />
+                  <Package size={16} />
+                  {user.orders?.length || 0} Orders
                 </div>
-                <div style={{ flex: 1, minWidth: '200px' }}>
-                  <h1 style={{ fontSize: '1.75rem', marginBottom: '8px' }}>
-                    {user.first_name} {user.last_name}
-                  </h1>
-                  <p style={{ color: 'var(--text-muted)', marginBottom: '4px' }}>@{user.username}</p>
-                  <p style={{ color: 'var(--text-muted)' }}>{user.email}</p>
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  background: 'rgba(255,255,255,0.1)',
+                  borderRadius: '20px',
+                  fontSize: '0.9rem',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)'
+                }}>
+                  <Heart size={16} />
+                  Member since 2024
                 </div>
-                <Button variant="secondary" onClick={handleRefresh} disabled={refreshing}>
-                  {refreshing ? <RefreshCw size={16} style={{ animation: 'spin 1s linear infinite', marginRight: '8px' }} /> : <RefreshCw size={16} style={{ marginRight: '8px' }} />} Refresh
-                </Button>
               </div>
             </div>
-          </Card>
+          </div>
+
+          {/* Quick Stats */}
+          <div style={{ marginBottom: 'var(--eh-spacing-2xl)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--eh-spacing-lg)' }}>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.4)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  textAlign: 'center',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease'
+                }}
+                whileHover={{ y: -4, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}
+              >
+                <div style={{ fontSize: '2rem', marginBottom: '8px', color: 'var(--primary)' }}>
+                  <Package size={32} />
+                </div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                  {user.orders?.length || 0}
+                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Total Orders</div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.4)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  textAlign: 'center',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease'
+                }}
+                whileHover={{ y: -4, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}
+              >
+                <div style={{ fontSize: '2rem', marginBottom: '8px', color: '#10b981' }}>
+                  <CheckCircle size={32} />
+                </div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                  {user.orders?.filter(order => order.status.toLowerCase() === 'delivered').length || 0}
+                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Delivered Orders</div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  border: '1px solid rgba(255,255,255,0.4)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  textAlign: 'center',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.08)',
+                  transition: 'all 0.3s ease'
+                }}
+                whileHover={{ y: -4, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}
+              >
+                <div style={{ fontSize: '2rem', marginBottom: '8px', color: '#f59e0b' }}>
+                  <Clock size={32} />
+                </div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                  {user.orders?.filter(order => order.status.toLowerCase() === 'pending').length || 0}
+                </div>
+                <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>Pending Orders</div>
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Profile Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.85) 100%)',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255,255,255,0.4)',
+              borderRadius: '16px',
+              padding: '32px',
+              marginBottom: 'var(--eh-spacing-2xl)',
+              boxShadow: '0 8px 25px rgba(0,0,0,0.08)',
+              transition: 'all 0.3s ease'
+            }}
+            whileHover={{ y: -4, boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}
+          >
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '24px',
+              flexWrap: 'wrap'
+            }}>
+              <div style={{
+                width: '100px',
+                height: '100px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '2.5rem',
+                color: 'white',
+                boxShadow: '0 8px 24px rgba(102, 126, 234, 0.4)'
+              }}>
+                <User size={48} />
+              </div>
+              <div style={{ flex: 1, minWidth: '200px' }}>
+                <h1 style={{ fontSize: '1.75rem', marginBottom: '8px', color: 'var(--text-primary)' }}>
+                  {user.first_name} {user.last_name}
+                </h1>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '4px' }}>@{user.username}</p>
+                <p style={{ color: 'var(--text-muted)', marginBottom: '12px' }}>{user.email}</p>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 12px',
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    color: '#10b981'
+                  }}>
+                    <Shield size={14} />
+                    Verified Account
+                  </div>
+                  <div style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 12px',
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    color: 'var(--primary)'
+                  }}>
+                    <Star size={14} />
+                    Premium Member
+                  </div>
+                </div>
+              </div>
+              <Button variant="secondary" onClick={handleRefresh} disabled={refreshing}>
+                {refreshing ? <RefreshCw size={16} style={{ animation: 'spin 1s linear infinite', marginRight: '8px' }} /> : <RefreshCw size={16} style={{ marginRight: '8px' }} />} Refresh
+              </Button>
+            </div>
+          </motion.div>
 
           {/* User Info */}
           <Card style={{ marginBottom: '24px' }}>
@@ -375,7 +564,7 @@ const Profile = () => {
           <p style={{ marginTop: '16px', color: 'var(--text-muted)' }}>Loading profile...</p>
         </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 

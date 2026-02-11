@@ -24,7 +24,7 @@ const PaymentFailure = () => {
                   Back to Cart
                 </Button>
                 <Button variant="secondary" onClick={() => navigate('/')}>
-                  Back to Home
+                  Back to Home Page
                 </Button>
               </div>
             </div>

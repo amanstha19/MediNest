@@ -8,10 +8,12 @@ import './pages.css';
 const AdminPanel = () => {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
+  const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('orders');
   const [updatingOrder, setUpdatingOrder] = useState(null);
   const [updatingStock, setUpdatingStock] = useState(null);
+  const [updatingPayment, setUpdatingPayment] = useState(null);
   const [newStockValue, setNewStockValue] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -27,7 +29,7 @@ const AdminPanel = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      await Promise.all([fetchOrders(), fetchProducts()]);
+      await Promise.all([fetchOrders(), fetchProducts(), fetchPayments()]);
     } catch (err) {
       setError('Failed to load data');
     } finally {
@@ -54,6 +56,17 @@ const AdminPanel = () => {
       setProducts(response.data.products || []);
     } catch (err) {
       console.error('Failed to fetch products:', err);
+    }
+  };
+
+  const fetchPayments = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/admin/payments/', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPayments(response.data.payments || []);
+    } catch (err) {
+      console.error('Failed to fetch payments:', err);
     }
   };
 
@@ -101,11 +114,42 @@ const AdminPanel = () => {
     }
   };
 
+  const updatePaymentStatus = async (paymentId, newStatus) => {
+    setUpdatingPayment(paymentId);
+    setError('');
+    setSuccess('');
+    try {
+      const response = await axios.patch(
+        `http://localhost:8000/api/admin/payments/${paymentId}/status/`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setSuccess(`Payment status updated to ${newStatus}`);
+      fetchPayments();
+    } catch (err) {
+      setError(err.response?.data?.error || 'Failed to update payment status');
+    } finally {
+      setUpdatingPayment(null);
+    }
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'pending': return { bg: '#fff3cd', color: '#856404' };
+      case 'processing': return { bg: '#cce5ff', color: '#004085' };
+      case 'paid': return { bg: '#d4edda', color: '#155724' };
       case 'shipped': return { bg: '#cce5ff', color: '#004085' };
       case 'delivered': return { bg: '#d4edda', color: '#155724' };
+      default: return { bg: '#f8f9fa', color: '#333' };
+    }
+  };
+
+  const getPaymentStatusColor = (status) => {
+    switch (status) {
+      case 'PENDING': return { bg: '#fff3cd', color: '#856404' };
+      case 'PAID': return { bg: '#d4edda', color: '#155724' };
+      case 'FAILED': return { bg: '#f8d7da', color: '#721c24' };
+      case 'REFUNDED': return { bg: '#e2d5f1', color: '#6f42c1' };
       default: return { bg: '#f8f9fa', color: '#333' };
     }
   };
@@ -136,7 +180,7 @@ const AdminPanel = () => {
           🔧 Admin Panel
         </h1>
         <p style={{ color: 'var(--text-muted)', marginBottom: '32px' }}>
-          Manage orders, track deliveries, and update inventory
+          Manage orders, track deliveries, update inventory, and handle payments
         </p>
 
         {/* Success/Error Messages */}
@@ -178,7 +222,7 @@ const AdminPanel = () => {
         </AnimatePresence>
 
         {/* Tabs */}
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '32px' }}>
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'wrap' }}>
           <Button
             variant={activeTab === 'orders' ? 'primary' : 'secondary'}
             onClick={() => setActiveTab('orders')}
@@ -190,6 +234,12 @@ const AdminPanel = () => {
             onClick={() => setActiveTab('inventory')}
           >
             💊 Inventory ({products.length})
+          </Button>
+          <Button
+            variant={activeTab === 'payments' ? 'primary' : 'secondary'}
+            onClick={() => setActiveTab('payments')}
+          >
+            💰 Payments ({payments.length})
           </Button>
         </div>
 
@@ -203,7 +253,7 @@ const AdminPanel = () => {
               <div style={{ padding: '24px', borderBottom: '1px solid var(--glass-border)' }}>
                 <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Order Management</h2>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                  Update order status: Pending → Shipped → Delivered
+                  Update order status: Pending → Processing → Paid → Shipped → Delivered
                 </p>
               </div>
               
@@ -275,7 +325,7 @@ const AdminPanel = () => {
                             </td>
                             <td style={{ padding: '16px' }}>
                               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                {['pending', 'shipped', 'delivered'].map((status) => (
+                                {['pending', 'processing', 'paid', 'shipped', 'delivered'].map((status) => (
                                   <Button
                                     key={status}
                                     size="sm"
@@ -416,6 +466,123 @@ const AdminPanel = () => {
                                   ✏️ Edit
                                 </Button>
                               )}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Payments Tab */}
+        {activeTab === 'payments' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            <Card>
+              <div style={{ padding: '24px', borderBottom: '1px solid var(--glass-border)' }}>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Payment Management</h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+                  View and update payment status: Pending → Paid → Failed → Refunded
+                </p>
+              </div>
+              
+              {payments.length === 0 ? (
+                <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  No payments found
+                </div>
+              ) : (
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                    <thead>
+                      <tr style={{ background: '#f8f9fa' }}>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Transaction ID</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>User</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Order ID</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Amount</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Status</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Date</th>
+                        <th style={{ padding: '16px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Update Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {payments.map((payment) => {
+                        const statusColors = getPaymentStatusColor(payment.status);
+                        return (
+                          <tr key={payment.id} style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                            <td style={{ padding: '16px' }}>
+                              <div style={{ fontWeight: 500, fontSize: '0.9rem', wordBreak: 'break-all' }}>
+                                {payment.transaction_uuid}
+                              </div>
+                              {payment.transaction_code && (
+                                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                  Code: {payment.transaction_code}
+                                </div>
+                              )}
+                            </td>
+                            <td style={{ padding: '16px' }}>
+                              <div style={{ fontWeight: 500 }}>{payment.user_username || 'Guest'}</div>
+                              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                                {payment.user_email || 'N/A'}
+                              </div>
+                            </td>
+                            <td style={{ padding: '16px' }}>
+                              {payment.order_id ? (
+                                <span style={{
+                                  padding: '4px 8px',
+                                  borderRadius: '8px',
+                                  fontSize: '0.85rem',
+                                  background: '#e9ecef',
+                                  color: '#495057'
+                                }}>
+                                  #{payment.order_id}
+                                </span>
+                              ) : (
+                                <span style={{ color: 'var(--text-muted)' }}>No Order</span>
+                              )}
+                            </td>
+                            <td style={{ padding: '16px', fontWeight: 600 }}>
+                              NPR {parseFloat(payment.total_amount).toLocaleString()}
+                            </td>
+                            <td style={{ padding: '16px' }}>
+                              <span style={{
+                                padding: '6px 12px',
+                                borderRadius: '20px',
+                                fontSize: '0.85rem',
+                                fontWeight: 600,
+                                background: statusColors.bg,
+                                color: statusColors.color
+                              }}>
+                                {payment.status}
+                              </span>
+                            </td>
+                            <td style={{ padding: '16px' }}>
+                              <div style={{ fontSize: '0.9rem' }}>
+                                {new Date(payment.created_at).toLocaleDateString()}
+                              </div>
+                              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                                {new Date(payment.created_at).toLocaleTimeString()}
+                              </div>
+                            </td>
+                            <td style={{ padding: '16px' }}>
+                              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                {['PENDING', 'PAID', 'FAILED', 'REFUNDED'].map((status) => (
+                                  <Button
+                                    key={status}
+                                    size="sm"
+                                    variant={payment.status === status ? 'primary' : 'secondary'}
+                                    disabled={payment.status === status || updatingPayment === payment.id}
+                                    onClick={() => updatePaymentStatus(payment.id, status)}
+                                  >
+                                    {updatingPayment === payment.id ? '...' : status}
+                                  </Button>
+                                ))}
+                              </div>
                             </td>
                           </tr>
                         );

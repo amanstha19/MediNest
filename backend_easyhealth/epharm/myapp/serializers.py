@@ -147,7 +147,7 @@ from .models import userPayment
 
 
 class UserPaymentSerializer(serializers.ModelSerializer):
-    
+    user = serializers.StringRelatedField(read_only=True)  # Display user info (string representation)
     order = OrderSerializer(read_only=True)  # Nested OrderSerializer for detailed order info
 
     class Meta:
@@ -165,48 +165,3 @@ class UserPaymentSerializer(serializers.ModelSerializer):
             'created_at'
         ]
 
-
-# Admin Payment Serializer - Detailed payment info for admin
-class AdminPaymentSerializer(serializers.ModelSerializer):
-    user_username = serializers.CharField(source='user.username', read_only=True, allow_null=True)
-    user_email = serializers.CharField(source='user.email', read_only=True, allow_null=True)
-    order_id = serializers.IntegerField(source='order.id', read_only=True, allow_null=True)
-    order_status = serializers.CharField(source='order.status', read_only=True, allow_null=True)
-    order_total = serializers.DecimalField(
-        source='order.total_price', max_digits=10, decimal_places=2, read_only=True, allow_null=True
-    )
-
-    class Meta:
-        model = userPayment
-        fields = [
-            'id',
-            'transaction_uuid',
-            'transaction_code',
-            'amount',
-            'tax_amount',
-            'total_amount',
-            'status',
-            'product_code',
-            'user_username',
-            'user_email',
-            'order_id',
-            'order_status',
-            'order_total',
-            'created_at',
-            'updated_at',
-        ]
-
-
-# Order Payment Status Serializer - Simplified for order payment lookup
-class OrderPaymentStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = userPayment
-        fields = [
-            'id',
-            'transaction_uuid',
-            'transaction_code',
-            'amount',
-            'total_amount',
-            'status',
-            'created_at',
-        ]

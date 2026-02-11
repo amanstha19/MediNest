@@ -38,13 +38,16 @@ echo "✅ Migrations complete!"
 echo ""
 
 # Check if products exist, if not, populate them
-echo "📦 Checking for products..."
+echo "📦 Checking for database content..."
 python manage.py shell -c "from myapp.models import Product; import sys; sys.exit(0 if Product.objects.exists() else 1)" || {
-    if [ -f "/app/epharm/myapp/fixtures/products.json" ]; then
-        echo "📥 Fixture found! Importing your products..."
+    if [ -f "/app/epharm/myapp/fixtures/full_db.json" ]; then
+        echo "📥 Full database fixture found! Syncing EVERYTHING (Users, Products, Orders)..."
+        python manage.py loaddata myapp/fixtures/full_db.json
+    elif [ -f "/app/epharm/myapp/fixtures/products.json" ]; then
+        echo "📥 Product fixture found! Importing products..."
         python manage.py loaddata myapp/fixtures/products.json
     else
-        echo "🌱 No fixture found. Seeding sample data..."
+        echo "🌱 No fixture found. Seeding generic sample data..."
         python manage.py seed_products
     fi
 }

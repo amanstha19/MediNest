@@ -1,0 +1,2000 @@
+[
+{
+  "model": "myapp.customuser",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$720000$Af8x3oSgjZRfOKMpfCFh4M$e8P6I2hFjj5i3JEyX1Ugi9JG4ccECImnU4I3ckIK1kk=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "luxme",
+    "first_name": "luxmee",
+    "last_name": "Thapa",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-08T11:53:28.814Z",
+    "email": "aman.211206@ncit.edu.np",
+    "city": "bkt",
+    "country": null,
+    "phone": "984000000",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "myapp.customuser",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$720000$IQQze8j1wdySlVOcNItPZV$SucH9xFPfDyiCJIBvykMSOTR4GW+gbwhg62YnPdCNdg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "testuser",
+    "first_name": "Test",
+    "last_name": "User",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-08T11:55:58.752Z",
+    "email": "test@example.com",
+    "city": "",
+    "country": null,
+    "phone": "",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "myapp.customuser",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$720000$GYpxOhjEYMBxzAbgapDgjH$EAmTsKGRcmQnYBUfjOpnyRQpkA/sAY0MI8cAwr2xXZM=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "testuser123",
+    "first_name": "Test",
+    "last_name": "User",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-02-08T12:09:41.147Z",
+    "email": "testuser123@example.com",
+    "city": "",
+    "country": null,
+    "phone": "1234567890",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "myapp.customuser",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$720000$cTnkl8WwC2PzFvJ43esIiZ$WongV7EAzvBDvHdiPxI5Iv9Xr02NrMB+eoEg3yBC9+k=",
+    "last_login": "2026-02-11T12:00:40.095Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-02-08T12:11:10.640Z",
+    "email": "admin@example.com",
+    "city": null,
+    "country": null,
+    "phone": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "myapp.category",
+  "pk": 1,
+  "fields": {
+    "value": "OTC",
+    "label": "Over-the-Counter",
+    "icon": "Pill",
+    "color": "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
+    "description": "Medicines available without prescription",
+    "order": 1,
+    "is_active": true,
+    "created_at": "2026-02-08T11:44:44.805Z",
+    "updated_at": "2026-02-08T11:44:44.856Z"
+  }
+},
+{
+  "model": "myapp.category",
+  "pk": 2,
+  "fields": {
+    "value": "RX",
+    "label": "Prescription Medicines",
+    "icon": "Syringe",
+    "color": "linear-gradient(135deg, #fc4a1a 0%, #f7b733 100%)",
+    "description": "Prescription required medicines",
+    "order": 2,
+    "is_active": true,
+    "created_at": "2026-02-08T11:44:44.808Z",
+    "updated_at": "2026-02-08T11:44:44.856Z"
+  }
+},
+{
+  "model": "myapp.category",
+  "pk": 3,
+  "fields": {
+    "value": "SUP",
+    "label": "Vitamins & Supplements",
+    "icon": "FlaskConical",
+    "color": "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+    "description": "Daily nutrition and supplements",
+    "order": 3,
+    "is_active": true,
+    "created_at": "2026-02-08T11:44:44.808Z",
+    "updated_at": "2026-02-08T11:44:44.857Z"
+  }
+},
+{
+  "model": "myapp.category",
+  "pk": 4,
+  "fields": {
+    "value": "WOM",
+    "label": "Women's Health",
+    "icon": "HeartPulse",
+    "color": "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
+    "description": "Women's health products",
+    "order": 4,
+    "is_active": true,
+    "created_at": "2026-02-08T11:44:44.809Z",
+    "updated_at": "2026-02-08T11:44:44.858Z"
+  }
+},
+{
+  "model": "myapp.category",
+  "pk": 5,
+  "fields": {
+    "value": "MEN",
+    "label": "Men's Health",
+    "icon": "Activity",
+    "color": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    "description": "Men's health products",
+    "order": 5,
+    "is_active": true,
+    "created_at": "2026-02-08T11:44:44.810Z",
+    "updated_at": "2026-02-08T11:44:44.858Z"
+  }
+},
+{
+  "model": "myapp.category",
+  "pk": 6,
+  "fields": {
+    "value": "PED",
+    "label": "Pediatric Medicines",
+    "icon": "Baby",
+    "color": "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+    "description": "Baby medicines & products",
+    "order": 6,
+    "is_active": true,
+    "created_at": "2026-02-08T11:44:44.810Z",
+    "updated_at": "2026-02-08T11:44:44.859Z"
+  }
+},
+{
+  "model": "myapp.category",
+  "pk": 7,
+  "fields": {
+    "value": "HERB",
+    "label": "Herbal & Ayurvedic",
+    "icon": "Leaf",
+    "color": "linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)",
+    "description": "Natural remedies and ayurvedic products",
+    "order": 7,
+    "is_active": true,
+    "created_at": "2026-02-08T11:44:44.811Z",
+    "updated_at": "2026-02-08T11:44:44.859Z"
+  }
+},
+{
+  "model": "myapp.category",
+  "pk": 8,
+  "fields": {
+    "value": "DIAG",
+    "label": "Medical Devices",
+    "icon": "Monitor",
+    "color": "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)",
+    "description": "BP monitors, glucometers, and medical devices",
+    "order": 8,
+    "is_active": true,
+    "created_at": "2026-02-08T11:44:44.811Z",
+    "updated_at": "2026-02-08T11:44:44.860Z"
+  }
+},
+{
+  "model": "myapp.category",
+  "pk": 9,
+  "fields": {
+    "value": "FIRST",
+    "label": "First Aid",
+    "icon": "SquarePlus",
+    "color": "linear-gradient(135deg, #ff6b6b 0%, #feca57 100%)",
+    "description": "Bandages, antiseptics, and first aid supplies",
+    "order": 9,
+    "is_active": true,
+    "created_at": "2026-02-08T11:44:44.812Z",
+    "updated_at": "2026-02-08T11:44:44.861Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 1,
+  "fields": {
+    "generic_name": "Paracetamol 500mg Tablets",
+    "name": "Paracetamol 500mg",
+    "image": "products/1_Paracetamol_500mg.jpg",
+    "category": 1,
+    "description": "For fever and mild to moderate pain. Safe for all ages.",
+    "price": "15.00",
+    "stock": 98,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:21:36.454Z",
+    "updated_at": "2026-02-11T11:33:14.562Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 2,
+  "fields": {
+    "generic_name": "Ibuprofen 400mg Tablets",
+    "name": "Ibuprofen 400mg",
+    "image": "products/images_1.jpeg",
+    "category": 1,
+    "description": "Anti-inflammatory pain reliever for headaches, muscle pain.",
+    "price": "25.00",
+    "stock": 80,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:21:36.486Z",
+    "updated_at": "2026-02-11T11:57:02.949Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 3,
+  "fields": {
+    "generic_name": "Cetirizine 10mg Tablets",
+    "name": "Cetirizine 10mg",
+    "image": "products/3_Cetirizine_10mg.jpg",
+    "category": 1,
+    "description": "Antihistamine for allergies, runny nose, and sneezing.",
+    "price": "18.00",
+    "stock": 120,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:21:36.488Z",
+    "updated_at": "2026-02-09T12:23:53.478Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 4,
+  "fields": {
+    "generic_name": "Digene Antacid Tablets",
+    "name": "Digene Tablets",
+    "image": "products/4_Digene_Tablets.jpg",
+    "category": 1,
+    "description": "Antacid for heartburn, acidity, and indigestion.",
+    "price": "35.00",
+    "stock": 100,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:21:36.489Z",
+    "updated_at": "2026-02-09T12:22:04.625Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 5,
+  "fields": {
+    "generic_name": "Pantoprazole",
+    "name": "Tylenol",
+    "image": "products/5_Tylenol.jpg",
+    "category": null,
+    "description": "Pantoprazole is a proton pump inhibitor that decreases the amount of acid produced in the stomach.",
+    "price": "10.00",
+    "stock": 960,
+    "prescription_required": false,
+    "created_at": "2026-02-08T11:48:51.764Z",
+    "updated_at": "2026-02-09T12:25:02.781Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 6,
+  "fields": {
+    "generic_name": "Amoxicillin",
+    "name": "Amoxil",
+    "image": "products/6_Amoxil.jpg",
+    "category": null,
+    "description": "Amoxicillin is used to treat a wide variety of bacterial infections.",
+    "price": "200.00",
+    "stock": 1999,
+    "prescription_required": false,
+    "created_at": "2026-02-08T11:48:51.862Z",
+    "updated_at": "2026-02-09T12:22:19.103Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 7,
+  "fields": {
+    "generic_name": "Azithromycin",
+    "name": "Azistra",
+    "image": "products/7_Azistra.jpg",
+    "category": null,
+    "description": "Azithromycin is used to treat certain bacterial infections.",
+    "price": "150.00",
+    "stock": 219,
+    "prescription_required": false,
+    "created_at": "2026-02-08T11:48:52.035Z",
+    "updated_at": "2026-02-09T12:23:50.654Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 8,
+  "fields": {
+    "generic_name": "Vitamin C",
+    "name": "Vitamin C",
+    "image": "products/8_Vitamin_C.jpg",
+    "category": null,
+    "description": "Vitamin C helps the body make collagen, a protein that is used to create skin, cartilage, tendons, ligaments, and blood vessels.",
+    "price": "50.00",
+    "stock": 898,
+    "prescription_required": false,
+    "created_at": "2026-02-08T11:48:52.219Z",
+    "updated_at": "2026-02-09T12:25:05.582Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 9,
+  "fields": {
+    "generic_name": "Amoxicillin 500mg Capsules",
+    "name": "Amoxicillin 500mg",
+    "image": "products/9_Amoxicillin_500mg.jpg",
+    "category": 2,
+    "description": "Antibiotic for bacterial infections. Prescription required.",
+    "price": "85.00",
+    "stock": 49,
+    "prescription_required": true,
+    "created_at": "2026-02-09T05:22:15.900Z",
+    "updated_at": "2026-02-09T13:20:22.341Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 10,
+  "fields": {
+    "generic_name": "Diclofenac Sodium 50mg",
+    "name": "Diclofenac 50mg",
+    "image": "products/10_Diclofenac_50mg.jpg",
+    "category": 2,
+    "description": "Strong pain reliever for joint and muscle pain.",
+    "price": "45.00",
+    "stock": 60,
+    "prescription_required": true,
+    "created_at": "2026-02-09T05:22:15.904Z",
+    "updated_at": "2026-02-09T12:23:20.192Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 11,
+  "fields": {
+    "generic_name": "Omeprazole 20mg Capsules",
+    "name": "Omeprazole 20mg",
+    "image": "products/11_Omeprazole_20mg.jpg",
+    "category": 2,
+    "description": "For acid reflux, ulcers, and GERD treatment.",
+    "price": "120.00",
+    "stock": 40,
+    "prescription_required": true,
+    "created_at": "2026-02-09T05:22:15.906Z",
+    "updated_at": "2026-02-09T12:25:08.224Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 12,
+  "fields": {
+    "generic_name": "Metformin 500mg Tablets",
+    "name": "Metformin 500mg",
+    "image": "products/12_Metformin_500mg.jpg",
+    "category": 2,
+    "description": "Diabetes management medication. Prescription required.",
+    "price": "95.00",
+    "stock": 55,
+    "prescription_required": true,
+    "created_at": "2026-02-09T05:22:15.907Z",
+    "updated_at": "2026-02-09T12:22:01.563Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 13,
+  "fields": {
+    "generic_name": "Vitamin C 500mg Chewable",
+    "name": "Vitamin C 500mg",
+    "image": "products/13_Vitamin_C_500mg.jpg",
+    "category": 3,
+    "description": "Immune system support. Chewable tablets.",
+    "price": "150.00",
+    "stock": 200,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.910Z",
+    "updated_at": "2026-02-09T12:22:07.501Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 14,
+  "fields": {
+    "generic_name": "Vitamin B-Complex",
+    "name": "B-Complex Tablets",
+    "image": "products/14_B-Complex_Tablets.jpg",
+    "category": 3,
+    "description": "Energy and metabolism support. All B vitamins.",
+    "price": "180.00",
+    "stock": 150,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.911Z",
+    "updated_at": "2026-02-09T12:22:10.254Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 15,
+  "fields": {
+    "generic_name": "Vitamin D3 1000IU",
+    "name": "Vitamin D3 1000IU",
+    "image": "products/15_Vitamin_D3_1000IU.jpg",
+    "category": 3,
+    "description": "Bone health and immune support. Essential for calcium absorption.",
+    "price": "200.00",
+    "stock": 100,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.912Z",
+    "updated_at": "2026-02-09T12:22:13.019Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 16,
+  "fields": {
+    "generic_name": "Prenatal Multivitamin",
+    "name": "Prenatal Vitamins",
+    "image": "products/16_Prenatal_Vitamins.jpg",
+    "category": 4,
+    "description": "Complete nutrition for pregnant women. Folic acid, iron, calcium.",
+    "price": "350.00",
+    "stock": 60,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.914Z",
+    "updated_at": "2026-02-09T12:24:20.261Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 17,
+  "fields": {
+    "generic_name": "Iron and Folic Acid Tablets",
+    "name": "Iron Folic Acid",
+    "image": "products/17_Iron_Folic_Acid.jpg",
+    "category": 4,
+    "description": "For anemia prevention and women's health.",
+    "price": "85.00",
+    "stock": 90,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.915Z",
+    "updated_at": "2026-02-09T08:23:29.437Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 18,
+  "fields": {
+    "generic_name": "Calcium with Vitamin D3",
+    "name": "Calcium + Vitamin D",
+    "image": "products/18_Calcium_+_Vitamin_D.jpg",
+    "category": 4,
+    "description": "Bone strength and osteoporosis prevention for women.",
+    "price": "220.00",
+    "stock": 75,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.916Z",
+    "updated_at": "2026-02-09T12:22:51.819Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 19,
+  "fields": {
+    "generic_name": "Men's Daily Multivitamin",
+    "name": "Multivitamin for Men",
+    "image": "products/19_Multivitamin_for_Men.jpg",
+    "category": 5,
+    "description": "Complete daily nutrition tailored for men's health needs.",
+    "price": "280.00",
+    "stock": 80,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.917Z",
+    "updated_at": "2026-02-09T12:22:54.446Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 20,
+  "fields": {
+    "generic_name": "Omega-3 Fish Oil 1000mg",
+    "name": "Omega-3 Fish Oil",
+    "image": "products/20_Omega-3_Fish_Oil.jpg",
+    "category": 5,
+    "description": "Heart health and brain function support.",
+    "price": "450.00",
+    "stock": 50,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.918Z",
+    "updated_at": "2026-02-09T12:22:57.245Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 21,
+  "fields": {
+    "generic_name": "Whey Protein Powder",
+    "name": "Protein Powder 500g",
+    "image": "products/21_Protein_Powder_500g.jpg",
+    "category": 5,
+    "description": "Muscle building and recovery protein supplement.",
+    "price": "1200.00",
+    "stock": 40,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.920Z",
+    "updated_at": "2026-02-09T12:22:59.880Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 22,
+  "fields": {
+    "generic_name": "Paracetamol Pediatric Syrup",
+    "name": "Paracetamol Syrup 60ml",
+    "image": "products/22_Paracetamol_Syrup_60ml.jpg",
+    "category": 6,
+    "description": "Fever and pain relief for children. Strawberry flavor.",
+    "price": "65.00",
+    "stock": 120,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.921Z",
+    "updated_at": "2026-02-09T12:24:01.082Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 23,
+  "fields": {
+    "generic_name": "Oral Rehydration Salts",
+    "name": "ORS Sachets",
+    "image": "products/23_ORS_Sachets.jpg",
+    "category": 6,
+    "description": "For diarrhea and dehydration in children and adults.",
+    "price": "20.00",
+    "stock": 300,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.924Z",
+    "updated_at": "2026-02-09T12:22:43.885Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 24,
+  "fields": {
+    "generic_name": "Vitamin D3 Pediatric Drops",
+    "name": "Vitamin D Drops",
+    "image": "products/24_Vitamin_D_Drops.jpg",
+    "category": 6,
+    "description": "Bone development and immunity for babies and children.",
+    "price": "180.00",
+    "stock": 85,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.925Z",
+    "updated_at": "2026-02-09T12:23:02.628Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 25,
+  "fields": {
+    "generic_name": "Ashwagandha 500mg",
+    "name": "Ashwagandha Capsules",
+    "image": "products/25_Ashwagandha_Capsules.jpg",
+    "category": 7,
+    "description": "Stress relief and energy booster. Natural adaptogen.",
+    "price": "320.00",
+    "stock": 70,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.927Z",
+    "updated_at": "2026-02-09T12:23:05.377Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 26,
+  "fields": {
+    "generic_name": "Tulsi (Holy Basil) Extract",
+    "name": "Tulsi Drops",
+    "image": "products/26_Tulsi_Drops.jpg",
+    "category": 7,
+    "description": "Immunity booster and respiratory health. Natural antibiotic.",
+    "price": "150.00",
+    "stock": 95,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.928Z",
+    "updated_at": "2026-02-09T12:23:08.098Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 27,
+  "fields": {
+    "generic_name": "Triphala Powder 100g",
+    "name": "Triphala Churna",
+    "image": "products/27_Triphala_Churna.jpg",
+    "category": 7,
+    "description": "Digestive health and detoxification. Traditional Ayurvedic remedy.",
+    "price": "95.00",
+    "stock": 110,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.930Z",
+    "updated_at": "2026-02-09T12:22:41.281Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 28,
+  "fields": {
+    "generic_name": "Digital Thermometer",
+    "name": "Digital Thermometer",
+    "image": "products/28_Digital_Thermometer.jpg",
+    "category": 8,
+    "description": "Fast and accurate temperature reading. Fever alarm.",
+    "price": "350.00",
+    "stock": 40,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.937Z",
+    "updated_at": "2026-02-09T12:23:14.471Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 29,
+  "fields": {
+    "generic_name": "Digital Blood Pressure Monitor",
+    "name": "BP Monitor",
+    "image": "products/29_BP_Monitor.jpg",
+    "category": 8,
+    "description": "Automatic blood pressure monitoring at home.",
+    "price": "2500.00",
+    "stock": 25,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.938Z",
+    "updated_at": "2026-02-09T12:25:00.011Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 30,
+  "fields": {
+    "generic_name": "Blood Glucose Monitoring System",
+    "name": "Glucometer Kit",
+    "image": "products/30_Glucometer_Kit.jpg",
+    "category": 8,
+    "description": "Complete kit for blood sugar monitoring with 25 strips.",
+    "price": "1200.00",
+    "stock": 30,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.940Z",
+    "updated_at": "2026-02-09T12:22:46.543Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 31,
+  "fields": {
+    "generic_name": "Complete First Aid Kit",
+    "name": "First Aid Kit",
+    "image": "products/31_First_Aid_Kit.jpg",
+    "category": 9,
+    "description": "Complete kit with bandages, antiseptic, scissors, and more.",
+    "price": "450.00",
+    "stock": 60,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.943Z",
+    "updated_at": "2026-02-09T12:23:17.229Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 32,
+  "fields": {
+    "generic_name": "Adhesive Bandages Pack",
+    "name": "Band-Aid Assorted",
+    "image": "products/32_Band-Aid_Assorted.jpg",
+    "category": 9,
+    "description": "Sterile adhesive bandages in various sizes.",
+    "price": "65.00",
+    "stock": 150,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.953Z",
+    "updated_at": "2026-02-09T12:23:23.992Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 33,
+  "fields": {
+    "generic_name": "Dettol Antiseptic Liquid",
+    "name": "Dettol Antiseptic 200ml",
+    "image": "products/33_Dettol_Antiseptic_200ml.jpg",
+    "category": 9,
+    "description": "Kills germs and prevents infection. For cuts and wounds.",
+    "price": "180.00",
+    "stock": 80,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.964Z",
+    "updated_at": "2026-02-09T12:22:38.469Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 34,
+  "fields": {
+    "generic_name": "Sterile Cotton Rolls",
+    "name": "Cotton Rolls 100g",
+    "image": "products/34_Cotton_Rolls_100g.jpg",
+    "category": 9,
+    "description": "Sterile cotton for wound cleaning and dressing.",
+    "price": "45.00",
+    "stock": 100,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:22:15.984Z",
+    "updated_at": "2026-02-09T08:23:30.171Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 35,
+  "fields": {
+    "generic_name": "Aspirin 100mg Tablets",
+    "name": "Aspirin 100mg",
+    "image": "products/35_Aspirin_100mg.jpg",
+    "category": 1,
+    "description": "Pain reliever and blood thinner. Take with food.",
+    "price": "22.00",
+    "stock": 90,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.484Z",
+    "updated_at": "2026-02-09T12:24:21.475Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 36,
+  "fields": {
+    "generic_name": "Loratadine 10mg Tablets",
+    "name": "Loratadine 10mg",
+    "image": "products/36_Loratadine_10mg.jpg",
+    "category": 1,
+    "description": "Non-drowsy antihistamine for allergies and hay fever.",
+    "price": "28.00",
+    "stock": 85,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.492Z",
+    "updated_at": "2026-02-09T12:23:31.527Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 37,
+  "fields": {
+    "generic_name": "Pantoprazole 40mg",
+    "name": "Pantoprazole 40mg",
+    "image": "products/37_Pantoprazole_40mg.jpg",
+    "category": 1,
+    "description": "For acid reflux and stomach ulcers. OTC strength.",
+    "price": "55.00",
+    "stock": 70,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.495Z",
+    "updated_at": "2026-02-09T12:22:49.236Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 38,
+  "fields": {
+    "generic_name": "Oral Rehydration Solution",
+    "name": "ORS Liquid 200ml",
+    "image": "products/38_ORS_Liquid_200ml.jpg",
+    "category": 1,
+    "description": "Ready-to-drink rehydration for diarrhea and vomiting.",
+    "price": "45.00",
+    "stock": 148,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.498Z",
+    "updated_at": "2026-02-10T16:08:07.314Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 39,
+  "fields": {
+    "generic_name": "Azithromycin 500mg Tablets",
+    "name": "Azithromycin 500mg",
+    "image": "products/39_Azithromycin_500mg.jpg",
+    "category": 2,
+    "description": "Antibiotic for respiratory and skin infections.",
+    "price": "150.00",
+    "stock": 44,
+    "prescription_required": true,
+    "created_at": "2026-02-09T05:29:39.503Z",
+    "updated_at": "2026-02-09T13:20:22.335Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 40,
+  "fields": {
+    "generic_name": "Atorvastatin 10mg Tablets",
+    "name": "Atorvastatin 10mg",
+    "image": "products/40_Atorvastatin_10mg.jpg",
+    "category": 2,
+    "description": "Cholesterol lowering medication. Heart health.",
+    "price": "180.00",
+    "stock": 39,
+    "prescription_required": true,
+    "created_at": "2026-02-09T05:29:39.505Z",
+    "updated_at": "2026-02-09T12:22:16.264Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 41,
+  "fields": {
+    "generic_name": "Losartan Potassium 50mg",
+    "name": "Losartan 50mg",
+    "image": "products/41_Losartan_50mg.jpg",
+    "category": 2,
+    "description": "Blood pressure control medication.",
+    "price": "135.00",
+    "stock": 49,
+    "prescription_required": true,
+    "created_at": "2026-02-09T05:29:39.507Z",
+    "updated_at": "2026-02-09T12:24:55.823Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 42,
+  "fields": {
+    "generic_name": "Levothyroxine Sodium 50mcg",
+    "name": "Levothyroxine 50mcg",
+    "image": "products/42_Levothyroxine_50mcg.jpg",
+    "category": 2,
+    "description": "Thyroid hormone replacement therapy.",
+    "price": "110.00",
+    "stock": 35,
+    "prescription_required": true,
+    "created_at": "2026-02-09T05:29:39.508Z",
+    "updated_at": "2026-02-09T12:24:30.457Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 43,
+  "fields": {
+    "generic_name": "Zinc Sulphate 20mg",
+    "name": "Zinc Sulphate 20mg",
+    "image": "products/43_Zinc_Sulphate_20mg.jpg",
+    "category": 3,
+    "description": "Immune support and wound healing. Essential mineral.",
+    "price": "120.00",
+    "stock": 120,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.514Z",
+    "updated_at": "2026-02-09T12:23:41.184Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 44,
+  "fields": {
+    "generic_name": "Complete Multivitamin Syrup",
+    "name": "Multivitamin Syrup 200ml",
+    "image": "products/44_Multivitamin_Syrup_200ml.jpg",
+    "category": 3,
+    "description": "Complete daily nutrition for children and adults.",
+    "price": "250.00",
+    "stock": 80,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.517Z",
+    "updated_at": "2026-02-09T12:23:12.149Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 45,
+  "fields": {
+    "generic_name": "Calcium Magnesium Zinc Tablets",
+    "name": "Calcium Magnesium Zinc",
+    "image": "products/45_Calcium_Magnesium_Zinc.jpg",
+    "category": 3,
+    "description": "Bone health and muscle function support.",
+    "price": "280.00",
+    "stock": 89,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.522Z",
+    "updated_at": "2026-02-09T13:48:35.345Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 46,
+  "fields": {
+    "generic_name": "Vitamin E 400IU Softgels",
+    "name": "Vitamin E 400IU",
+    "image": "products/46_Vitamin_E_400IU.jpg",
+    "category": 3,
+    "description": "Antioxidant for skin health and immune support.",
+    "price": "220.00",
+    "stock": 70,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.529Z",
+    "updated_at": "2026-02-09T12:23:47.831Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 47,
+  "fields": {
+    "generic_name": "Evening Primrose Oil 1000mg",
+    "name": "Evening Primrose Oil",
+    "image": "products/47_Evening_Primrose_Oil.jpg",
+    "category": 4,
+    "description": "Hormonal balance and skin health for women.",
+    "price": "380.00",
+    "stock": 50,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.535Z",
+    "updated_at": "2026-02-09T12:24:23.653Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 48,
+  "fields": {
+    "generic_name": "Cranberry Extract 500mg",
+    "name": "Cranberry Extract",
+    "image": "products/48_Cranberry_Extract.jpg",
+    "category": 4,
+    "description": "Urinary tract health support for women.",
+    "price": "295.00",
+    "stock": 65,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.547Z",
+    "updated_at": "2026-02-09T12:25:26.092Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 49,
+  "fields": {
+    "generic_name": "Hydrolyzed Collagen Peptides",
+    "name": "Collagen Peptides",
+    "image": "products/49_Collagen_Peptides.jpg",
+    "category": 4,
+    "description": "Skin elasticity and joint health supplement.",
+    "price": "450.00",
+    "stock": 45,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.550Z",
+    "updated_at": "2026-02-09T12:24:47.170Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 50,
+  "fields": {
+    "generic_name": "Menopause Relief Complex",
+    "name": "Menopause Support",
+    "image": "products/50_Menopause_Support.jpg",
+    "category": 4,
+    "description": "Natural relief for menopause symptoms.",
+    "price": "320.00",
+    "stock": 40,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.562Z",
+    "updated_at": "2026-02-09T12:24:35.840Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 51,
+  "fields": {
+    "generic_name": "Natural Testosterone Support",
+    "name": "Testosterone Booster",
+    "image": "products/51_Testosterone_Booster.jpg",
+    "category": 5,
+    "description": "Natural testosterone support with herbal extracts.",
+    "price": "550.00",
+    "stock": 35,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.580Z",
+    "updated_at": "2026-02-09T12:24:51.261Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 52,
+  "fields": {
+    "generic_name": "Creatine Monohydrate 300g",
+    "name": "Creatine Monohydrate",
+    "image": "products/52_Creatine_Monohydrate.jpg",
+    "category": 5,
+    "description": "Strength and performance enhancement supplement.",
+    "price": "850.00",
+    "stock": 30,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.583Z",
+    "updated_at": "2026-02-09T12:24:53.936Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 53,
+  "fields": {
+    "generic_name": "Saw Palmetto Extract 500mg",
+    "name": "Saw Palmetto",
+    "image": "products/53_Saw_Palmetto.jpg",
+    "category": 5,
+    "description": "Prostate health support for men.",
+    "price": "380.00",
+    "stock": 45,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.585Z",
+    "updated_at": "2026-02-09T12:24:38.566Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 54,
+  "fields": {
+    "generic_name": "Branched Chain Amino Acids",
+    "name": "BCAA Powder",
+    "image": "products/54_BCAA_Powder.jpg",
+    "category": 5,
+    "description": "Muscle recovery and endurance supplement.",
+    "price": "650.00",
+    "stock": 35,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.587Z",
+    "updated_at": "2026-02-09T08:23:30.210Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 55,
+  "fields": {
+    "generic_name": "Pediatric Cough Syrup",
+    "name": "Cough Syrup for Kids",
+    "image": "products/55_Cough_Syrup_for_Kids.jpg",
+    "category": 6,
+    "description": "Honey-based cough relief for children 2+ years.",
+    "price": "95.00",
+    "stock": 100,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.589Z",
+    "updated_at": "2026-02-09T12:24:57.115Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 56,
+  "fields": {
+    "generic_name": "Pediatric Probiotic Drops",
+    "name": "Probiotic Drops",
+    "image": "products/56_Probiotic_Drops.jpg",
+    "category": 6,
+    "description": "Digestive health and immunity for infants.",
+    "price": "220.00",
+    "stock": 60,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.592Z",
+    "updated_at": "2026-02-09T12:25:23.351Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 57,
+  "fields": {
+    "generic_name": "Zinc Sulphate Syrup",
+    "name": "Zinc Syrup 100ml",
+    "image": "products/57_Zinc_Syrup_100ml.jpg",
+    "category": 6,
+    "description": "Immune support and growth for children.",
+    "price": "75.00",
+    "stock": 90,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.594Z",
+    "updated_at": "2026-02-09T12:25:11.124Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 58,
+  "fields": {
+    "generic_name": "Simethicone Colic Drops",
+    "name": "Colic Relief Drops",
+    "image": "products/58_Colic_Relief_Drops.jpg",
+    "category": 6,
+    "description": "Gas and colic relief for babies.",
+    "price": "120.00",
+    "stock": 70,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.596Z",
+    "updated_at": "2026-02-09T12:25:13.769Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 59,
+  "fields": {
+    "generic_name": "Neem Extract 500mg",
+    "name": "Neem Capsules",
+    "image": "products/59_Neem_Capsules.jpg",
+    "category": 7,
+    "description": "Blood purifier and skin health. Natural detox.",
+    "price": "180.00",
+    "stock": 80,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.598Z",
+    "updated_at": "2026-02-09T12:24:27.747Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 60,
+  "fields": {
+    "generic_name": "Indian Gooseberry Juice",
+    "name": "Amla Juice 500ml",
+    "image": "products/60_Amla_Juice_500ml.jpg",
+    "category": 7,
+    "description": "Vitamin C rich immunity booster. Antioxidant powerhouse.",
+    "price": "240.00",
+    "stock": 65,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.599Z",
+    "updated_at": "2026-02-09T08:23:29.776Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 61,
+  "fields": {
+    "generic_name": "Pure Shilajit Resin 30g",
+    "name": "Shilajit Resin",
+    "image": "products/61_Shilajit_Resin.jpg",
+    "category": 7,
+    "description": "Energy, vitality and strength. Himalayan mineral pitch.",
+    "price": "550.00",
+    "stock": 40,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.600Z",
+    "updated_at": "2026-02-09T12:24:03.366Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 62,
+  "fields": {
+    "generic_name": "Bacopa Monnieri 500mg",
+    "name": "Brahmi Tablets",
+    "image": "products/62_Brahmi_Tablets.jpg",
+    "category": 7,
+    "description": "Memory and cognitive function support.",
+    "price": "210.00",
+    "stock": 75,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.601Z",
+    "updated_at": "2026-02-09T12:25:20.424Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 63,
+  "fields": {
+    "generic_name": "Finger Pulse Oximeter",
+    "name": "Pulse Oximeter",
+    "image": "products/63_Pulse_Oximeter.jpg",
+    "category": 8,
+    "description": "Blood oxygen and pulse rate monitoring.",
+    "price": "850.00",
+    "stock": 50,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.603Z",
+    "updated_at": "2026-02-09T08:23:29.796Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 64,
+  "fields": {
+    "generic_name": "Compressor Nebulizer",
+    "name": "Nebulizer Machine",
+    "image": "products/64_Nebulizer_Machine.jpg",
+    "category": 8,
+    "description": "Respiratory treatment device for asthma and COPD.",
+    "price": "1800.00",
+    "stock": 20,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.604Z",
+    "updated_at": "2026-02-09T12:25:17.775Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 65,
+  "fields": {
+    "generic_name": "Digital Body Weight Scale",
+    "name": "Weighing Scale Digital",
+    "image": "products/65_Weighing_Scale_Digital.jpg",
+    "category": 8,
+    "description": "Accurate weight monitoring with BMI calculation.",
+    "price": "950.00",
+    "stock": 35,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.605Z",
+    "updated_at": "2026-02-09T12:23:56.590Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 66,
+  "fields": {
+    "generic_name": "Non-Contact IR Thermometer",
+    "name": "Infrared Thermometer",
+    "image": "products/66_Infrared_Thermometer.jpg",
+    "category": 8,
+    "description": "Contactless temperature screening device.",
+    "price": "1200.00",
+    "stock": 45,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.606Z",
+    "updated_at": "2026-02-09T12:24:07.399Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 67,
+  "fields": {
+    "generic_name": "Burn Healing Cream",
+    "name": "Burnol Cream 20g",
+    "image": "products/67_Burnol_Cream_20g.jpg",
+    "category": 9,
+    "description": "Immediate relief for minor burns and scalds.",
+    "price": "85.00",
+    "stock": 70,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.615Z",
+    "updated_at": "2026-02-09T12:19:45.473Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 68,
+  "fields": {
+    "generic_name": "Crepe Bandage Roll",
+    "name": "Elastic Bandage 4 inch",
+    "image": "products/68_Elastic_Bandage_4_inch.jpg",
+    "category": 9,
+    "description": "Support and compression for sprains and strains.",
+    "price": "75.00",
+    "stock": 90,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.616Z",
+    "updated_at": "2026-02-09T12:24:14.068Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 69,
+  "fields": {
+    "generic_name": "Micropore Surgical Tape",
+    "name": "Surgical Tape 5m",
+    "image": "products/69_Surgical_Tape_5m.jpg",
+    "category": 9,
+    "description": "Hypoallergenic tape for securing dressings.",
+    "price": "55.00",
+    "stock": 120,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.617Z",
+    "updated_at": "2026-02-09T08:23:30.083Z"
+  }
+},
+{
+  "model": "myapp.product",
+  "pk": 70,
+  "fields": {
+    "generic_name": "Disposable Cold Compress",
+    "name": "Instant Cold Pack",
+    "image": "products/70_Instant_Cold_Pack.jpg",
+    "category": 9,
+    "description": "Instant cold therapy for injuries and swelling.",
+    "price": "95.00",
+    "stock": 55,
+    "prescription_required": false,
+    "created_at": "2026-02-09T05:29:39.619Z",
+    "updated_at": "2026-02-09T12:24:11.482Z"
+  }
+},
+{
+  "model": "myapp.order",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "total_price": "300.00",
+    "status": "delivered",
+    "address": "tyty",
+    "prescription": "prescriptions/WhatsApp_Image_2026-02-07_at_18.15.56_7BAXP3H.jpeg",
+    "payment_method": "CASH_ON_DELIVERY",
+    "created_at": "2026-02-08T12:21:21.031Z",
+    "updated_at": "2026-02-08T12:29:56.683Z"
+  }
+},
+{
+  "model": "myapp.order",
+  "pk": 2,
+  "fields": {
+    "user": 1,
+    "total_price": "150.00",
+    "status": "delivered",
+    "address": "yuyuyuyuyuyu",
+    "prescription": "prescriptions/WhatsApp_Image_2026-02-04_at_16.34.24_MaPNOdI.jpeg",
+    "payment_method": "ONLINE",
+    "created_at": "2026-02-08T12:24:48.689Z",
+    "updated_at": "2026-02-08T12:28:36.767Z"
+  }
+},
+{
+  "model": "myapp.order",
+  "pk": 3,
+  "fields": {
+    "user": 1,
+    "total_price": "315.00",
+    "status": "delivered",
+    "address": "khhgf",
+    "prescription": "prescriptions/WhatsApp_Image_2026-02-04_at_17.38.27_Mnl7A4m.jpeg",
+    "payment_method": "CASH_ON_DELIVERY",
+    "created_at": "2026-02-09T09:26:41.343Z",
+    "updated_at": "2026-02-09T13:51:34.079Z"
+  }
+},
+{
+  "model": "myapp.order",
+  "pk": 4,
+  "fields": {
+    "user": 1,
+    "total_price": "235.00",
+    "status": "delivered",
+    "address": "yyyyy",
+    "prescription": "prescriptions/WhatsApp_Image_2026-02-07_at_18.15.56_S74BGiG.jpeg",
+    "payment_method": "ONLINE",
+    "created_at": "2026-02-09T13:20:22.322Z",
+    "updated_at": "2026-02-09T13:29:38.846Z"
+  }
+},
+{
+  "model": "myapp.order",
+  "pk": 5,
+  "fields": {
+    "user": 1,
+    "total_price": "280.00",
+    "status": "delivered",
+    "address": "ytytyt",
+    "prescription": "",
+    "payment_method": "CASH_ON_DELIVERY",
+    "created_at": "2026-02-09T13:48:35.341Z",
+    "updated_at": "2026-02-09T13:49:37.954Z"
+  }
+},
+{
+  "model": "myapp.order",
+  "pk": 6,
+  "fields": {
+    "user": 1,
+    "total_price": "45.00",
+    "status": "delivered",
+    "address": "ffff, ddd, Bharatpur, Province 2, 55555, Near hhhh",
+    "prescription": "",
+    "payment_method": "CASH_ON_DELIVERY",
+    "created_at": "2026-02-09T14:57:38.493Z",
+    "updated_at": "2026-02-10T16:17:44.276Z"
+  }
+},
+{
+  "model": "myapp.order",
+  "pk": 7,
+  "fields": {
+    "user": 1,
+    "total_price": "15.00",
+    "status": "delivered",
+    "address": "ffff, ddd, Lalitpur, Province 2, 55555, Near forcepark",
+    "prescription": "",
+    "payment_method": "CASH_ON_DELIVERY",
+    "created_at": "2026-02-10T15:51:18.471Z",
+    "updated_at": "2026-02-10T16:05:10.188Z"
+  }
+},
+{
+  "model": "myapp.order",
+  "pk": 8,
+  "fields": {
+    "user": 1,
+    "total_price": "45.00",
+    "status": "delivered",
+    "address": "ffff, ddd, Lalitpur, Bagmati Province, 55555",
+    "prescription": "",
+    "payment_method": "CASH_ON_DELIVERY",
+    "created_at": "2026-02-10T16:08:07.295Z",
+    "updated_at": "2026-02-10T16:17:20.616Z"
+  }
+},
+{
+  "model": "myapp.order",
+  "pk": 9,
+  "fields": {
+    "user": 1,
+    "total_price": "15.00",
+    "status": "pending",
+    "address": "ffff, ddd, Lalitpur, Bagmati Province, 55555",
+    "prescription": "",
+    "payment_method": "CASH_ON_DELIVERY",
+    "created_at": "2026-02-11T11:33:14.548Z",
+    "updated_at": "2026-02-11T11:33:14.567Z"
+  }
+},
+{
+  "model": "myapp.cartitem",
+  "pk": 1,
+  "fields": {
+    "product": 7,
+    "quantity": 2,
+    "order": 1,
+    "prescription_file": ""
+  }
+},
+{
+  "model": "myapp.cartitem",
+  "pk": 2,
+  "fields": {
+    "product": 7,
+    "quantity": 1,
+    "order": 2,
+    "prescription_file": ""
+  }
+},
+{
+  "model": "myapp.cartitem",
+  "pk": 3,
+  "fields": {
+    "product": 40,
+    "quantity": 1,
+    "order": 3,
+    "prescription_file": ""
+  }
+},
+{
+  "model": "myapp.cartitem",
+  "pk": 4,
+  "fields": {
+    "product": 41,
+    "quantity": 1,
+    "order": 3,
+    "prescription_file": ""
+  }
+},
+{
+  "model": "myapp.cartitem",
+  "pk": 5,
+  "fields": {
+    "product": 39,
+    "quantity": 1,
+    "order": 4,
+    "prescription_file": ""
+  }
+},
+{
+  "model": "myapp.cartitem",
+  "pk": 6,
+  "fields": {
+    "product": 9,
+    "quantity": 1,
+    "order": 4,
+    "prescription_file": ""
+  }
+},
+{
+  "model": "myapp.cartitem",
+  "pk": 7,
+  "fields": {
+    "product": 45,
+    "quantity": 1,
+    "order": 5,
+    "prescription_file": ""
+  }
+},
+{
+  "model": "myapp.cartitem",
+  "pk": 8,
+  "fields": {
+    "product": 38,
+    "quantity": 1,
+    "order": 6,
+    "prescription_file": ""
+  }
+},
+{
+  "model": "myapp.cartitem",
+  "pk": 9,
+  "fields": {
+    "product": 1,
+    "quantity": 1,
+    "order": 7,
+    "prescription_file": ""
+  }
+},
+{
+  "model": "myapp.cartitem",
+  "pk": 10,
+  "fields": {
+    "product": 38,
+    "quantity": 1,
+    "order": 8,
+    "prescription_file": ""
+  }
+},
+{
+  "model": "myapp.cartitem",
+  "pk": 11,
+  "fields": {
+    "product": 1,
+    "quantity": 1,
+    "order": 9,
+    "prescription_file": ""
+  }
+},
+{
+  "model": "myapp.userpayment",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "order": 1,
+    "amount": "300.00",
+    "tax_amount": "0.00",
+    "total_amount": "300.00",
+    "transaction_uuid": "COD-22673E2BCF57",
+    "transaction_code": null,
+    "status": "PAID",
+    "payment_method": "CASH_ON_DELIVERY",
+    "product_code": "EPAYTEST",
+    "created_at": "2026-02-08T12:21:22.241Z",
+    "updated_at": "2026-02-08T12:22:29.379Z",
+    "products": []
+  }
+},
+{
+  "model": "myapp.userpayment",
+  "pk": 2,
+  "fields": {
+    "user": 1,
+    "order": 2,
+    "amount": "150.00",
+    "tax_amount": "0.00",
+    "total_amount": "150.00",
+    "transaction_uuid": "TID-1770553490148-zorym1ir8",
+    "transaction_code": null,
+    "status": "PAID",
+    "payment_method": "ONLINE",
+    "product_code": "EPAYTEST",
+    "created_at": "2026-02-08T12:24:51.478Z",
+    "updated_at": "2026-02-08T12:24:51.481Z",
+    "products": []
+  }
+},
+{
+  "model": "myapp.userpayment",
+  "pk": 3,
+  "fields": {
+    "user": 1,
+    "order": 3,
+    "amount": "315.00",
+    "tax_amount": "0.00",
+    "total_amount": "315.00",
+    "transaction_uuid": "COD-D35783283BC8",
+    "transaction_code": null,
+    "status": "PENDING",
+    "payment_method": "CASH_ON_DELIVERY",
+    "product_code": "EPAYTEST",
+    "created_at": "2026-02-09T09:26:44.492Z",
+    "updated_at": "2026-02-09T09:26:44.492Z",
+    "products": []
+  }
+},
+{
+  "model": "myapp.userpayment",
+  "pk": 4,
+  "fields": {
+    "user": 1,
+    "order": 4,
+    "amount": "235.00",
+    "tax_amount": "0.00",
+    "total_amount": "235.00",
+    "transaction_uuid": "TID-1770643223439-aswqvurry",
+    "transaction_code": null,
+    "status": "PAID",
+    "payment_method": "ONLINE",
+    "product_code": "EPAYTEST",
+    "created_at": "2026-02-09T13:20:25.258Z",
+    "updated_at": "2026-02-09T13:20:25.262Z",
+    "products": []
+  }
+},
+{
+  "model": "myapp.userpayment",
+  "pk": 5,
+  "fields": {
+    "user": 1,
+    "order": 5,
+    "amount": "280.00",
+    "tax_amount": "0.00",
+    "total_amount": "280.00",
+    "transaction_uuid": "COD-80A2B3FE8932",
+    "transaction_code": null,
+    "status": "PAID",
+    "payment_method": "CASH_ON_DELIVERY",
+    "product_code": "EPAYTEST",
+    "created_at": "2026-02-09T13:48:35.348Z",
+    "updated_at": "2026-02-09T13:49:26.974Z",
+    "products": []
+  }
+},
+{
+  "model": "myapp.userpayment",
+  "pk": 6,
+  "fields": {
+    "user": 1,
+    "order": 6,
+    "amount": "45.00",
+    "tax_amount": "0.00",
+    "total_amount": "45.00",
+    "transaction_uuid": "COD-5CAAD1EBEA05",
+    "transaction_code": null,
+    "status": "PENDING",
+    "payment_method": "CASH_ON_DELIVERY",
+    "product_code": "EPAYTEST",
+    "created_at": "2026-02-09T14:57:38.507Z",
+    "updated_at": "2026-02-09T14:57:38.507Z",
+    "products": []
+  }
+},
+{
+  "model": "myapp.userpayment",
+  "pk": 7,
+  "fields": {
+    "user": 1,
+    "order": 7,
+    "amount": "15.00",
+    "tax_amount": "0.00",
+    "total_amount": "15.00",
+    "transaction_uuid": "COD-C3214B9DF3C4",
+    "transaction_code": null,
+    "status": "PAID",
+    "payment_method": "CASH_ON_DELIVERY",
+    "product_code": "EPAYTEST",
+    "created_at": "2026-02-10T15:51:18.545Z",
+    "updated_at": "2026-02-10T15:52:00.373Z",
+    "products": []
+  }
+},
+{
+  "model": "myapp.userpayment",
+  "pk": 8,
+  "fields": {
+    "user": 1,
+    "order": 8,
+    "amount": "45.00",
+    "tax_amount": "0.00",
+    "total_amount": "45.00",
+    "transaction_uuid": "COD-B2E039FBC2B2",
+    "transaction_code": null,
+    "status": "PAID",
+    "payment_method": "CASH_ON_DELIVERY",
+    "product_code": "EPAYTEST",
+    "created_at": "2026-02-10T16:08:07.325Z",
+    "updated_at": "2026-02-10T16:08:31.056Z",
+    "products": []
+  }
+},
+{
+  "model": "myapp.userpayment",
+  "pk": 9,
+  "fields": {
+    "user": 1,
+    "order": 9,
+    "amount": "15.00",
+    "tax_amount": "0.00",
+    "total_amount": "15.00",
+    "transaction_uuid": "COD-FEC5FCE611BF",
+    "transaction_code": null,
+    "status": "PENDING",
+    "payment_method": "CASH_ON_DELIVERY",
+    "product_code": "EPAYTEST",
+    "created_at": "2026-02-11T11:33:14.568Z",
+    "updated_at": "2026-02-11T11:33:14.568Z",
+    "products": []
+  }
+},
+{
+  "model": "myapp.passwordresettoken",
+  "pk": 1,
+  "fields": {
+    "user": 1,
+    "token": "wHmKqqJYV5NmA_IZHUdgXtebjD1727Ak0RFqwTUBUfI",
+    "created_at": "2026-02-08T12:23:22.184Z",
+    "expires_at": "2026-02-08T13:23:22.183Z",
+    "is_used": false
+  }
+},
+{
+  "model": "myapp.prescriptionverification",
+  "pk": 1,
+  "fields": {
+    "order": 1,
+    "prescription_image": "prescription_verifications/WhatsApp_Image_2026-02-07_at_18.15.56.jpeg",
+    "extracted_nmc_number": "27444",
+    "doctor_name": "Sagar Chhetri",
+    "hospital_name": null,
+    "department": null,
+    "medicine_list": [
+      {
+        "name": "Vitamin c",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "medium"
+      },
+      {
+        "name": "Regd",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      },
+      {
+        "name": "Name           r",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      }
+    ],
+    "patient_name": null,
+    "patient_age": null,
+    "patient_gender": null,
+    "chief_complaints": null,
+    "followup_date": null,
+    "ocr_confidence": "medium",
+    "ocr_raw_text": "OPD  CARD)\n\nDr. Sagar Chhetri (CLC)\nBDSsS, TU\nNMC No. 27444\n\nRegd. No\nName           r\n\nAddress: 7\n}",
+    "status": "approved",
+    "verified_by": null,
+    "verification_notes": "OCR extracted: NMC=27444, Doctor=Sagar Chhetri, Hospital=None, Dept=None, Medicines=3, Confidence=medium",
+    "verified_at": null,
+    "created_at": "2026-02-08T12:21:22.237Z",
+    "updated_at": "2026-02-08T12:22:46.066Z"
+  }
+},
+{
+  "model": "myapp.prescriptionverification",
+  "pk": 2,
+  "fields": {
+    "order": 2,
+    "prescription_image": "prescription_verifications/WhatsApp_Image_2026-02-04_at_16.34.24_Btg4EZd.jpeg",
+    "extracted_nmc_number": null,
+    "doctor_name": "Arpana Neopane LTTE",
+    "hospital_name": "ro ie Hospital",
+    "department": "Pulmonary Critical Care And Sleep Qe",
+    "medicine_list": [
+      {
+        "name": "Vitamin c",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "medium"
+      },
+      {
+        "name": "Calcium",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "medium"
+      },
+      {
+        "name": "Name         Mr",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      },
+      {
+        "name": "Age",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      },
+      {
+        "name": "Contact No",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      },
+      {
+        "name": "Address        BHAKTAPUR",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      },
+      {
+        "name": "Department      Pulmonary",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      },
+      {
+        "name": "Terctia dar",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      }
+    ],
+    "patient_name": "Mr",
+    "patient_age": null,
+    "patient_gender": "F",
+    "chief_complaints": null,
+    "followup_date": null,
+    "ocr_confidence": "high",
+    "ocr_raw_text": "i\nf\n(OPD RE\nCORD BOOK)\nA TR\n:                                                             . ro       ie\n             Hospital No. : 82436563             2082/10/18 42:11\nName         Mr. Aman Shrestha\nAge/Gender    25 Yrs /M             Room No 4\nContact No.    9840259838       Charge : Rs. 700\nAddress        BHAKTAPUR                     EHS\nDepartment      Pulmonary Critical Care And Sleep Qe cine\n-          Unit/Doctor    Prof. Dr. Arpana Neopane\nLTTE                      y,\ny-\nA GIS THCORAA TROSEM T                                             7\nfaxanRa secure Bar\nfaster ve aseRa deat y ast\nTH ACM TENT\nTerctia dar ehfat aver gun we                                 4\nae\nww\na / Sv .",
+    "status": "approved",
+    "verified_by": null,
+    "verification_notes": "OCR extracted: NMC=None, Doctor=Arpana Neopane LTTE, Hospital=ro ie Hospital, Dept=Pulmonary Critical Care And Sleep Qe, Medicines=8, Confidence=high",
+    "verified_at": null,
+    "created_at": "2026-02-08T12:24:50.127Z",
+    "updated_at": "2026-02-08T12:29:40.102Z"
+  }
+},
+{
+  "model": "myapp.prescriptionverification",
+  "pk": 3,
+  "fields": {
+    "order": 3,
+    "prescription_image": "prescription_verifications/WhatsApp_Image_2026-02-04_at_17.38.27_WOhKQ3q.jpeg",
+    "extracted_nmc_number": null,
+    "doctor_name": "ess",
+    "hospital_name": null,
+    "department": null,
+    "medicine_list": [
+      {
+        "name": "Vitamin c",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "medium"
+      },
+      {
+        "name": "Hoapnalte GynaeObs",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      },
+      {
+        "name": "Name     y",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      },
+      {
+        "name": "Address",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      },
+      {
+        "name": "User ii",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      }
+    ],
+    "patient_name": null,
+    "patient_age": null,
+    "patient_gender": null,
+    "chief_complaints": null,
+    "followup_date": null,
+    "ocr_confidence": "medium",
+    "ocr_raw_text": "}             i                              ee   =\n038114       LUT\nHoapnalte GynaeObs      Room No a       0\neer poonem Lame         ;\nne         BRAIKeE bddodbia        i,\nName     y       ) Phohe Kol\n                  STHMANDU\nAddress. 7720820907 (2025/12/22AD) - 08:09:48\npemeni    HA\nUser ii  ae         Rs :100.00/:\nkK         A             ATA\nq                   1\ns        0\n3    -             ees\nE\n*. tae         ey\n:                    ,  cAe\nDs  4\nBe /,\nae              us\n2\nY                     vt\nee              ,                :\n%\nme\n  rs vat\nd,     yuk\ni ee.\nz          -o sp\n           Dpsoulve .\na           2 ae",
+    "status": "approved",
+    "verified_by": null,
+    "verification_notes": "OCR extracted: NMC=None, Doctor=ess, Hospital=None, Dept=None, Medicines=5, Confidence=medium",
+    "verified_at": null,
+    "created_at": "2026-02-09T09:26:44.469Z",
+    "updated_at": "2026-02-09T13:22:52.049Z"
+  }
+},
+{
+  "model": "myapp.prescriptionverification",
+  "pk": 4,
+  "fields": {
+    "order": 4,
+    "prescription_image": "prescription_verifications/WhatsApp_Image_2026-02-07_at_18.15.56_SXR0FBW.jpeg",
+    "extracted_nmc_number": "27444",
+    "doctor_name": "Sagar Chhetri",
+    "hospital_name": null,
+    "department": null,
+    "medicine_list": [
+      {
+        "name": "Vitamin c",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "medium"
+      },
+      {
+        "name": "Regd",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      },
+      {
+        "name": "Name           r",
+        "dosage": "",
+        "duration": "",
+        "frequency": "",
+        "confidence": "low"
+      }
+    ],
+    "patient_name": null,
+    "patient_age": null,
+    "patient_gender": null,
+    "chief_complaints": null,
+    "followup_date": null,
+    "ocr_confidence": "medium",
+    "ocr_raw_text": "OPD  CARD)\n\nDr. Sagar Chhetri (CLC)\nBDSsS, TU\nNMC No. 27444\n\nRegd. No\nName           r\n\nAddress: 7\n}",
+    "status": "pending",
+    "verified_by": null,
+    "verification_notes": "OCR extracted: NMC=27444, Doctor=Sagar Chhetri, Hospital=None, Dept=None, Medicines=3, Confidence=medium",
+    "verified_at": null,
+    "created_at": "2026-02-09T13:20:23.388Z",
+    "updated_at": "2026-02-09T13:20:23.388Z"
+  }
+}
+]

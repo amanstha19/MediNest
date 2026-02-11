@@ -49,7 +49,7 @@ const AmbulanceCard = ({ service }) => (
       </div>
       <a href={`tel:${service.phone.split(',')[0]}`} style={{ textDecoration: 'none' }}>
         <Button variant="success" className="eh-btn--block" size="sm">
-          Call Now
+          Call Now For Ambulance
         </Button>
       </a>
     </CardContent>

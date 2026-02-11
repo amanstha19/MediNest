@@ -36,6 +36,14 @@ python manage.py migrate --noinput
 echo ""
 echo "✅ Migrations complete!"
 echo ""
+
+# Check if products exist, if not, seed them
+echo "📦 Checking for products..."
+python manage.py shell -c "from myapp.models import Product; import sys; sys.exit(0 if Product.objects.exists() else 1)" || {
+    echo "🌱 No products found! Seeding sample data..."
+    python manage.py seed_products
+}
+echo ""
 echo "🚀 Starting Django development server..."
 echo "   URL: http://0.0.0.0:8000"
 echo ""

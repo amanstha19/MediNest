@@ -73,7 +73,33 @@ docker compose build --no-cache
 
 ---
 
-## ✅ VERIFICATION
+## ✅ Solution 4: Missing Products Fix (Empty List `[]`)
+
+If the app is running but the products list is empty, it's because the database is blank.
+
+**I have now updated the code to fix this automatically.**
+
+The `entrypoint.sh` now contains logic to:
+1. Check if the database is empty.
+2. Automatically run `python manage.py seed_products` if no products exist.
+
+### How to get the products:
+
+1. **You (the owner)** must push the latest changes (run the commands below).
+2. **Your friend** must pull the latest changes.
+3. **Your friend** must restart the containers:
+   ```bash
+   docker compose down
+   docker compose up
+   ```
+
+---
+
+## ✅ Summary Checklist for Friend
+1. `git pull origin development`
+2. `docker compose down`
+3. `docker compose up`
+4. Wait for message: `🌱 No products found! Seeding sample data...`
 
 After the fix, run:
 ```bash

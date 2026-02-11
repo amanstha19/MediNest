@@ -1,0 +1,14 @@
+# Ensure shell scripts always use LF line endings (Unix style)
+# This prevents "bad interpreter" errors on Linux/Docker
+*.sh text eol=lf
+
+# Ensure Python files use LF
+*.py text eol=lf
+
+# Docker files
+Dockerfile text eol=lf
+docker-compose.yml text eol=lf
+.dockerignore text eol=lf
+
+# Environment files
+.env* text eol=lf

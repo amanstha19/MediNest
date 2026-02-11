@@ -38,7 +38,7 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Services */}
+         {/* Services */}
           <div className="footer-section">
             <h4 className="footer-title">Services</h4>
             <ul className="footer-links footer-services">
@@ -48,7 +48,7 @@ function Footer() {
                 'Ambulance Service',
                 'Health Consultation',
               ].map((service) => (
-                <li key={service}>{service}</li>
+                <li key={service}><span>{service}</span></li>
               ))}
             </ul>
           </div>
@@ -57,12 +57,14 @@ function Footer() {
           <div className="footer-section">
             <h4 className="footer-title">Contact</h4>
             <ul className="footer-contact">
-              <li><MapPin size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Kathmandu, Nepal</li>
-              <li><Phone size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> +977-01-XXXXXXX</li>
-              <li><Mail size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> support@medinest.com</li>
+              <li><span>📍 Kathmandu, Nepal</span></li>
+              <li><span>📞 +977-01-XXXXXXX</span></li>
+              <li><span>✉️ support@medinest.com</span></li>
             </ul>
           </div>
         </div>
+
+
 
         {/* Bottom Bar */}
         <div className="footer-bottom">

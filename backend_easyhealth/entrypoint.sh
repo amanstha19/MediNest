@@ -38,19 +38,23 @@ echo "✅ Migrations complete!"
 echo ""
 
 # Check if products exist, if not, populate them
-echo "📦 Checking for database content..."
-python manage.py shell -c "from myapp.models import Product; import sys; sys.exit(0 if Product.objects.exists() else 1)" || {
+echo ""
+echo "🔍 Checking for database content..."
+if python manage.py shell -c "from myapp.models import Product; import sys; sys.exit(0 if Product.objects.exists() else 1)"; then
+    echo "✅ Database already contains data. Skipping auto-sync."
+else
+    echo "🌱 Database is empty!"
     if [ -f "/app/epharm/myapp/fixtures/full_db.json" ]; then
-        echo "📥 Full database fixture found! Syncing EVERYTHING (Users, Products, Orders)..."
-        python manage.py loaddata myapp/fixtures/full_db.json
+        echo "📥 [IMPORT] Full database fixture found! MIRRORING state (Users, Products, Orders)..."
+        python manage.py loaddata myapp/fixtures/full_db.json || echo "⚠️ Warning: Full sync encountered some issues, but continuing..."
     elif [ -f "/app/epharm/myapp/fixtures/products.json" ]; then
-        echo "📥 Product fixture found! Importing products..."
+        echo "📥 [IMPORT] Product fixture found! Importing products only..."
         python manage.py loaddata myapp/fixtures/products.json
     else
-        echo "🌱 No fixture found. Seeding generic sample data..."
+        echo "🌱 [SEED] No fixtures found. Running fallback seed_products command..."
         python manage.py seed_products
     fi
-}
+fi
 echo ""
 echo "🚀 Starting Django development server..."
 echo "   URL: http://0.0.0.0:8000"

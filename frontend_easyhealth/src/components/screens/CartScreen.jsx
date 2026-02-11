@@ -5,12 +5,19 @@ import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Trash2, AlertTriangle } from 'lucide-react';
+import { BASE_URL } from '../../api/config';
 import './pages.css';
 
 const CartScreen = () => {
   const { cartItems, removeFromCart, updateQuantity } = useCart();
   const navigate = useNavigate();
   const [updatedItems, setUpdatedItems] = useState(new Set());
+
+  // Helper for image URLs
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    return path.startsWith('http') ? path : `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+  };
 
   const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
@@ -93,7 +100,7 @@ const CartScreen = () => {
                   {/* Image */}
                   <motion.div className="cart-item-image-wrapper">
                     <img
-                      src={`http://127.0.0.1:8000${item.image}`}
+                      src={getImageUrl(item.image)}
                       alt={item.name}
                       className="cart-item-image"
                     />

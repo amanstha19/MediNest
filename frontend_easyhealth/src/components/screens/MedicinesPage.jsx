@@ -4,6 +4,7 @@ import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
 import { Pill, Search, ListFilter } from 'lucide-react';
+import { API_URL, BASE_URL } from '../../api/config';
 import './pages.css';
 
 const MedicinesPage = () => {
@@ -13,11 +14,17 @@ const MedicinesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
 
+  // Helper for image URLs
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    return path.startsWith('http') ? path : `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+  };
+
   // Fetch categories from API
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/categories/');
+        const response = await fetch(`${API_URL}/categories/`);
         const data = await response.json();
         setCategories(data);
       } catch (error) {
@@ -31,7 +38,7 @@ const MedicinesPage = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        let url = 'http://127.0.0.1:8000/api/products/search/?';
+        let url = `${API_URL}/products/search/?`;
         if (searchQuery) url += `search=${searchQuery}&`;
         if (selectedCategory) url += `category=${selectedCategory}&`;
 
@@ -151,7 +158,7 @@ const MedicinesPage = () => {
                 <div className="product-image-container">
                   {product.image ? (
                     <img
-                      src={`http://127.0.0.1:8000${product.image}`}
+                      src={getImageUrl(product.image)}
                       alt={product.generic_name || product.name}
                     />
                   ) : (

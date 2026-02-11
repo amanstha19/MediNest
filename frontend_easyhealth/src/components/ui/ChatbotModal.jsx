@@ -5,6 +5,7 @@ import {
   Loader2, User, Bot, Clock 
 } from 'lucide-react';
 import PropTypes from 'prop-types';
+import { API_URL } from '../../api/config';
 import './ChatbotModal.css';
 
 const ChatbotModal = ({ isOpen, onClose }) => {
@@ -72,7 +73,7 @@ const ChatbotModal = ({ isOpen, onClose }) => {
       }));
 
       // Call backend API
-      const response = await fetch('http://127.0.0.1:8000/api/chatbot/', {
+      const response = await fetch(`${API_URL}/chatbot/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

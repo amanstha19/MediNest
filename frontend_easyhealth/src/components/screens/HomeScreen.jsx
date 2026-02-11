@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import API from '../../utils/api';
 import { Card } from '../ui/card';
 import Button from '../ui/button';
 import SimpleSearchModal from '../ui/SimpleSearchModal';
@@ -10,6 +10,7 @@ import {
   Pill, Syringe, FlaskConical, HeartPulse, Activity, 
   Baby, Leaf, Monitor, SquarePlus, Home, Search 
 } from 'lucide-react';
+import { API_URL, BASE_URL } from '../../api/config';
 import './pages.css';
 
 const getIconComponent = (iconName) => {
@@ -46,6 +47,12 @@ function HomeScreen() {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const categoryRef = useRef(null);
 
+  // Helper for image URLs
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    return path.startsWith('http') ? path : `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+  };
+
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category');
     if (categoryFromUrl) setSelectedCategory(categoryFromUrl);
@@ -54,7 +61,7 @@ function HomeScreen() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/api/categories/');
+        const response = await fetch(`${API_URL}/categories/`);
         const data = await response.json();
         const allProductsEntry = { value: '', label: 'All Products', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', icon: 'Home', description: 'Browse everything' };
         setCategories([allProductsEntry, ...data]);
@@ -70,7 +77,7 @@ function HomeScreen() {
     async function fetchProducts() {
       try {
         setLoading(true);
-        const { data } = await axios.get('/api/products');
+        const { data } = await API.get('products/');
         setProducts(data);
         setFilteredProducts(data);
         const grouped = data.reduce((acc, product) => {
@@ -278,7 +285,7 @@ function HomeScreen() {
                     <motion.div key={product.id} className="filtered-product-card" variants={itemVariants} layout>
                       <Link to={`/product/${product.id}`} className="product-link">
                         <div className="product-image-container">
-                          {product.image ? <img src={`http://127.0.0.1:8000${product.image}`} alt={product.generic_name || product.name} /> : <div className="product-placeholder">💊</div>}
+                          {product.image ? <img src={getImageUrl(product.image)} alt={product.generic_name || product.name} /> : <div className="product-placeholder">💊</div>}
                           <div className="product-badges"><span className={`badge ${product.prescription_required ? 'badge-rx' : 'badge-otc'}`}>{product.prescription_required ? 'Rx' : 'OTC'}</span></div>
                         </div>
                         <div className="product-content">
@@ -329,7 +336,7 @@ function HomeScreen() {
                     <motion.div key={product.id} className="recommendation-product-card" initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} transition={{ delay: idx * 0.05 }}>
                       <Link to={`/product/${product.id}`} className="product-link">
                         <div className="product-image-container">
-                          {product.image ? <img src={`http://127.0.0.1:8000${product.image}`} alt={product.generic_name || product.name} /> : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)', fontSize: '1.2rem' }}>💊</div>}
+                          {product.image ? <img src={getImageUrl(product.image)} alt={product.generic_name || product.name} /> : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)', fontSize: '1.2rem' }}>💊</div>}
                           <div className="product-badges"><span className={`badge ${product.prescription_required ? 'badge-rx' : 'badge-otc'}`}>{product.prescription_required ? 'Rx' : 'OTC'}</span></div>
                         </div>
                         <div className="product-content"><h4 className="product-name">{product.generic_name || product.name}</h4><p className="product-price">{product.price?.toLocaleString() || 'N/A'}</p></div>

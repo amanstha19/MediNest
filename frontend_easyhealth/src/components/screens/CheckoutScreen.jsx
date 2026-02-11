@@ -2,19 +2,26 @@ import { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../components/ui/Toast';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../../utils/api';
 import EsewaPayment from '../screens/Payment';
 import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
 import { ShoppingCart, MapPin, FileText, CreditCard, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
 import AddressForm from '../ui/AddressForm';
+import { BASE_URL, API_URL } from '../../api/config';
 
 const CheckoutScreen = () => {
   const { cartItems } = useCart();
   const { addToast } = useToast();
   const navigate = useNavigate();
   const [prescription, setPrescription] = useState(null);
+
+  // Helper for image URLs
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    return path.startsWith('http') ? path : `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+  };
   const [address, setAddress] = useState({
     fullName: '',
     phone: '',
@@ -93,7 +100,7 @@ const CheckoutScreen = () => {
       }
       formData.append('cart_items', JSON.stringify(cartItems));
 
-      const response = await axios.post('http://localhost:8000/api/order/place/', formData, {
+      const response = await API.post('order/place/', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${token}`,
@@ -223,7 +230,7 @@ const CheckoutScreen = () => {
                       }}
                     >
                       <motion.img
-                        src={`http://127.0.0.1:8000${item.image}`}
+                        src={getImageUrl(item.image)}
                         alt={item.name}
                         style={{
                           width: '100%',

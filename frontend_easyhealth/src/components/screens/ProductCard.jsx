@@ -1,15 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
-import { Card } from '../ui/card';
+import { BASE_URL } from '../../api/config';
 
 const ProductCard = ({ product }) => {
+  // Ensure image URL is correctly constructed
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    return path.startsWith('http') ? path : `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+  };
+
   return (
     <Card className="">
       <Link to={`/product/${product.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
         <div className="eh-card__media">
           {product.image ? (
-            <img src={`http://127.0.0.1:8000${product.image}`} alt={product.generic_name} />
+            <img src={getImageUrl(product.image)} alt={product.generic_name} />
           ) : (
             <div className="eh-center eh-muted">No image</div>
           )}

@@ -120,20 +120,26 @@ You should see:
 
 ---
 
-## 🛡️ Prevention (Already Fixed in Repo)
+---
 
-I've added `.gitattributes` to the repo which will prevent this issue for future clones:
+## ✅ Solution 5: MIRROR MODE (Total Reset)
 
+If your friend says "it's still not syncing!" or if they want an absolute **fresh start** that matches your environment 100%, tell them to run this **Nuclear Option**:
+
+```bash
+# 1. Wipe everything (including the database volume)
+docker compose down -v
+
+# 2. Rebuild with new sync logic
+docker compose up --build
 ```
-*.sh text eol=lf
-```
 
-This ensures shell scripts **always** use Unix line endings, even on Windows.
+### Why this is the "Best" Fix:
+- **`docker compose down -v`**: The `-v` flag is the key. It deletes the local database volume.
+- **Next Start**: When they run `up`, the `entrypoint.sh` will see an empty database and trigger the `full_db.json` import automatically.
+- **Result**: They get your exact users, categories, products, and images.
 
 ---
 
-## 📝 Summary
-
-**The problem:** Git on Windows converted LF → CRLF when your friend cloned the repo  
-**The fix:** Force git to use LF line endings for shell scripts  
-**Prevention:** `.gitattributes` file now enforces this automatically
+## 🛡️ Prevention (Already Fixed in Repo)
+...

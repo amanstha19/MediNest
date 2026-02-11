@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import API from '../../utils/api';
 import { useCart } from '../../context/CartContext';
 import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
 import { AlertTriangle, ShoppingCart } from 'lucide-react';
+import { BASE_URL } from '../../api/config';
 import './pages.css';
 
 function ProductScreen() {
@@ -15,11 +16,17 @@ function ProductScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Helper for image URLs
+  const getImageUrl = (path) => {
+    if (!path) return null;
+    return path.startsWith('http') ? path : `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+  };
+
   useEffect(() => {
     async function fetchProductDetails() {
       try {
         setLoading(true);
-        const { data } = await axios.get(`/api/product/${id}/`);
+        const { data } = await API.get(`product/${id}/`);
         setProduct(data);
       } catch (err) {
         console.error('Error fetching product details:', err);
@@ -67,7 +74,7 @@ function ProductScreen() {
         <div className="product-image-container">
           <Card>
             <div className="eh-card__media" style={{ aspectRatio: '1/1' }}>
-              <img src={`http://127.0.0.1:8000${product.image}`} alt={product.generic_name} />
+              <img src={getImageUrl(product.image)} alt={product.generic_name} />
             </div>
           </Card>
         </div>

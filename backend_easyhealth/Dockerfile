@@ -16,11 +16,16 @@ RUN apt-get update && apt-get install -y \
     libxrender-dev \
     tesseract-ocr \
     tesseract-ocr-eng \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements file and install dependencies
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt && pip install --no-cache-dir --upgrade google-genai
+# Use pip cache for faster builds, especially on Windows
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --upgrade pip && \
+    pip install -r requirements.txt && \
+    pip install --upgrade google-genai
 
 # Copy all backend project files
 COPY . .

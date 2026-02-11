@@ -779,3 +779,102 @@ class AdminProductStockUpdateView(APIView):
             'product_name': product.name,
             'new_stock': product.stock
         }, status=status.HTTP_200_OK)
+
+
+# Admin: Get All Payments
+class AdminPaymentsView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        # Check if user is admin
+        if not request.user.is_staff and not request.user.is_superuser:
+            return Response({'error': 'Admin access required'}, status=status.HTTP_403_FORBIDDEN)
+        
+        from .serializers import AdminPaymentSerializer
+        
+        payments = userPayment.objects.all().order_by('-created_at')
+        serializer = AdminPaymentSerializer(payments, many=True)
+        
+        return Response({
+            'payments': serializer.data,
+            'count': len(serializer.data)
+        }, status=status.HTTP_200_OK)
+
+
+# Admin: Update Payment Status
+class AdminPaymentStatusUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def patch(self, request, payment_id):
+        # Check if user is admin
+        if not request.user.is_staff and not request.user.is_superuser:
+            return Response({'error': 'Admin access required'}, status=status.HTTP_403_FORBIDDEN)
+        
+        try:
+            payment = userPayment.objects.get(id=payment_id)
+        except userPayment.DoesNotExist:
+            return Response({'error': 'Payment not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        new_status = request.data.get('status')
+        
+        # Validate status
+        valid_statuses = ['PENDING', 'PAID', 'FAILED', 'REFUNDED']
+        if new_status not in valid_statuses:
+            return Response({
+                'error': f'Invalid status. Use: {", ".join(valid_statuses)}'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        old_status = payment.status
+        payment.status = new_status
+        payment.save()
+        
+        # If payment is marked as PAID, update related order status
+        if new_status == 'PAID' and payment.order:
+            payment.order.status = 'paid'
+            payment.order.save()
+            logger.info(f"Order {payment.order.id} status updated to 'paid' after payment confirmation")
+        
+        return Response({
+            'message': 'Payment status updated successfully',
+            'payment_id': payment.id,
+            'transaction_uuid': payment.transaction_uuid,
+            'old_status': old_status,
+            'new_status': new_status
+        }, status=status.HTTP_200_OK)
+
+
+# Get Order Payment Status
+class OrderPaymentStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, order_id):
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Check if user owns this order or is admin
+        if order.user != request.user and not (request.user.is_staff or request.user.is_superuser):
+            return Response({'error': 'Access denied'}, status=status.HTTP_403_FORBIDDEN)
+        
+        from .serializers import OrderPaymentStatusSerializer
+        
+        try:
+            payment = userPayment.objects.filter(order=order).first()
+            if payment:
+                serializer = OrderPaymentStatusSerializer(payment)
+                return Response({
+                    'order_id': order.id,
+                    'order_status': order.status,
+                    'payment': serializer.data
+                }, status=status.HTTP_200_OK)
+            else:
+                return Response({
+                    'order_id': order.id,
+                    'order_status': order.status,
+                    'payment': None,
+                    'message': 'No payment found for this order'
+                }, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Error fetching payment status: {str(e)}")
+            return Response({'error': 'Error fetching payment status'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -36,6 +36,7 @@ services:
       - POSTGRES_PASSWORD=drf123
       - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
+      - DJANGO_SECRET_KEY=django-insecure-dev-key-change-in-production-abcdefghijklmnopqrstuvwxyz123456
     volumes:
       - ./backend_easyhealth/epharm:/app/epharm
       - ./backend_easyhealth/epharm/staticfiles:/app/epharm/staticfiles

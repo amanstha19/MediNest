@@ -1181,8 +1181,8 @@ class PrescriptionVerificationAdmin(admin.ModelAdmin):
 # Register all models with the custom admin site
 admin_site.register(Product, ProductAdmin)
 admin_site.register(CustomUser, CustomUserAdmin)
-admin_site.register(Cart, CartAdmin)
-admin_site.register(CartItem, CartItemAdmin)
+
+
 admin_site.register(Order, OrderAdmin)
 admin_site.register(userPayment, UserPaymentAdmin)
 admin_site.register(Category, CategoryAdmin)

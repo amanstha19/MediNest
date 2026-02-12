@@ -1,0 +1,3 @@
+Test ID,Overall Accuracy,Weighted Accuracy,Confidence,doctor_name_score,doctor_name_match,nmc_number_score,nmc_number_match,hospital_name_score,hospital_name_match,department_score,department_match,medicines_score,medicines_match
+Prescription_001,87.78,90.88,High,100.0,Yes,100.0,Yes,72.22,No,100.0,Yes,66.67,No
+Prescription_002,40.0,37.31,Low,100.0,Yes,0.0,No,100.0,Yes,0.0,No,0.0,No

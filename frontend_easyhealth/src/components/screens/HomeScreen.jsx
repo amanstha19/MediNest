@@ -286,7 +286,7 @@ function HomeScreen() {
                       <Link to={`/product/${product.id}`} className="product-link">
                         <div className="product-image-container">
                           {product.image ? <img src={getImageUrl(product.image)} alt={product.generic_name || product.name} /> : <div className="product-placeholder">💊</div>}
-                          <div className="product-badges"><span className={`badge ${product.prescription_required ? 'badge-rx' : 'badge-otc'}`}>{product.prescription_required ? 'Rx' : 'OTC'}</span></div>
+                          <div className="product-badges"><span className={`badge ${product.category === 'RX' ? 'badge-rx' : 'badge-otc'}`}>{product.category || 'OTC'}</span></div>
                         </div>
                         <div className="product-content">
                           <h4 className="product-name">{product.generic_name || product.name}</h4>
@@ -337,7 +337,7 @@ function HomeScreen() {
                       <Link to={`/product/${product.id}`} className="product-link">
                         <div className="product-image-container">
                           {product.image ? <img src={getImageUrl(product.image)} alt={product.generic_name || product.name} /> : <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--text-muted)', fontSize: '1.2rem' }}>💊</div>}
-                          <div className="product-badges"><span className={`badge ${product.prescription_required ? 'badge-rx' : 'badge-otc'}`}>{product.prescription_required ? 'Rx' : 'OTC'}</span></div>
+                          <div className="product-badges"><span className={`badge ${product.category === 'RX' ? 'badge-rx' : 'badge-otc'}`}>{product.category || 'OTC'}</span></div>
                         </div>
                         <div className="product-content"><h4 className="product-name">{product.generic_name || product.name}</h4><p className="product-price">{product.price?.toLocaleString() || 'N/A'}</p></div>
                       </Link>

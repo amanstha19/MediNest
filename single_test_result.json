@@ -1,0 +1,48 @@
+{
+  "test_id": "Test_001",
+  "timestamp": "2026-02-12T18:47:11.192391",
+  "overall_accuracy": 87.78,
+  "weighted_accuracy": 90.88,
+  "confidence_label": "High",
+  "field_results": {
+    "doctor_name": {
+      "match": true,
+      "score": 100.0,
+      "extracted": "Dr. Ram Sharma",
+      "expected": "Dr. Ram Sharma",
+      "similarity": 100.0
+    },
+    "nmc_number": {
+      "match": true,
+      "score": 100.0,
+      "extracted": "12345",
+      "expected": "12345"
+    },
+    "hospital_name": {
+      "match": false,
+      "score": 72.22,
+      "extracted": "City Hospital Kathmandu",
+      "expected": "City Hospital",
+      "similarity": 72.22
+    },
+    "department": {
+      "match": true,
+      "score": 100.0,
+      "extracted": "Cardiology",
+      "expected": "Cardiology"
+    },
+    "medicines": {
+      "match": false,
+      "score": 66.67,
+      "extracted_count": 2,
+      "expected_count": 3,
+      "matched_count": 2
+    }
+  },
+  "total_fields": 5,
+  "summary": {
+    "high_confidence_fields": 3,
+    "medium_confidence_fields": 2,
+    "low_confidence_fields": 0
+  }
+}

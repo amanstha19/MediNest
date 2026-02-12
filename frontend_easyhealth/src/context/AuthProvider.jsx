@@ -10,17 +10,25 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const authTokens = sessionStorage.getItem('authTokens');
-    if (authTokens) {
-      const parsedTokens = JSON.parse(authTokens);
-      setUser({
-        username: parsedTokens.username,
-        email: parsedTokens.email,
-      });
-      
-      // Set token to axios default header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${parsedTokens.access}`;
+    if (authTokens && authTokens !== 'undefined') {
+      try {
+        const parsedTokens = JSON.parse(authTokens);
+        if (parsedTokens && parsedTokens.access) {
+          setUser({
+            username: parsedTokens.username,
+            email: parsedTokens.email,
+          });
+          
+          // Set token to axios default header
+          axios.defaults.headers.common['Authorization'] = `Bearer ${parsedTokens.access}`;
+        }
+      } catch (e) {
+        // Invalid JSON in storage, clear it
+        sessionStorage.removeItem('authTokens');
+      }
     }
   }, []);
+
 
   const signup = async (userData) => {
     try {
@@ -34,10 +42,10 @@ export const AuthProvider = ({ children }) => {
         phone: userData.phone,
       });
       setUser(response.data.user);
-      sessionStorage.setItem('authTokens', JSON.stringify(response.data.tokens));
+      sessionStorage.setItem('authTokens', JSON.stringify(response.data));
 
       // Set token to axios default header
-      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.tokens.access}`;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access}`;
     } catch (err) {
       setError(err.response?.data?.detail || 'Signup failed');
       throw err;

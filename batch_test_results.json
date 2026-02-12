@@ -1,0 +1,131 @@
+{
+  "total_tests": 2,
+  "average_accuracy": 64.09,
+  "overall_confidence": "Medium",
+  "individual_results": [
+    {
+      "test_id": "Prescription_001",
+      "timestamp": "2026-02-12T18:47:11.193410",
+      "overall_accuracy": 87.78,
+      "weighted_accuracy": 90.88,
+      "confidence_label": "High",
+      "field_results": {
+        "doctor_name": {
+          "match": true,
+          "score": 100.0,
+          "extracted": "Dr. Ram Sharma",
+          "expected": "Dr. Ram Sharma",
+          "similarity": 100.0
+        },
+        "nmc_number": {
+          "match": true,
+          "score": 100.0,
+          "extracted": "12345",
+          "expected": "12345"
+        },
+        "hospital_name": {
+          "match": false,
+          "score": 72.22,
+          "extracted": "City Hospital Kathmandu",
+          "expected": "City Hospital",
+          "similarity": 72.22
+        },
+        "department": {
+          "match": true,
+          "score": 100.0,
+          "extracted": "Cardiology",
+          "expected": "Cardiology"
+        },
+        "medicines": {
+          "match": false,
+          "score": 66.67,
+          "extracted_count": 2,
+          "expected_count": 3,
+          "matched_count": 2
+        }
+      },
+      "total_fields": 5,
+      "summary": {
+        "high_confidence_fields": 3,
+        "medium_confidence_fields": 2,
+        "low_confidence_fields": 0
+      }
+    },
+    {
+      "test_id": "Prescription_002",
+      "timestamp": "2026-02-12T18:47:11.193461",
+      "overall_accuracy": 40.0,
+      "weighted_accuracy": 37.31,
+      "confidence_label": "Low",
+      "field_results": {
+        "doctor_name": {
+          "match": true,
+          "score": 100.0,
+          "extracted": "Dr. R Sharma",
+          "expected": "Dr. Ram Sharma",
+          "similarity": 92.31
+        },
+        "nmc_number": {
+          "match": false,
+          "score": 0.0,
+          "extracted": "12346",
+          "expected": "12345"
+        },
+        "hospital_name": {
+          "match": true,
+          "score": 100.0,
+          "extracted": "City Hosp",
+          "expected": "City Hospital",
+          "similarity": 81.82
+        },
+        "department": {
+          "match": false,
+          "score": 0.0,
+          "extracted": "Cardio",
+          "expected": "Cardiology"
+        },
+        "medicines": {
+          "match": false,
+          "score": 0.0,
+          "extracted_count": 1,
+          "expected_count": 2,
+          "matched_count": 0
+        }
+      },
+      "total_fields": 5,
+      "summary": {
+        "high_confidence_fields": 2,
+        "medium_confidence_fields": 0,
+        "low_confidence_fields": 3
+      }
+    }
+  ],
+  "field_statistics": {
+    "doctor_name": {
+      "average": 100.0,
+      "min": 100.0,
+      "max": 100.0
+    },
+    "nmc_number": {
+      "average": 50.0,
+      "min": 0.0,
+      "max": 100.0
+    },
+    "hospital_name": {
+      "average": 86.11,
+      "min": 72.22,
+      "max": 100.0
+    },
+    "department": {
+      "average": 50.0,
+      "min": 0.0,
+      "max": 100.0
+    },
+    "medicines": {
+      "average": 33.34,
+      "min": 0.0,
+      "max": 66.67
+    }
+  },
+  "timestamp": "2026-02-12T18:47:11.193476"
+}

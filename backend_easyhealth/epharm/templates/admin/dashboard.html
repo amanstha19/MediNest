@@ -230,7 +230,7 @@
           <div class="stat-label">Total Orders</div>
         </div>
         <div class="stat-card blue">
-          <div class="stat-value">NRP{{ total_revenue }}</div>
+          <div class="stat-value">NPR{{ total_revenue }}</div>
           <div class="stat-label">Total Revenue</div>
         </div>
       </div>
@@ -292,7 +292,7 @@
               <tr>
                 <td>#{{ order.id }}</td>
                 <td>{{ order.user.username|default:"Guest" }}</td>
-                <td>NRP{{ order.total_price }}</td>
+                <td>NPR{{ order.total_price }}</td>
                 <td>
                   <span class="status-{{ order.status }}"
                     >{{ order.status|title }}</span
@@ -347,7 +347,7 @@
           data: {
             labels: {{ labels|safe }},
             datasets: [{
-              label: 'Sales (NRP)',
+              label: 'Sales (NPR)',
               data: {{ sales_data|safe }},
               borderColor: '#667eea',
               backgroundColor: 'rgba(102, 126, 234, 0.1)',
@@ -359,7 +359,7 @@
             responsive: true,
             plugins: { legend: { display: false } },
             scales: {
-              y: { beginAtZero: true, ticks: { callback: function(value) { return 'NRP' + value; } } }
+              y: { beginAtZero: true, ticks: { callback: function(value) { return 'NPR' + value; } } }
             }
           }
         });

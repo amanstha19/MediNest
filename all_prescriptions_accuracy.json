@@ -1,0 +1,131 @@
+{
+  "total_tests": 2,
+  "average_accuracy": 55.22,
+  "overall_confidence": "Low",
+  "individual_results": [
+    {
+      "test_id": "Image_1",
+      "timestamp": "2026-02-12T19:08:35.671831",
+      "overall_accuracy": 60.0,
+      "weighted_accuracy": 55.22,
+      "confidence_label": "Low",
+      "field_results": {
+        "doctor_name": {
+          "match": true,
+          "score": 100.0,
+          "extracted": "EHS A",
+          "expected": "EHS A",
+          "similarity": 100.0
+        },
+        "nmc_number": {
+          "match": false,
+          "score": 0.0,
+          "extracted": null,
+          "expected": null
+        },
+        "hospital_name": {
+          "match": true,
+          "score": 100.0,
+          "extracted": "A Hospital",
+          "expected": "A Hospital",
+          "similarity": 100.0
+        },
+        "department": {
+          "match": true,
+          "score": 100.0,
+          "extracted": "Pulmonary Critleal Care And Sleep",
+          "expected": "Pulmonary Critleal Care And Sleep"
+        },
+        "medicines": {
+          "match": false,
+          "score": 0.0,
+          "extracted_count": 0,
+          "expected_count": 0,
+          "matched_count": 0
+        }
+      },
+      "total_fields": 5,
+      "summary": {
+        "high_confidence_fields": 3,
+        "medium_confidence_fields": 0,
+        "low_confidence_fields": 2
+      }
+    },
+    {
+      "test_id": "Image_2",
+      "timestamp": "2026-02-12T19:08:35.671855",
+      "overall_accuracy": 60.0,
+      "weighted_accuracy": 55.22,
+      "confidence_label": "Low",
+      "field_results": {
+        "doctor_name": {
+          "match": true,
+          "score": 100.0,
+          "extracted": "EHS A",
+          "expected": "EHS A",
+          "similarity": 100.0
+        },
+        "nmc_number": {
+          "match": false,
+          "score": 0.0,
+          "extracted": null,
+          "expected": null
+        },
+        "hospital_name": {
+          "match": true,
+          "score": 100.0,
+          "extracted": "A Hospital",
+          "expected": "A Hospital",
+          "similarity": 100.0
+        },
+        "department": {
+          "match": true,
+          "score": 100.0,
+          "extracted": "Pulmonary Critleal Care And Sleep",
+          "expected": "Pulmonary Critleal Care And Sleep"
+        },
+        "medicines": {
+          "match": false,
+          "score": 0.0,
+          "extracted_count": 0,
+          "expected_count": 0,
+          "matched_count": 0
+        }
+      },
+      "total_fields": 5,
+      "summary": {
+        "high_confidence_fields": 3,
+        "medium_confidence_fields": 0,
+        "low_confidence_fields": 2
+      }
+    }
+  ],
+  "field_statistics": {
+    "doctor_name": {
+      "average": 100.0,
+      "min": 100.0,
+      "max": 100.0
+    },
+    "nmc_number": {
+      "average": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    },
+    "hospital_name": {
+      "average": 100.0,
+      "min": 100.0,
+      "max": 100.0
+    },
+    "department": {
+      "average": 100.0,
+      "min": 100.0,
+      "max": 100.0
+    },
+    "medicines": {
+      "average": 0.0,
+      "min": 0.0,
+      "max": 0.0
+    }
+  },
+  "timestamp": "2026-02-12T19:08:35.671867"
+}

@@ -13,6 +13,11 @@ const MedicinesPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
+  const limit = 12;
 
   // Helper for image URLs
   const getImageUrl = (path) => {
@@ -34,26 +39,50 @@ const MedicinesPage = () => {
     fetchCategories();
   }, []);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
+  const fetchProducts = async (isLoadMore = false, currentOffset = 0) => {
+    try {
+      if (isLoadMore) {
+        setLoadingMore(true);
+      } else {
         setLoading(true);
-        let url = `${API_URL}/products/search/?`;
-        if (searchQuery) url += `search=${searchQuery}&`;
-        if (selectedCategory) url += `category=${selectedCategory}&`;
-
-        const response = await fetch(url);
-        const data = await response.json();
-        setProducts(data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setLoading(false);
       }
-    };
 
-    fetchProducts();
+      let url = `${API_URL}/products/search/?offset=${currentOffset}&limit=${limit}&`;
+      if (searchQuery) url += `search=${searchQuery}&`;
+      if (selectedCategory) url += `category=${selectedCategory}&`;
+
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (isLoadMore) {
+        setProducts(prev => [...prev, ...data.products]);
+      } else {
+        setProducts(data.products);
+      }
+
+      setHasMore(data.has_more);
+      setTotalCount(data.total_count);
+      setOffset(currentOffset + data.products.length);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
+
+  // Initial load and when search/category changes
+  useEffect(() => {
+    setOffset(0);
+    setHasMore(true);
+    fetchProducts(false, 0);
   }, [searchQuery, selectedCategory]);
+
+  const loadMore = () => {
+    if (!loadingMore && hasMore) {
+      fetchProducts(true, offset);
+    }
+  };
 
   return (
     <div className="eh-container medicines-page">
@@ -140,13 +169,14 @@ const MedicinesPage = () => {
           />
         </div>
       ) : products.length > 0 ? (
-        <motion.div
-          className="advanced-product-grid"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          {products.map((product, idx) => (
+        <>
+          <motion.div
+            className="advanced-product-grid"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            {products.map((product, idx) => (
             <motion.div
               key={product.id}
               className="advanced-product-card"
@@ -174,8 +204,8 @@ const MedicinesPage = () => {
                     </div>
                   )}
                   <div className="product-badges">
-                    <span className={`badge ${product.prescription_required ? 'badge-rx' : 'badge-otc'}`}>
-                      {product.prescription_required ? 'Rx' : 'OTC'}
+                    <span className={`badge ${product.category === 'RX' ? 'badge-rx' : 'badge-otc'}`}>
+                      {product.category || 'OTC'}
                     </span>
                     {product.stock <= 0 && (
                       <span className="badge badge-out-of-stock">
@@ -198,7 +228,52 @@ const MedicinesPage = () => {
               </Link>
             </motion.div>
           ))}
-        </motion.div>
+          </motion.div>
+
+          {/* Load More Button */}
+          {hasMore && (
+            <motion.div
+              className="load-more-container"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                marginTop: '2rem',
+                marginBottom: '2rem'
+              }}
+            >
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="load-more-btn"
+              >
+                {loadingMore ? (
+                  <>
+                    <motion.div
+                      className="eh-loader"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                      style={{ 
+                        width: '20px', 
+                        height: '20px', 
+                        borderWidth: '2px',
+                        display: 'inline-block',
+                        marginRight: '8px',
+                        verticalAlign: 'middle'
+                      }}
+                    />
+                    Loading...
+                  </>
+                ) : (
+                  `Load More (${products.length} of ${totalCount})`
+                )}
+              </Button>
+            </motion.div>
+          )}
+        </>
       ) : (
         <motion.div
           className="empty-state"
@@ -221,4 +296,3 @@ const MedicinesPage = () => {
 };
 
 export default MedicinesPage;
-

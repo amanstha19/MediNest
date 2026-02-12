@@ -10,6 +10,7 @@ from datetime import timedelta
 from unfold.sites import UnfoldAdminSite
 from .models import Product, CustomUser, Cart, CartItem, Order, userPayment, Category, PrescriptionVerification
 from .views.orders import send_delivery_email
+from django.contrib.auth.models import Group
 
 
 class MediNestAdminSite(UnfoldAdminSite):
@@ -20,7 +21,25 @@ class MediNestAdminSite(UnfoldAdminSite):
         ]
         return custom_urls + urls
 
+    def get_app_list(self, request):
+        app_list = super().get_app_list(request)
+        if request.user.groups.filter(name='Delivery Boy').exists():
+            # Filter to show Orders and UserPayment for delivery boys
+            filtered_apps = []
+            for app in app_list:
+                if app['app_label'] == 'myapp':
+                    app['models'] = [model for model in app['models'] if model['object_name'] in ['Order', 'UserPayment']]
+                if app['models']:  # Only include apps that have models
+                    filtered_apps.append(app)
+            return filtered_apps
+        return app_list
+                
     def dashboard_view(self, request):
+        if request.user.groups.filter(name='Delivery Boy').exists():
+            # Redirect delivery boys to orders list instead of dashboard
+            from django.shortcuts import redirect
+            return redirect('admin:myapp_order_changelist')
+
         today = timezone.now()
         total_products = Product.objects.count()
         total_users = CustomUser.objects.count()
@@ -31,10 +50,10 @@ class MediNestAdminSite(UnfoldAdminSite):
         delivered_orders = Order.objects.filter(status='delivered').count()
         paid_orders = Order.objects.filter(status='paid').count()
         pending_prescriptions = PrescriptionVerification.objects.filter(status='pending').count()
-        
+
         recent_orders = Order.objects.select_related('user').prefetch_related('cartitem_set').order_by('-created_at')[:10]
         low_stock_products = Product.objects.filter(stock__lt=10).order_by('stock')[:10]
-        
+
         labels = []
         sales_data = []
         for i in range(6, -1, -1):
@@ -45,7 +64,7 @@ class MediNestAdminSite(UnfoldAdminSite):
                 created_at__date=date.date()
             ).aggregate(total=Sum('total_amount'))['total'] or 0
             sales_data.append(float(day_revenue))
-        
+
         context = {
             'total_products': total_products,
             'total_users': total_users,
@@ -62,13 +81,13 @@ class MediNestAdminSite(UnfoldAdminSite):
             'sales_data': sales_data,
             'title': 'Dashboard',
         }
-        
+
         request.current_app = self.name
         return TemplateResponse(request, 'admin/dashboard.html', context)
 
 
 admin_site = MediNestAdminSite(name='admin')
-
+                    
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'icon', 'value', 'label', 'order', 'is_active', 'product_count', 'created_at')
@@ -198,20 +217,103 @@ class OrderAdmin(admin.ModelAdmin):
         'payment_status', 'payment_method', 'transaction_id', 'amount', 'tax', 'total_amount',
         'address', 'has_prescription', 'prescription_verification_status', 'prescription_thumbnail', 'created_at'
     )
-    
+
     list_filter = ('status', 'created_at')
     search_fields = ('id', 'user__username', 'user__email', 'user__phone', 'address')
     readonly_fields = ('created_at', 'updated_at', 'complete_order_details', 'all_products_detail', 'all_payment_detail', 'all_user_detail', 'all_cartitem_detail')
     inlines = [CartItemInline]
     list_editable = ('status',)
     list_per_page = 20
-    
+    actions = ['mark_cash_payment_received']
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.groups.filter(name='Delivery Boy').exists():
+            # Delivery boys should see all orders to understand the full context
+            # They can work on any order that's not already delivered or canceled
+            pass  # Show all orders for now
+        return qs
+            
+    def get_list_display(self, request):
+        if request.user.groups.filter(name='Delivery Boy').exists():
+            
+            return ('user_username', 'address', 'status', 'payment_status')
+        return super().get_list_display(request)
+    def get_list_editable(self, request):
+        if request.user.groups.filter(name='Delivery Boy').exists():
+            return ('status', 'payment_status')
+        return super().get_list_editable(request)
+            
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        if request.user.groups.filter(name='Delivery Boy').exists() and db_field.name == 'status':
+            # Allow delivery boys to see current status and change to 'delivered' or 'canceled'
+            kwargs['choices'] = [
+                ('pending', 'Pending'),
+                ('delivered', 'Delivered'),
+                ('canceled', 'Canceled'),
+            ]
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
+                        
+                                
+    def has_add_permission(self, request):
+        return super().has_add_permission(request)
+
+    def has_delete_permission(self, request, obj=None):
+        if request.user.groups.filter(name='Delivery Boy').exists():
+            return False
+        return super().has_delete_permission(request, obj)
+
+    def save_model(self, request, obj, form, change):
+        """Override save_model to handle cash on delivery logic for delivery boys"""
+        if request.user.groups.filter(name='Delivery Boy').exists():
+            if obj.status == 'delivered':
+                # Check if payment method is CASH_ON_DELIVERY and update payment status
+                try:
+                    payment = userPayment.objects.filter(order=obj).first()
+                    if payment and payment.payment_method == 'CASH_ON_DELIVERY':
+                        payment.status = 'PAID'
+                        payment.save()
+                except Exception as e:
+                    # Log error but don't prevent save
+                    pass
+        super().save_model(request, obj, form, change)
+
+    def mark_cash_payment_received(self, request, queryset):
+        """Mark cash payments as received for selected orders"""
+        updated_count = 0
+        for order in queryset:
+            try:
+                payment = userPayment.objects.filter(order=order).first()
+                if payment and payment.payment_method == 'CASH_ON_DELIVERY' and payment.status != 'PAID':
+                    payment.status = 'PAID'
+                    payment.save()
+                    updated_count += 1
+            except Exception as e:
+                # Log error but continue with other orders
+                pass
+
+        if updated_count > 0:
+            self.message_user(request, f'{updated_count} cash payment(s) marked as received.')
+        else:
+            self.message_user(request, 'No cash payments were updated. Make sure orders have cash on delivery payment method.')
+    mark_cash_payment_received.short_description = '💰 Mark cash payment received'
+            
     def delivery_status(self, obj):
-        colors = {'pending': '#856404', 'processing': '#0d6efd', 'shipped': '#004085', 'delivered': '#155724'}
-        return format_html('<span style="background:{};color:white;padding:4px 12px;border-radius:15px;font-size:11px;font-weight:600;">{}</span>', 
+        colors = {
+            'pending': '#856404',
+            'processing': '#0d6efd',
+            'confirmed': '#17a2b8',
+            'packed': '#6f42c1',
+            'shipped': '#004085',
+            'out_for_delivery': '#fd7e14',
+            'delivered': '#155724',
+            'canceled': '#dc3545',
+            'returned': '#6c757d'
+        }
+        return format_html('<span style="background:{};color:white;padding:4px 12px;border-radius:15px;font-size:11px;font-weight:600;">{}</span>',
                           colors.get(obj.status, '#333'), obj.status.upper())
-    delivery_status.short_description = 'DELIVERY STATUS'
-    
+        delivery_status.short_description = 'DELIVERY STATUS'
+        
     def user_username(self, obj):
         return obj.user.username if obj.user else '-'
     user_username.short_description = 'User'
@@ -1068,3 +1170,19 @@ admin_site.register(Order, OrderAdmin)
 admin_site.register(userPayment, UserPaymentAdmin)
 admin_site.register(Category, CategoryAdmin)
 admin_site.register(PrescriptionVerification, PrescriptionVerificationAdmin)
+
+# Create Delivery Boy group if it doesn't exist
+def create_delivery_boy_group():
+    group, created = Group.objects.get_or_create(name='Delivery Boy')
+    if created:
+        # Add permissions to view and change orders
+        from django.contrib.contenttypes.models import ContentType
+        from django.contrib.auth.models import Permission
+        order_content_type = ContentType.objects.get_for_model(Order)
+        view_order_permission = Permission.objects.get(content_type=order_content_type, codename='view_order')
+        change_order_permission = Permission.objects.get(content_type=order_content_type, codename='change_order')
+        group.permissions.add(view_order_permission, change_order_permission)
+        print("Created 'Delivery Boy' group with order view and change permissions")
+        
+# Group creation will be handled by management command or when admin is accessed
+# create_delivery_boy_group()

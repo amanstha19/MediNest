@@ -25,6 +25,11 @@ from .views import (
     reset_password,
 )
 from .views.chatbot import HealthChatbotAPIView
+from .views.delivery_boy import (
+    DeliveryBoyOrdersView,
+    DeliveryBoyDeliverOrderView,
+    DeliveryBoyCancelOrderView,
+)
 
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -92,4 +97,9 @@ urlpatterns = [
     
     # Chatbot Routes
     path('chatbot/', HealthChatbotAPIView.as_view(), name='chatbot'),
+
+    # Delivery Boy Routes
+    path('delivery-boy/orders/', DeliveryBoyOrdersView.as_view(), name='delivery-boy-orders'),
+    path('delivery-boy/orders/<int:order_id>/deliver/', DeliveryBoyDeliverOrderView.as_view(), name='delivery-boy-deliver'),
+    path('delivery-boy/orders/<int:order_id>/cancel/', DeliveryBoyCancelOrderView.as_view(), name='delivery-boy-cancel'),
 ]

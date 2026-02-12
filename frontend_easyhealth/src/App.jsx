@@ -20,6 +20,7 @@ import CartScreen from './components/screens/CartScreen';
 import { CartProvider } from './context/CartContext';
 import { ThemeProvider } from './context/DarkModeContext';
 import AdminPanel from './components/screens/AdminPanel';
+import DeliveryBoyPanel from './components/screens/DeliveryBoyPanel';
 import CheckoutScreen from './components/screens/CheckoutScreen';
 import OrderSuccessScreen from './components/screens/OrderSuccessScreen';
 
@@ -39,13 +40,14 @@ import './components/ui/modern-ui-2027.css';
 const AppContent = () => {
   const location = useLocation();
   const isAdminPage = location.pathname === '/admin' || location.pathname.startsWith('/admin/');
+  const isDeliveryBoyPage = location.pathname === '/delivery-boy' || location.pathname.startsWith('/delivery-boy/');
 
   const isAuthenticated = true; // Replace with actual authentication check
 
   return (
     <>
-      {!isAdminPage && <Navbar />}
-      {!isAdminPage && <Container>
+      {!isAdminPage && !isDeliveryBoyPage && <Navbar />}
+      {!isAdminPage && !isDeliveryBoyPage && <Container>
         <Routes>
           <Route path="/" element={<HomeScreen />} />
           <Route path="/product/:id" element={<ProductScreen />} />
@@ -79,7 +81,10 @@ const AppContent = () => {
       {isAdminPage && <Routes>
         <Route path="/admin" element={<AdminPanel />} />
       </Routes>}
-      {!isAdminPage && <Footer />}
+      {isDeliveryBoyPage && <Routes>
+        <Route path="/delivery-boy" element={<DeliveryBoyPanel />} />
+      </Routes>}
+      {!isAdminPage && !isDeliveryBoyPage && <Footer />}
     </>
   );
 };

@@ -264,7 +264,16 @@ class OrderAdmin(admin.ModelAdmin):
         return super().has_delete_permission(request, obj)
 
     def save_model(self, request, obj, form, change):
-        """Override save_model to handle cash on delivery logic for delivery boys"""
+        """Override save_model to handle cash on delivery logic for delivery boys and send delivery emails"""
+        # Track if status is changing to 'delivered'
+        old_status = None
+        if change:
+            try:
+                old_status = Order.objects.get(pk=obj.pk).status
+            except Order.DoesNotExist:
+                pass
+
+        # Handle cash on delivery logic for delivery boys
         if request.user.groups.filter(name='Delivery Boy').exists():
             if obj.status == 'delivered':
                 # Check if payment method is CASH_ON_DELIVERY and update payment status
@@ -276,8 +285,21 @@ class OrderAdmin(admin.ModelAdmin):
                 except Exception as e:
                     # Log error but don't prevent save
                     pass
+
+        # Save the order first
         super().save_model(request, obj, form, change)
 
+        # Send delivery email if status changed to 'delivered'
+        if change and old_status != 'delivered' and obj.status == 'delivered':
+            try:
+                email_sent = send_delivery_email(obj)
+                if email_sent:
+                    self.message_user(request, f"✓ Delivery email sent to {obj.user.email}", messages.SUCCESS)
+                else:
+                    self.message_user(request, "⚠ Order marked delivered but email could not be sent", messages.WARNING)
+            except Exception as e:
+                self.message_user(request, f"⚠ Error sending delivery email: {str(e)}", messages.ERROR)
+                    
     def mark_cash_payment_received(self, request, queryset):
         """Mark cash payments as received for selected orders"""
         updated_count = 0

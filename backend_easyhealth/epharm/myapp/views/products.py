@@ -92,6 +92,8 @@ class ProductSearchAPIView(APIView):
     def get(self, request, *args, **kwargs):
         search_query = request.GET.get('search', '').strip()
         category_value = request.GET.get('category', '').strip()
+        offset = int(request.GET.get('offset', 0))
+        limit = int(request.GET.get('limit', 12))
 
         # Basic query for filtering by name and description (case-insensitive)
         filters = Q(name__icontains=search_query) | Q(description__icontains=search_query) | Q(generic_name__icontains=search_query)
@@ -100,8 +102,11 @@ class ProductSearchAPIView(APIView):
         if category_value:
             filters &= Q(category__value=category_value)
 
-        # Get products with applied filters
-        products = Product.objects.filter(filters)
+        # Get total count for pagination info
+        total_count = Product.objects.filter(filters).count()
+
+        # Get products with applied filters and pagination
+        products = Product.objects.filter(filters)[offset:offset + limit]
 
         # Serialize and return the products
         product_data = [{
@@ -117,7 +122,13 @@ class ProductSearchAPIView(APIView):
             "image": product.image.url if product.image else None,
         } for product in products]
 
-        return Response(product_data, status=status.HTTP_200_OK)
+        return Response({
+            "products": product_data,
+            "total_count": total_count,
+            "offset": offset,
+            "limit": limit,
+            "has_more": (offset + limit) < total_count
+        }, status=status.HTTP_200_OK)
 
 
 class AISearchAPIView(APIView):

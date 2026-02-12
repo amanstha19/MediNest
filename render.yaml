@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: medinest-backend
+    runtime: docker
+    repo: https://github.com/amanstha19/MediNest
+    branch: master
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: epharm.settings_prod
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: medinest-db
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: medinest-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: medinest-db
+          property: password
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: medinest-db
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: medinest-db
+          property: port
+    healthCheckPath: /api/products/
+
+databases:
+  - name: medinest-db
+    databaseName: medinest
+    user: medinest
+    plan: free

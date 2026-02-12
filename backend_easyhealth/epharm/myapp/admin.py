@@ -711,8 +711,7 @@ class PrescriptionVerificationAdmin(admin.ModelAdmin):
     )
     readonly_fields = (
         'created_at', 'updated_at', 'order_connection_display', 'prescription_image_display',
-        'ocr_raw_text_display', 'extracted_medicines_display', 'patient_info_display',
-        'ocr_metadata_display'
+        'ocr_raw_text_display', 'ocr_metadata_display', 'verified_at', 'verified_by'
     )
     list_editable = ('status',)
     list_display_links = ('id', 'order_summary')
@@ -720,34 +719,30 @@ class PrescriptionVerificationAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Order Connection', {
-            'fields': ('order', 'order_connection_display'),
+            'fields': ('order',),
             'classes': ('wide',)
         }),
         ('Prescription Image', {
-            'fields': ('prescription_image', 'prescription_image_display'),
+            'fields': ('prescription_image',),
             'classes': ('wide',)
         }),
         ('OCR Extracted Doctor Information', {
             'fields': (
-                'extracted_nmc_number', 'doctor_name', 'hospital_name', 
+                'extracted_nmc_number', 'doctor_name', 'hospital_name',
                 'department', 'ocr_confidence'
             ),
             'classes': ('collapse',)
         }),
         ('OCR Extracted Patient Information', {
-            'fields': ('patient_info_display',),
+            'fields': ('patient_name', 'patient_age', 'patient_gender', 'chief_complaints', 'followup_date'),
             'classes': ('collapse',)
         }),
         ('OCR Extracted Medicines', {
-            'fields': ('extracted_medicines_display',),
+            'fields': ('medicine_list',),
             'classes': ('wide', 'collapse')
         }),
-        ('OCR Raw Data', {
-            'fields': ('ocr_raw_text_display', 'ocr_metadata_display'),
-            'classes': ('collapse',)
-        }),
         ('Verification Status', {
-            'fields': ('status', 'verified_by', 'verification_notes', 'verified_at')
+            'fields': ('status', 'verification_notes')
         }),
     )
     

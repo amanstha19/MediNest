@@ -1,0 +1,50 @@
+# Railway Production Dockerfile for MediNest Backend
+
+FROM python:3.10-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV DJANGO_SETTINGS_MODULE=epharm.settings_prod
+
+# Set work directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpq-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    tesseract-ocr \
+    tesseract-ocr-eng \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY backend_easyhealth/requirements.txt .
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt && \
+    pip install gunicorn whitenoise psycopg2-binary
+
+# Copy project
+COPY backend_easyhealth/ .
+
+# Create directories for static and media files
+RUN mkdir -p staticfiles static/images
+
+# Collect static files
+RUN cd epharm && python manage.py collectstatic --noinput || true
+
+# Expose port
+EXPOSE 8000
+
+# Run migrations and start server
+CMD cd epharm && \
+    python manage.py migrate --noinput && \
+    python manage.py collectstatic --noinput && \
+    gunicorn epharm.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 60

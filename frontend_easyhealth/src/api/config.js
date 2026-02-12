@@ -4,9 +4,19 @@
  * Centered configuration for API and Media base URLs.
  * Detects the current host to ensure it works on localhost, 
  * private network IPs, or Docker container names.
+ * 
+ * Production: Uses VITE_API_URL environment variable
+ * Development: Auto-detects backend from current hostname
  */
 
 const getBaseUrl = () => {
+    // Check for production API URL first
+    const prodApiUrl = import.meta.env?.VITE_API_URL;
+    if (prodApiUrl) {
+        return prodApiUrl;
+    }
+    
+    // Development: Auto-detect from current hostname
     const hostname = window.location.hostname;
     
     // If we are accessing via a specific IP or custom domain, 

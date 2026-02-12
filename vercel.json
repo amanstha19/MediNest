@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "name": "medinest-frontend",
+  "builds": [
+    {
+      "src": "frontend_easyhealth/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "frontend_easyhealth/dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "frontend_easyhealth/dist/$1"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/.*",
+      "dest": "frontend_easyhealth/dist/index.html"
+    }
+  ],
+  "env": {
+    "VITE_API_URL": "@medinest_api_url"
+  }
+}

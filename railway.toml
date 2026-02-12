@@ -1,6 +1,5 @@
 [build]
 builder = "DOCKERFILE"
-dockerfilePath = "backend_easyhealth/Dockerfile.railway"
 
 [deploy]
 startCommand = "cd backend_easyhealth/epharm && python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn epharm.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 60"

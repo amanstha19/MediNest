@@ -44,7 +44,4 @@ RUN cd epharm && python manage.py collectstatic --noinput || true
 EXPOSE 8000
 
 # Run migrations and start server
-CMD cd epharm && \
-    python manage.py migrate --noinput && \
-    python manage.py collectstatic --noinput && \
-    gunicorn epharm.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 60
+CMD ["sh", "-c", "cd epharm && python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn epharm.wsgi:application --bind 0.0.0.0:$PORT --workers 4 --threads 2 --timeout 60"]

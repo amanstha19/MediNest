@@ -86,7 +86,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'epharm.wsgi.application'
 
-# Database - Use Supabase PostgreSQL
+# Database - Use Supabase PostgreSQL with SSL
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -94,7 +94,10 @@ DATABASES = {
         'USER': os.environ.get('POSTGRES_USER', 'drf_user'),
         'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'drf123'),
         'HOST': os.environ.get('POSTGRES_HOST', 'db.vvbreylpmmnutthhmnmn.supabase.co'),
-        'PORT': os.environ.get('POSTGRES_PORT', '5434'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        'OPTIONS': {
+            'sslmode': 'require',  # Required for Supabase
+        },
     }
 }
 

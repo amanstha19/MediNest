@@ -35,7 +35,10 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")  # Fetching Gemini API key
 # Debug mode (Set to False in production)
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]  # Change to specific hosts in production
+# Allow ngrok domains and localhost
+ALLOWED_HOSTS = ["*"]  # Allows all hosts including ngrok domains
+# For production, restrict to specific domains:
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.app', 'yourdomain.com']
 
 CACHES = {
     "default": {
@@ -87,20 +90,58 @@ REST_FRAMEWORK = {
     ],
 }
 
+# CORS Configuration - Allow frontend origins
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:5175",
+    "http://127.0.0.1:5173",
+]
 
+# Allow ngrok domains dynamically
+import re
 
+# Custom CORS origin checker for ngrok
+def cors_allow_ngrok(origin):
+    """Allow ngrok-free.app domains and localhost"""
+    if not origin:
+        return False
+    
+    allowed_patterns = [
+        r'^https?://localhost(:\d+)?$',
+        r'^https?://127\.0\.0\.1(:\d+)?$',
+        r'^https://[a-z0-9-]+\.ngrok-free\.app$',  # ngrok domains
+    ]
+    
+    for pattern in allowed_patterns:
+        if re.match(pattern, origin):
+            return True
+    
+    return origin in CORS_ALLOWED_ORIGINS
 
-
+# Use the custom checker
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r'^https://[a-z0-9-]+\.ngrok-free\.app$',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
-    'http://127.0.0.1:8000',# Add the Vite server URL
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'https://childless-jimmy-tactlessly.ngrok-free.dev', # Add your specific ngrok domain
 ]
+
+# Add ngrok domains to CSRF trusted origins dynamically
+NGROK_BACKEND_URL = os.getenv('NGROK_BACKEND_URL', '')
+NGROK_FRONTEND_URL = os.getenv('NGROK_FRONTEND_URL', '')
+
+if NGROK_BACKEND_URL:
+    CSRF_TRUSTED_ORIGINS.append(NGROK_BACKEND_URL)
+    CORS_ALLOWED_ORIGINS.append(NGROK_BACKEND_URL)
+
+if NGROK_FRONTEND_URL:
+    CSRF_TRUSTED_ORIGINS.append(NGROK_FRONTEND_URL)
+    CORS_ALLOWED_ORIGINS.append(NGROK_FRONTEND_URL)
 
 CORS_ALLOW_HEADERS = [
     'accept',
@@ -110,6 +151,7 @@ CORS_ALLOW_HEADERS = [
     'dnt',
     'origin',
     'user-agent',
+    'ngrok-skip-browser-warning',
     'x-csrftoken',
     'x-requested-with',
 ]

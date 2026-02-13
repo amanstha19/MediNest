@@ -5,7 +5,7 @@ import { useCart } from '../../context/CartContext';
 import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
 import { AlertTriangle, ShoppingCart } from 'lucide-react';
-import { BASE_URL } from '../../api/config';
+import { BASE_URL, getImageUrl } from '../../api/config';
 import './pages.css';
 
 function ProductScreen() {
@@ -16,11 +16,7 @@ function ProductScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Helper for image URLs
-  const getImageUrl = (path) => {
-    if (!path) return null;
-    return path.startsWith('http') ? path : `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
-  };
+
 
   useEffect(() => {
     async function fetchProductDetails() {

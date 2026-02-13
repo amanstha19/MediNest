@@ -4,7 +4,7 @@ import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
 import { Pill, Search, ListFilter } from 'lucide-react';
-import { API_URL, BASE_URL } from '../../api/config';
+import { API_URL, BASE_URL, getImageUrl } from '../../api/config';
 import './pages.css';
 
 const MedicinesPage = () => {
@@ -19,11 +19,7 @@ const MedicinesPage = () => {
   const [totalCount, setTotalCount] = useState(0);
   const limit = 12;
 
-  // Helper for image URLs
-  const getImageUrl = (path) => {
-    if (!path) return null;
-    return path.startsWith('http') ? path : `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
-  };
+
 
   // Fetch categories from API
   useEffect(() => {

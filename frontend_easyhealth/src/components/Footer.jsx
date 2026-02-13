@@ -44,7 +44,6 @@ function Footer() {
             <ul className="footer-links footer-services">
               {[
                 'Online Medicine Ordering',
-                'Lab Test Booking',
                 'Ambulance Service',
                 'Health Consultation',
               ].map((service) => (
@@ -58,7 +57,7 @@ function Footer() {
             <h4 className="footer-title">Contact</h4>
             <ul className="footer-contact">
               <li><MapPin size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> Kathmandu, Nepal</li>
-              <li><Phone size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> +977-01-XXXXXXX</li>
+              <li><Phone size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> 9840259838</li>
               <li><Mail size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> support@medinest.com</li>
             </ul>
           </div>

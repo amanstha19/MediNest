@@ -4,6 +4,7 @@ import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Package, CheckCircle, XCircle, Phone, MapPin, User, Mail, Clock } from 'lucide-react';
+import { API_URL } from '../../api/config';
 import './pages.css';
 
 const DeliveryBoyPanel = () => {
@@ -25,7 +26,7 @@ const DeliveryBoyPanel = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get('http://localhost:8000/api/delivery-boy/orders/', {
+      const response = await axios.get(`${API_URL}/delivery-boy/orders/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setOrders(response.data.orders || []);
@@ -43,7 +44,7 @@ const DeliveryBoyPanel = () => {
     setSuccess('');
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/delivery-boy/orders/${orderId}/deliver/`,
+        `${API_URL}/delivery-boy/orders/${orderId}/deliver/`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -70,7 +71,7 @@ const DeliveryBoyPanel = () => {
     setSuccess('');
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/delivery-boy/orders/${orderId}/cancel/`,
+        `${API_URL}/delivery-boy/orders/${orderId}/cancel/`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

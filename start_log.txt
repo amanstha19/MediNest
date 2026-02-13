@@ -1,0 +1,53 @@
+🚀 Starting MediNest Ngrok Deployment...
+==========================================
+
+🔍 Checking if backend service is running...
+
+[0;32m✅ Backend is running on port 8000[0m
+
+==========================================
+
+Starting ngrok tunnel for Backend...
+
+⏳ Waiting for ngrok to initialize...
+
+==========================================
+[0;32m✅ Ngrok tunnel started successfully![0m
+==========================================
+
+[0;34m🌐 Your MediNest API is now publicly accessible![0m
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[0;32mBackend URL:[0m  https://childless-jimmy-tactlessly.ngrok-free.dev
+[1;33mFrontend:[0m     http://localhost:5173 (Run locally)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 Ngrok Web Interface: \033[0;34mhttp://localhost:4040\033[0m
+
+==========================================
+[1;33m⚙️  IMPORTANT: Update Frontend Configuration[0m
+==========================================
+
+To connect your LOCAL frontend to the REMOTE backend:
+
+1. Create/Update .env.local in frontend_easyhealth/:
+
+[0;34m   cd frontend_easyhealth[0m
+[0;34m   echo 'VITE_API_URL=https://childless-jimmy-tactlessly.ngrok-free.dev/api' > .env.local[0m
+
+2. Restart your frontend:
+
+   Docker:
+[0;34m   docker-compose restart frontend[0m
+
+   Local:
+[0;34m   npm run dev[0m
+
+==========================================
+[0;32m✨ Deployment Complete![0m
+==========================================
+
+Access your application at: http://localhost:5173
+
+Press Ctrl+C to stop ngrok tunnel
+

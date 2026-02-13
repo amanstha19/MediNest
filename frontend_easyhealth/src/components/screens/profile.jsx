@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import API from '../../utils/api';
 import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, RefreshCw, Package, Clock, CheckCircle, MapPin, Heart, Shield, Star } from 'lucide-react';
+import { User, RefreshCw, Package, Clock, CheckCircle, MapPin, Heart, Shield, Star, RefreshCcw } from 'lucide-react';
+import { getImageUrl } from '../../api/config';
 import './pages.css';
 
 const Profile = () => {
@@ -25,15 +26,21 @@ const Profile = () => {
 
     try {
       const parsedTokens = JSON.parse(authTokens);
-      const response = await axios.get('http://localhost:8000/api/user/profile/', {
+      const response = await API.get('user/profile/', {
         headers: {
           'Authorization': `Bearer ${parsedTokens.access}`,
         },
       });
+      console.log('Profile data fetched:', response.data);
       setUser(response.data);
       setError(null);
     } catch (err) {
+      console.error('Profile fetch error:', err);
       setError('Error fetching profile: ' + (err.response?.data?.detail || err.message));
+      // If unauthorized, redirect to login
+      if (err.response?.status === 401) {
+        navigate('/login');
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);

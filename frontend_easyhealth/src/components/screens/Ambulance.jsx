@@ -17,46 +17,55 @@ L.Icon.Default.mergeOptions({
 
 
 
-const AmbulanceCard = ({ service }) => (
-  <Card>
-    <CardContent>
-      <h3 style={{ fontSize: '1.1rem', marginBottom: '12px', color: 'var(--eh-primary)' }}>
-        <AmbulanceIcon size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-        {service.name}
-      </h3>
-      <div style={{ display: 'grid', gap: '8px', marginBottom: 'var(--eh-spacing-lg)' }}>
-        <div>
-          <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.85rem', marginBottom: '4px' }}>Location</p>
-          <p style={{ fontSize: '0.95rem', fontWeight: 500 }}>
-            <MapPin size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
-            {service.location}
-          </p>
+const AmbulanceCard = ({ service }) => {
+  // Handle missing or empty phone number - use contact as fallback
+  const phoneNumber = (service.phone && service.phone.trim()) 
+    ? service.phone.split(',')[0] 
+    : (service.contact ? service.contact.split(',')[0] : '');
+  
+  return (
+    <Card>
+      <CardContent>
+        <h3 style={{ fontSize: '1.1rem', marginBottom: '12px', color: 'var(--eh-primary)' }}>
+          <AmbulanceIcon size={20} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+          {service.name}
+        </h3>
+        <div style={{ display: 'grid', gap: '8px', marginBottom: 'var(--eh-spacing-lg)' }}>
+          <div>
+            <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.85rem', marginBottom: '4px' }}>Location</p>
+            <p style={{ fontSize: '0.95rem', fontWeight: 500 }}>
+              <MapPin size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+              {service.location}
+            </p>
+          </div>
+          <div>
+            <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.85rem', marginBottom: '4px' }}>Distance</p>
+            <p style={{ fontSize: '0.95rem', fontWeight: 500 }}>
+              <Ruler size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+              {service.distance ? service.distance.toFixed(1) : '0.0'} km away
+            </p>
+          </div>
+          <div>
+            <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.85rem', marginBottom: '4px' }}>Contact</p>
+            <p style={{ fontSize: '0.95rem', fontWeight: 500 }}>
+              <Phone size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+              {service.contact}
+            </p>
+          </div>
         </div>
-        <div>
-          <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.85rem', marginBottom: '4px' }}>Distance</p>
-          <p style={{ fontSize: '0.95rem', fontWeight: 500 }}>
-            <Ruler size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
-            {service.distance.toFixed(1)} km away
-          </p>
-        </div>
-        <div>
-          <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.85rem', marginBottom: '4px' }}>Contact</p>
-          <p style={{ fontSize: '0.95rem', fontWeight: 500 }}>
-            <Phone size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
-            {service.contact}
-          </p>
-        </div>
-      </div>
-      <a href={`tel:${service.phone.split(',')[0]}`} style={{ textDecoration: 'none' }}>
-        <Button variant="success" className="eh-btn--block" size="sm">
-          Call Now
-        </Button>
-      </a>
-    </CardContent>
-  </Card>
-);
+        {phoneNumber && (
+          <a href={`tel:${phoneNumber}`} style={{ textDecoration: 'none' }}>
+            <Button variant="success" className="eh-btn--block" size="sm">
+              Call Now
+            </Button>
+          </a>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
 
-const fetchAmbulances = async (retries = 20) => {
+const fetchAmbulances = async (retries = 3) => {
   // Check cache first
   const cached = localStorage.getItem('ambulanceData');
   if (cached) {
@@ -69,19 +78,19 @@ const fetchAmbulances = async (retries = 20) => {
     }
   }
 
-  const query = `[out:json];area["ISO3166-1"="NP"]->.nepal;(node[amenity=ambulance](area.nepal);node[amenity=hospital](area.nepal););out;`;
+  const query = `[out:json];area["ISO3166-1"="NP"]->.nepal;(node[amenity=ambulance_station](area.nepal);way[amenity=ambulance_station](area.nepal);node[amenity=ambulance](area.nepal););out;`;
   const url = `https://overpass.kumi.systems/api/interpreter?data=${encodeURIComponent(query)}`;
 
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      const response = await axios.get(url, { timeout: 30000 }); // 30 second timeout
-      const data = response.data.elements.map(node => ({
-        name: node.tags.name || 'Unnamed Ambulance/Hospital',
-        location: node.tags.name || 'Location not specified',
+      const response = await axios.get(url, { timeout: 10000 }); // 10 second timeout
+      const data = response.data.elements.filter(node => node.tags && node.tags.name).map(node => ({
+        name: node.tags.name || 'Unnamed Ambulance Service',
+        location: node.tags['addr:street'] ? node.tags['addr:street'] + (node.tags['addr:city'] ? ', ' + node.tags['addr:city'] : '') : (node.tags.name || 'Location not specified'),
         contact: node.tags.phone || node.tags.contact || node.tags['contact:phone'] || 'Contact not available',
         phone: node.tags.phone || node.tags.contact || node.tags['contact:phone'] || '',
-        lat: node.lat,
-        lng: node.lon
+        lat: node.center ? node.center.lat : node.lat,
+        lng: node.center ? node.center.lon : node.lon
       }));
 
       // Cache the data
@@ -95,8 +104,8 @@ const fetchAmbulances = async (retries = 20) => {
     } catch (error) {
       console.error(`Attempt ${attempt} failed:`, error.message);
       if (attempt < retries) {
-        // Wait before retrying (exponential backoff)
-        const delay = 3000 * attempt; // 3s, 6s, 9s, etc.
+        // Wait before retrying (reduced exponential backoff)
+        const delay = 1000 * attempt; // 1s, 2s, 3s
         console.log(`Retrying in ${delay}ms...`);
         await new Promise(resolve => setTimeout(resolve, delay));
       } else {
@@ -137,7 +146,7 @@ function Ambulance() {
     const fetchAndProcessAmbulances = async () => {
       try {
         const fetchedAmbulances = await fetchAmbulances();
-        const ambulanceData = fetchedAmbulances || fallbackAmbulances;
+        const ambulanceData = (fetchedAmbulances && fetchedAmbulances.length > 0) ? fetchedAmbulances : fallbackAmbulances;
 
         // Calculate distances and sort ambulances by proximity to user location
         const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -205,7 +214,27 @@ function Ambulance() {
         <p>Quick access to emergency ambulance services near you. Save these numbers for emergency.</p>
       </div>
 
-      {error && <div style={{ color: 'red', marginBottom: 'var(--eh-spacing-lg)' }}>{error}</div>}
+      {error && (
+        <div style={{ 
+          background: '#fee2e2', 
+          color: '#b91c1c', 
+          padding: 'var(--eh-spacing-md)', 
+          borderRadius: 'var(--eh-radius)',
+          marginBottom: 'var(--eh-spacing-lg)',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <span>{error}</span>
+          <Button 
+            size="sm" 
+            variant="secondary" 
+            onClick={() => setUserLocation({ lat: 27.7172, lng: 85.3240 })}
+          >
+            Load Kathmandu
+          </Button>
+        </div>
+      )}
 
       <div style={{ marginBottom: 'var(--eh-spacing-2xl)', padding: 'var(--eh-spacing-lg)', background: 'var(--eh-surface)', borderRadius: 'var(--eh-radius)', border: '2px solid var(--eh-accent)' }}>
         <div style={{ display: 'flex', alignItems: 'start', gap: 'var(--eh-spacing-md)' }}>
@@ -223,7 +252,7 @@ function Ambulance() {
       <div style={{ display: 'flex', gap: 'var(--eh-spacing-2xl)', alignItems: 'flex-start', marginBottom: 'var(--eh-spacing-2xl)' }}>
         <div style={{ flex: 1 }}>
           <h2 style={{ fontSize: '1.5rem', marginBottom: 'var(--eh-spacing-lg)' }}>Available Ambulance Services</h2>
-          <div className="eh-grid--2">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 'var(--eh-spacing-lg)' }}>
             {ambulances.map((service, idx) => (
               <AmbulanceCard key={idx} service={service} />
             ))}

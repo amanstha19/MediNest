@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
 import { useCart } from '../../context/CartContext';
+import { API_URL } from '../../api/config';
 
 const OrderSuccessScreen = () => {
   const { orderId } = useParams();
@@ -32,7 +33,7 @@ const OrderSuccessScreen = () => {
       }
 
       try {
-        const response = await axios.get(`http://localhost:8000/api/order/${orderId}/`, {
+        const response = await axios.get(`${API_URL}/order/${orderId}/`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -101,14 +102,18 @@ const OrderSuccessScreen = () => {
                 <div style={{ paddingBottom: 'var(--eh-spacing-lg)', borderBottom: '1px solid var(--eh-border)' }}>
                   <p style={{ color: 'var(--eh-text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>Payment Method</p>
                   <span style={{ 
-                    background: orderDetails.payment_method === 'CASH_ON_DELIVERY' ? 'var(--eh-success)' : 'var(--eh-primary)', 
+                    background: (orderDetails.payment_method?.toUpperCase() === 'CASH_ON_DELIVERY' || orderDetails.payment_method === 'cod') ? 'var(--eh-success)' : 'var(--eh-primary)', 
                     color: 'white', 
                     padding: '6px 12px', 
                     borderRadius: 'var(--eh-radius-sm)', 
                     fontWeight: 600 
                   }}>
-                    {orderDetails.payment_method_display || (orderDetails.payment_method === 'CASH_ON_DELIVERY' ? 'Cash on Delivery' : 'Online Payment (eSewa)')}
+                    {orderDetails.payment_method_display || 
+                     ((orderDetails.payment_method?.toUpperCase() === 'CASH_ON_DELIVERY' || orderDetails.payment_method === 'cod') 
+                        ? 'Cash on Delivery' 
+                        : 'Online Payment (eSewa)')}
                   </span>
+
                 </div>
 
                 <div>

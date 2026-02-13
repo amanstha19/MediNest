@@ -10,7 +10,7 @@ import {
   Pill, Syringe, FlaskConical, HeartPulse, Activity, 
   Baby, Leaf, Monitor, SquarePlus, Home, Search 
 } from 'lucide-react';
-import { API_URL, BASE_URL } from '../../api/config';
+import { API_URL, BASE_URL, getImageUrl } from '../../api/config';
 import './pages.css';
 
 const getIconComponent = (iconName) => {
@@ -47,11 +47,7 @@ function HomeScreen() {
   const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const categoryRef = useRef(null);
 
-  // Helper for image URLs
-  const getImageUrl = (path) => {
-    if (!path) return null;
-    return path.startsWith('http') ? path : `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
-  };
+
 
   useEffect(() => {
     const categoryFromUrl = searchParams.get('category');
@@ -61,7 +57,11 @@ function HomeScreen() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch(`${API_URL}/categories/`);
+        const response = await fetch(`${API_URL}/categories/`, {
+          headers: {
+            'ngrok-skip-browser-warning': '69420'
+          }
+        });
         const data = await response.json();
         const allProductsEntry = { value: '', label: 'All Products', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', icon: 'Home', description: 'Browse everything' };
         setCategories([allProductsEntry, ...data]);
@@ -135,7 +135,7 @@ function HomeScreen() {
 
   const getCurrentCategoryInfo = () => categories.find(c => c.value === selectedCategory) || categories[0] || FALLBACK_CATEGORIES[0];
 
-  const renderIcon = (iconName, size = 16) => {
+  const renderIcon = (iconName, size = 20) => {
     if (!iconName) return null;
     if (typeof iconName !== 'string') {
       const IconComponent = iconName;
@@ -167,9 +167,10 @@ function HomeScreen() {
                 <button 
                   className="ai-search-trigger"
                   onClick={() => setIsSearchModalOpen(true)}
+                  style={{ width: '100%', maxWidth: '450px' }}
                 >
-                  <Search size={20} />
-                  <span>Search medicines by name...</span>
+                  <Search size={22} />
+                  <span style={{ fontSize: '1rem' }}>Search medicines by name...</span>
                   <div className="ai-search-trigger-badges">
                     <kbd className="kbd-cmd">⌘K</kbd>
                   </div>
@@ -182,7 +183,7 @@ function HomeScreen() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                style={{ marginTop: '12px' }}
+                style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
               >
                 <button 
                   className="chatbot-trigger-btn"
@@ -190,39 +191,44 @@ function HomeScreen() {
                   style={{
                     background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                     border: 'none',
-                    borderRadius: '12px',
-                    padding: '12px 20px',
+                    borderRadius: '50px',
+                    padding: '14px 28px',
                     color: 'white',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '10px',
+                    justifyContent: 'center',
+                    gap: '15px',
                     cursor: 'pointer',
-                    fontSize: '0.95rem',
-                    fontWeight: '500',
-                    boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)',
-                    transition: 'all 0.2s ease'
+                    fontSize: '1rem',
+                    fontWeight: '600',
+                    boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)',
+                    transition: 'all 0.3s ease',
+                    width: '100%',
+                    maxWidth: '450px'
                   }}
                 >
-                  <span style={{ fontSize: '1.2rem' }}>💬</span>
-                  <span>Ask Health Assistant</span>
+                  <span style={{ fontSize: '1.4rem' }}>💬</span>
+                  <span>Ask MediNest Health Assistant</span>
                   <span style={{ 
                     background: 'rgba(255,255,255,0.2)', 
-                    padding: '2px 8px', 
-                    borderRadius: '4px',
-                    fontSize: '0.75rem'
+                    padding: '2px 10px', 
+                    borderRadius: '6px',
+                    fontSize: '0.85rem',
+                    fontWeight: '800'
                   }}>
                     AI
                   </span>
                 </button>
                 <p style={{ 
-                  fontSize: '0.8rem', 
+                  fontSize: '0.85rem', 
                   color: 'rgba(255,255,255,0.7)', 
-                  marginTop: '6px',
-                  marginLeft: '4px'
+                  marginTop: '10px',
+                  fontWeight: '500'
                 }}>
                   Get general health info • Not for diagnosis
                 </p>
               </motion.div>
+
 
          
             </div>
@@ -326,7 +332,7 @@ function HomeScreen() {
 
         {!selectedCategory && (
           <motion.div className="recommendations-section" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}>
-            <h2 className="section-title">🎬 Recommended for You</h2>
+            <h2 className="section-title">🎬 For You </h2>
             <p className="section-subtitle">Discover products from different categories</p>
             {Object.entries(productsByCategory).slice(0, 5).map(([category, categoryProducts]) => (
               <motion.div key={category} className="recommendation-row" initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
@@ -367,7 +373,6 @@ function HomeScreen() {
               <p className="cta-subtitle">Our team is available 24/7 to help you.</p>
               <div className="cta-buttons">
                 <Button variant="glass" size="lg">📞 Call Support</Button>
-                <Button variant="glass" size="lg">💬 Chat with Doctor</Button>
               </div>
             </div>
           </Card>

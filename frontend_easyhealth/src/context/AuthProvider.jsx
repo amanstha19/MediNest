@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
+import { API_URL } from '../api/config';
 
 export const AuthContext = createContext();
 
@@ -32,7 +33,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (userData) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/register/', {
+      const response = await axios.post(`${API_URL}/register/`, {
         email: userData.email,
         password: userData.password,
         username: userData.username,
@@ -54,7 +55,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      const response = await axios.post('http://localhost:8000/api/token/', credentials);
+      const response = await axios.post(`${API_URL}/token/`, credentials);
       sessionStorage.setItem('authTokens', JSON.stringify(response.data));
       
       // Set token to axios default header

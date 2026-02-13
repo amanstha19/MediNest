@@ -121,6 +121,43 @@
   cursor: not-allowed;
 }
 
+/* ===== PASSWORD TOGGLE ===== */
+
+.eh-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.eh-input-password {
+  padding-right: 3.5rem !important;
+}
+
+.eh-password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+  z-index: 2;
+  border-radius: 8px;
+}
+
+.eh-password-toggle:hover {
+  color: var(--primary);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.eh-password-toggle:active {
+  transform: scale(0.9);
+}
+
 /* ===== FORM VALIDATION ===== */
 
 .eh-error {

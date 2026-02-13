@@ -1,0 +1,5 @@
+version: "2"
+# Ngrok configuration for MediNest deployment
+
+authtoken: 39ZiUX6mD4pPp3jaA7Lv7jVDnxb_3tdoc1DcVvHTjCy8D54Yj
+

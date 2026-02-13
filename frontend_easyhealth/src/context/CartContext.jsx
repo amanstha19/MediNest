@@ -43,11 +43,11 @@ export const CartProvider = ({ children }) => {
       if (itemExists) {
         return prevItems.map((cartItem) =>
           cartItem.id === item.id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            ? { ...cartItem, quantity: cartItem.quantity + 1, selected: true } // Ensure it's selected if re-added
             : cartItem
         );
       }
-      return [...prevItems, { ...item, quantity: 1 }];
+      return [...prevItems, { ...item, quantity: 1, selected: true }];
     });
     // Show success toast
     addToast(`${item.name} added to cart!`, 'success');
@@ -73,6 +73,20 @@ export const CartProvider = ({ children }) => {
     );
   };
 
+  const toggleSelectItem = (id) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === id ? { ...item, selected: !item.selected } : item
+      )
+    );
+  };
+
+  const toggleSelectAll = (isSelected) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) => ({ ...item, selected: isSelected }))
+    );
+  };
+
   const clearCart = () => {
     setCartItems([]);
     localStorage.removeItem('cartItems');
@@ -83,8 +97,11 @@ export const CartProvider = ({ children }) => {
     addToCart,
     removeFromCart,
     updateQuantity,
+    toggleSelectItem,
+    toggleSelectAll,
     clearCart
   };
+
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 };

@@ -5,6 +5,7 @@ import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
 import { KeyRound, ArrowLeft } from 'lucide-react';
+import { API_URL } from '../../api/config';
 import './auth.css';
 
 const ForgotPassword = () => {
@@ -29,7 +30,7 @@ const ForgotPassword = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/forgot-password/', {
+      const response = await fetch(`${API_URL}/forgot-password/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

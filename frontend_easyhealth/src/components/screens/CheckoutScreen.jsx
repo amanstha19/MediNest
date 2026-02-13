@@ -9,19 +9,17 @@ import Button from '../ui/button';
 import { motion } from 'framer-motion';
 import { ShoppingCart, MapPin, FileText, CreditCard, Loader2, CheckCircle, AlertTriangle } from 'lucide-react';
 import AddressForm from '../ui/AddressForm';
-import { BASE_URL, API_URL } from '../../api/config';
+import { BASE_URL, API_URL, getImageUrl } from '../../api/config';
 
 const CheckoutScreen = () => {
   const { cartItems } = useCart();
+  const selectedItems = cartItems.filter(item => item.selected !== false);
   const { addToast } = useToast();
+
   const navigate = useNavigate();
   const [prescription, setPrescription] = useState(null);
 
-  // Helper for image URLs
-  const getImageUrl = (path) => {
-    if (!path) return null;
-    return path.startsWith('http') ? path : `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
-  };
+
   const [address, setAddress] = useState({
     fullName: '',
     phone: '',
@@ -41,13 +39,15 @@ const CheckoutScreen = () => {
 
 
   useEffect(() => {
-    const requiresPrescription = cartItems.some(item => item.prescriptionRequired);
+    const requiresPrescription = selectedItems.some(item => item.prescriptionRequired);
     setPrescriptionRequired(requiresPrescription);
 
-    // Calculate total price from cart items
-    const total = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+    // Calculate total price from selected items
+    const total = selectedItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
     setTotalPrice(total);
-  }, [cartItems]);
+  }, [selectedItems]);
+
 
   const handlePrescriptionUpload = (e) => {
     setPrescription(e.target.files[0]);
@@ -56,10 +56,11 @@ const CheckoutScreen = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (cartItems.length === 0) {
-      addToast('Your cart is empty. Please add items before proceeding to checkout.', 'warning');
+    if (selectedItems.length === 0) {
+      addToast('No items selected for checkout. Please go back to the cart.', 'warning');
       return;
     }
+
 
     if (prescriptionRequired && !prescription) {
       addToast('Please upload your prescription.', 'warning');
@@ -98,7 +99,7 @@ const CheckoutScreen = () => {
       if (prescriptionRequired) {
         formData.append('prescription', prescription);
       }
-      formData.append('cart_items', JSON.stringify(cartItems));
+      formData.append('cart_items', JSON.stringify(selectedItems));
 
       const response = await API.post('order/place/', formData, {
         headers: {
@@ -127,7 +128,7 @@ const CheckoutScreen = () => {
 
 
 
-  if (cartItems.length === 0) {
+  if (selectedItems.length === 0) {
     return (
       <div className="eh-container" style={{ paddingTop: '48px', paddingBottom: '48px' }}>
         <motion.div
@@ -156,22 +157,23 @@ const CheckoutScreen = () => {
             color: 'var(--eh-text-primary)',
             fontWeight: 800
           }}>
-            Your Cart is Empty
+            No Items Selected
           </h1>
           <p style={{
             color: 'var(--eh-text-muted)',
             fontSize: '1.1rem',
             marginBottom: '32px'
           }}>
-            Add some medicines to proceed with checkout.
+            Please go back to the cart and select items to checkout.
           </p>
-          <Button variant="primary" size="lg" onClick={() => navigate('/')}>
-            Continue Shopping
+          <Button variant="primary" size="lg" onClick={() => navigate('/cart')}>
+            Back to Cart
           </Button>
         </motion.div>
       </div>
     );
   }
+
 
   return (
     <div className="eh-container" style={{ paddingTop: '48px', paddingBottom: '48px' }}>
@@ -208,12 +210,13 @@ const CheckoutScreen = () => {
                   color: 'var(--eh-text-primary)',
                   fontWeight: 800
                 }}>
-                  Order Items ({cartItems.length})
+                  Order Items ({selectedItems.length})
                 </h2>
+
               </div>
               <CardContent style={{ padding: '24px' }}>
                 <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                  {cartItems.map((item, idx) => (
+                  {selectedItems.map((item, idx) => (
                     <motion.div
                       key={item.id}
                       initial={{ opacity: 0, x: -20 }}
@@ -225,10 +228,11 @@ const CheckoutScreen = () => {
                         gap: '16px',
                         alignItems: 'center',
                         paddingBottom: '16px',
-                        borderBottom: idx < cartItems.length - 1 ? '1px solid var(--glass-border)' : 'none',
+                        borderBottom: idx < selectedItems.length - 1 ? '1px solid var(--glass-border)' : 'none',
                         marginBottom: '16px'
                       }}
                     >
+
                       <motion.img
                         src={getImageUrl(item.image)}
                         alt={item.name}
@@ -393,9 +397,10 @@ const CheckoutScreen = () => {
                       marginBottom: '12px',
                       color: 'var(--eh-text-secondary)'
                     }}>
-                      <span>Subtotal ({cartItems.length} items):</span>
+                      <span>Subtotal ({selectedItems.length} items):</span>
                       <span>NPR {totalPrice.toLocaleString()}</span>
                     </div>
+
                     <div style={{
                       display: 'flex',
                       justifyContent: 'space-between',

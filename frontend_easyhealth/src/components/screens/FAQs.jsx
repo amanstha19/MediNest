@@ -72,11 +72,6 @@ function FAQs() {
       answer: "Our AI-powered handwriting recognition can process handwritten prescriptions. Simply upload a clear photo, and our system will extract the medication details for verification."
     },
     {
-      question: "Do you provide lab test booking?",
-      answer: "Yes, MediNest offers lab test booking services. You can schedule various diagnostic tests through our platform and get results delivered securely.",
-      icon: <TestTube size={20} />
-    },
-    {
       question: "How do I reset my password?",
       answer: "Click on 'Forgot Password' on the login page, enter your email, and follow the instructions sent to your email to reset your password securely.",
       icon: <Lock size={20} />

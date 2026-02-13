@@ -1,11 +1,10 @@
-import { BASE_URL } from '../../api/config';
+import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { Card } from '../ui/card';
+import { BASE_URL, getImageUrl } from '../../api/config';
 
 const ProductCard = ({ product }) => {
-  // Ensure image URL is correctly constructed
-  const getImageUrl = (path) => {
-    if (!path) return null;
-    return path.startsWith('http') ? path : `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
-  };
+
 
   return (
     <Card className="">

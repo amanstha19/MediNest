@@ -21,13 +21,20 @@ export default defineConfig({
   plugins: [react(), grecaptchaMock()],
   server: {
     host: '0.0.0.0',
+    allowedHosts: [
+      '.ngrok-free.dev',
+      '.ngrok-free.app',
+      '.ngrok.io',
+      '.loca.lt',
+      'localhost',
+    ],
     hmr: {
       port: 5173,
     },
     proxy: {
-      '/admin': 'http://backend:8000', // Proxy admin requests to backend service
-      '/api': 'http://backend:8000',   // Proxy API requests to backend service
-
+      '/admin': process.env.VITE_RUNNING_IN_DOCKER ? 'http://backend:8000' : 'http://127.0.0.1:8000', 
+      '/api': process.env.VITE_RUNNING_IN_DOCKER ? 'http://backend:8000' : 'http://127.0.0.1:8000',   
+      '/images': process.env.VITE_RUNNING_IN_DOCKER ? 'http://backend:8000' : 'http://127.0.0.1:8000', 
     },
   },
 })

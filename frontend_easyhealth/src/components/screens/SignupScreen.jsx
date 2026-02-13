@@ -6,12 +6,14 @@ import axios from 'axios';
 import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, Eye, EyeOff } from 'lucide-react';
+import { API_URL } from '../../api/config';
 import './auth.css';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -27,7 +29,7 @@ const Signup = () => {
 
   const checkEmailUniqueness = async () => {
     try {
-      const response = await axios.post('http://localhost:8000/api/check-email/', { email });
+      const response = await axios.post(`${API_URL}/check-email/`, { email });
       if (response.data.message === 'Email is available.') {
         setEmailError('');
         return true;
@@ -170,16 +172,27 @@ const Signup = () => {
 
               <div className="eh-form-group">
                 <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  className="eh-input"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min 8 chars with special character"
-                  required
-                  disabled={loading}
-                />
+                <div className="eh-password-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="eh-input eh-input-password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Min 8 chars with special character"
+                    required
+                    disabled={loading}
+                  />
+                  <button
+                    type="button"
+                    className="eh-password-toggle"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex="-1"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
                 {passwordError && <div className="eh-error">{passwordError}</div>}
               </div>
 

@@ -4,6 +4,7 @@ import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Package, CreditCard, CheckCircle, XCircle, Edit, Phone } from 'lucide-react';
+import { API_URL } from '../../api/config';
 import './pages.css';
 
 const AdminPanel = () => {
@@ -40,7 +41,7 @@ const AdminPanel = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/admin/orders/', {
+      const response = await axios.get(`${API_URL}/admin/orders/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setOrders(response.data.orders || []);
@@ -51,7 +52,7 @@ const AdminPanel = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/admin/products/', {
+      const response = await axios.get(`${API_URL}/admin/products/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProducts(response.data.products || []);
@@ -62,7 +63,7 @@ const AdminPanel = () => {
 
   const fetchPayments = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/admin/payments/', {
+      const response = await axios.get(`${API_URL}/admin/payments/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPayments(response.data.payments || []);
@@ -77,7 +78,7 @@ const AdminPanel = () => {
     setSuccess('');
     try {
       const response = await axios.patch(
-        `http://localhost:8000/api/admin/orders/${orderId}/status/`,
+        `${API_URL}/admin/orders/${orderId}/status/`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -96,7 +97,7 @@ const AdminPanel = () => {
     setSuccess('');
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/order/${orderId}/mark-delivered/`,
+        `${API_URL}/order/${orderId}/mark-delivered/`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -123,7 +124,7 @@ const AdminPanel = () => {
     setSuccess('');
     try {
       const response = await axios.patch(
-        `http://localhost:8000/api/admin/products/${productId}/stock/`,
+        `${API_URL}/admin/products/${productId}/stock/`,
         { stock: parseInt(newStockValue) },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -144,7 +145,7 @@ const AdminPanel = () => {
     setSuccess('');
     try {
       const response = await axios.patch(
-        `http://localhost:8000/api/admin/payments/${paymentId}/status/`,
+        `${API_URL}/admin/payments/${paymentId}/status/`,
         { status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );

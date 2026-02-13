@@ -5,6 +5,7 @@ import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
 import { Lock, ArrowLeft, CheckCircle } from 'lucide-react';
+import { API_URL } from '../../api/config';
 import './auth.css';
 
 const ResetPassword = () => {
@@ -23,7 +24,7 @@ const ResetPassword = () => {
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/verify-reset-token/${token}/`, {
+        const response = await fetch(`${API_URL}/verify-reset-token/${token}/`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -74,7 +75,7 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:8000/api/reset-password/', {
+      const response = await fetch(`${API_URL}/reset-password/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

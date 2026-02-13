@@ -5,12 +5,13 @@ import { useToast } from '../../components/ui/Toast';
 import { Card } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
-import { Pill } from 'lucide-react';
+import { Pill, Eye, EyeOff } from 'lucide-react';
 import './auth.css';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useContext(AuthContext);
@@ -86,16 +87,27 @@ const Login = () => {
 
               <div className="eh-form-group">
                 <label htmlFor="password">Password</label>
-                <input
-                  type="password"
-                  className="eh-input"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  required
-                  disabled={loading}
-                />
+                <div className="eh-password-wrapper">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    className="eh-input eh-input-password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    required
+                    disabled={loading}
+                  />
+                  <button
+                    type="button"
+                    className="eh-password-toggle"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex="-1"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </div>
               </div>
 
               <div className="forgot-password-link" style={{ textAlign: 'right', marginBottom: '1rem' }}>

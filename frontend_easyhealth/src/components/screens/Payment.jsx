@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
+import { API_URL } from '../../api/config';
 
 const EsewaPayment = () => {
     const [error, setError] = useState(null);
@@ -102,7 +103,7 @@ const EsewaPayment = () => {
 
             console.log('Sending payment request with data:', formData); // Debug log
 
-            const response = await axios.post('http://localhost:8000/api/payment/process/', formData, {
+            const response = await axios.post(`${API_URL}/payment/process/`, formData, {
                 headers: {
                     'Authorization': `Bearer ${sessionStorage.getItem('authTokens') ? JSON.parse(sessionStorage.getItem('authTokens')).access : ''}`,
                     'Content-Type': 'application/json'

@@ -5,21 +5,24 @@ import { Card, CardContent } from '../ui/card';
 import Button from '../ui/button';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Trash2, AlertTriangle } from 'lucide-react';
-import { BASE_URL } from '../../api/config';
+import { BASE_URL, getImageUrl } from '../../api/config';
 import './pages.css';
 
 const CartScreen = () => {
-  const { cartItems, removeFromCart, updateQuantity } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, toggleSelectItem, toggleSelectAll } = useCart();
   const navigate = useNavigate();
   const [updatedItems, setUpdatedItems] = useState(new Set());
 
-  // Helper for image URLs
-  const getImageUrl = (path) => {
-    if (!path) return null;
-    return path.startsWith('http') ? path : `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
-  };
+  const selectedCount = cartItems.filter(item => item.selected !== false).length;
+  const isAllSelected = selectedCount === cartItems.length && cartItems.length > 0;
+  
+  const totalPrice = cartItems.reduce((total, item) => {
+    if (item.selected !== false) {
+      return total + item.price * item.quantity;
+    }
+    return total;
+  }, 0);
 
-  const totalPrice = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
   const triggerUpdateAnimation = (itemId) => {
     setUpdatedItems(prev => new Set([...prev, itemId]));
@@ -85,85 +88,116 @@ const CartScreen = () => {
       </motion.h1>
 
       <div className="cart-layout">
-        {/* Cart Items */}
-        <div className="cart-items">
-          {cartItems.map((item, idx) => (
-            <motion.div
-              key={item.id}
-              className="cart-item"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-            >
-              <Card hover>
-                <CardContent className="cart-item-content">
-                  {/* Image */}
-                  <motion.div className="cart-item-image-wrapper">
-                    <img
-                      src={getImageUrl(item.image)}
-                      alt={item.name}
-                      className="cart-item-image"
-                    />
-                  </motion.div>
+        <div className="cart-main-content">
+          {/* Select All Bar */}
+          <div className="select-all-bar">
+            <label className="cart-checkbox-container">
+              <input 
+                type="checkbox" 
+                className="cart-checkbox"
+                checked={isAllSelected}
+                onChange={(e) => toggleSelectAll(e.target.checked)}
+              />
+              <span style={{ fontWeight: 600 }}>Select All ({cartItems.length} items)</span>
+            </label>
+            {selectedCount > 0 && (
+              <span style={{ fontSize: '0.9rem', color: 'var(--eh-success)', fontWeight: 600 }}>
+                {selectedCount} item{selectedCount !== 1 ? 's' : ''} selected
+              </span>
+            )}
+          </div>
 
-                  {/* Product Info */}
-                  <div className="cart-item-info">
-                    <h3>{item.name}</h3>
-                    <p className="cart-item-meta">{item.generic_name}</p>
-                    {item.prescriptionRequired && (
-                      <span className="prescription-badge">
-                        <AlertTriangle size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
-                        Prescription Required
-                      </span>
-                    )}
-                  </div>
+          {/* Cart Items */}
+          <div className="cart-items">
+            {cartItems.map((item, idx) => (
+              <motion.div
+                key={item.id}
+                className="cart-item"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <Card hover>
+                  <CardContent className="cart-item-content">
+                    {/* Selection Checkbox */}
+                    <div className="cart-item-checkbox-wrapper">
+                      <input 
+                        type="checkbox" 
+                        className="cart-checkbox"
+                        checked={item.selected !== false}
+                        onChange={() => toggleSelectItem(item.id)}
+                      />
+                    </div>
 
-                  {/* Quantity & Price */}
-                  <div className="cart-item-actions">
-                    <p className="cart-item-price">
-                      NPR {(item.price * item.quantity).toLocaleString()}
-                    </p>
-                    
-                    <div className="quantity-controls">
+                    {/* Image */}
+                    <motion.div className="cart-item-image-wrapper">
+                      <img
+                        src={getImageUrl(item.image)}
+                        alt={item.name}
+                        className="cart-item-image"
+                      />
+                    </motion.div>
+
+                    {/* Product Info */}
+                    <div className="cart-item-info">
+                      <h3>{item.name}</h3>
+                      <p className="cart-item-meta">{item.generic_name}</p>
+                      {item.prescriptionRequired && (
+                        <span className="prescription-badge">
+                          <AlertTriangle size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                          Prescription Required
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Quantity & Price */}
+                    <div className="cart-item-actions">
+                      <p className="cart-item-price">
+                        NPR {(item.price * item.quantity).toLocaleString()}
+                      </p>
+                      
+                      <div className="quantity-controls">
+                        <motion.button
+                          className="quantity-btn minus"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.92 }}
+                          onClick={() => decreaseQuantity(item.id)}
+                          disabled={item.quantity <= 1}
+                          aria-label="Decrease quantity"
+                        >
+                          −
+                        </motion.button>
+                        <span className={`quantity-value ${updatedItems.has(item.id) ? 'updated' : ''}`}>
+                          {item.quantity}
+                        </span>
+                        <motion.button
+                          className="quantity-btn plus"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.92 }}
+                          onClick={() => increaseQuantity(item.id)}
+                          aria-label="Increase quantity"
+                        >
+                          +
+                        </motion.button>
+                      </div>
+                      
                       <motion.button
-                        className="quantity-btn minus"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.92 }}
-                        onClick={() => decreaseQuantity(item.id)}
-                        disabled={item.quantity <= 1}
-                        aria-label="Decrease quantity"
+                        className="remove-btn"
+                        whileHover={{ scale: 1.02, backgroundColor: 'rgba(245, 87, 108, 0.2)' }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => removeFromCart(item.id)}
                       >
-                        −
-                      </motion.button>
-                      <span className={`quantity-value ${updatedItems.has(item.id) ? 'updated' : ''}`}>
-                        {item.quantity}
-                      </span>
-                      <motion.button
-                        className="quantity-btn plus"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.92 }}
-                        onClick={() => increaseQuantity(item.id)}
-                        aria-label="Increase quantity"
-                      >
-                        +
+                        <Trash2 size={16} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
+                        Remove
                       </motion.button>
                     </div>
-                    
-                    <motion.button
-                      className="remove-btn"
-                      whileHover={{ scale: 1.02, backgroundColor: 'rgba(245, 87, 108, 0.2)' }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => removeFromCart(item.id)}
-                    >
-                      <Trash2 size={16} style={{ marginRight: '6px', verticalAlign: 'middle' }} />
-                      Remove
-                    </motion.button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
         </div>
+
 
         {/* Order Summary */}
         <div className="order-summary">
@@ -179,7 +213,7 @@ const CartScreen = () => {
               <CardContent className="order-summary-body">
                 <div className="order-summary-divider">
                   <div className="order-summary-row">
-                    <span>Subtotal ({cartItems.length} items):</span>
+                    <span>Subtotal ({selectedCount} items selected):</span>
                     <span>NPR {totalPrice.toLocaleString()}</span>
                   </div>
                   <div className="order-summary-row free">
@@ -201,13 +235,15 @@ const CartScreen = () => {
 
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Button
-                    variant="success"
+                    variant={selectedCount > 0 ? "success" : "secondary"}
                     size="lg"
                     className="product-btn-block"
-                    onClick={() => navigate('/checkout')}
+                    onClick={() => selectedCount > 0 && navigate('/checkout')}
+                    disabled={selectedCount === 0}
                   >
-                    Proceed to Checkout
+                    Proceed to Checkout {selectedCount > 0 ? `(${selectedCount})` : ''}
                   </Button>
+
                 </motion.div>
 
                 <Button

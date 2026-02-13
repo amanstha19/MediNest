@@ -1,25 +1,14 @@
-// frontend_easyhealth/api/proxy-media.js
 export default async function handler(req, res) {
-  // Get the path from the URL. 
-  // We use req.url which contains the path after the rewrite.
-  // Example: /proxy-media/products/img.jpg
-  let path = req.url.split('?')[0]; 
+  let { actualPath } = req.query;
   
-  // Remove common prefixes used in rewrites or direct calls
-  path = path.replace('/api/proxy-media', '');
-  path = path.replace('/proxy-media', '');
-  
-  // Remove leading slash
-  if (path.startsWith('/')) path = path.slice(1);
-  
-  // Extra safety: remove redundant 'images/' if it's already there
-  path = path.replace(/^images\//, '');
-  
-  if (!path) {
+  if (!actualPath) {
     return res.status(400).send('Missing image path');
   }
+  
+  // Extra safety: remove redundant 'images/' if it's already there
+  let path = actualPath.replace(/^images\//, '');
 
-  const backend = "https://childless-jimmy-tactlessly.ngrok-free.dev";
+  const backend = (process.env.VITE_API_URL || "https://childless-jimmy-tactlessly.ngrok-free.dev").replace(/\/api$/, '');
   const targetUrl = `${backend}/images/${path}?ngrok-skip-browser-warning=1`;
 
   try {

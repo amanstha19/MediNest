@@ -10,22 +10,19 @@
  */
 
 const getBaseUrl = () => {
-    // Check for production API URL first
-    const prodApiUrl = import.meta.env?.VITE_API_URL;
-    if (prodApiUrl) {
-        return prodApiUrl;
-    }
-
     const isLocal = window.location.hostname === 'localhost' || 
                     window.location.hostname === '127.0.0.1' || 
                     window.location.hostname.startsWith('192.168.') ||
                     window.location.hostname.endsWith('.local');
 
-    // For Hosted Environments (Vercel, etc.)
-    // We use the absolute URL for API calls because CORS is supported by the backend.
-    // This ensures maximum performance and stability for Chrome/Brave.
-    if (!isLocal || window.location.protocol === 'https:') {
-        return 'https://childless-jimmy-tactlessly.ngrok-free.dev';
+    // Check for production API URL first
+    const prodApiUrl = import.meta.env?.VITE_API_URL;
+    if (prodApiUrl && (isLocal || !prodApiUrl.startsWith('http'))) {
+        return prodApiUrl;
+    }
+
+    if (!isLocal) {
+        return window.location.origin + '/api/v1';
     }
     
     // Development fallback
@@ -36,8 +33,8 @@ const getBaseUrl = () => {
 
 const rawBaseUrl = getBaseUrl();
 // Clean base URL
-export const BASE_URL = rawBaseUrl.replace(/\/api$/, '').replace(/\/$/, '');
-export const API_URL = `${BASE_URL}/api`;
+export const BASE_URL = rawBaseUrl.replace(/\/api\/v1$/, '').replace(/\/api$/, '').replace(/\/$/, '');
+export const API_URL = rawBaseUrl.endsWith('/api/v1') ? rawBaseUrl : `${BASE_URL}/api`;
 
 console.log('🔗 MediNest API Config:', {
     ENVIRONMENT: import.meta.env.MODE,

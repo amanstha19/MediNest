@@ -96,6 +96,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5174",
     "http://localhost:5175",
     "http://127.0.0.1:5173",
+    "https://frontend-easyhealth.vercel.app",
 ]
 
 # Allow ngrok domains dynamically

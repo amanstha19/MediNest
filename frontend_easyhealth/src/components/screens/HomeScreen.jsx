@@ -64,7 +64,7 @@ function HomeScreen() {
         });
         const data = await response.json();
         const allProductsEntry = { value: '', label: 'All Products', color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', icon: 'Home', description: 'Browse everything' };
-        setCategories([allProductsEntry, ...data]);
+        setCategories(Array.isArray(data) ? [allProductsEntry, ...data] : [allProductsEntry]);
       } catch (error) {
         console.error('Error fetching categories:', error);
         setCategories(FALLBACK_CATEGORIES);
@@ -78,14 +78,14 @@ function HomeScreen() {
       try {
         setLoading(true);
         const { data } = await API.get('products/');
-        setProducts(data);
-        setFilteredProducts(data);
-        const grouped = data.reduce((acc, product) => {
+        setProducts(Array.isArray(data) ? data : []);
+        setFilteredProducts(Array.isArray(data) ? data : []);
+        const grouped = Array.isArray(data) ? data.reduce((acc, product) => {
           const cat = product.category || 'Other';
           if (!acc[cat]) acc[cat] = [];
           acc[cat].push(product);
           return acc;
-        }, {});
+        }, {}) : {};
         setProductsByCategory(grouped);
       } catch (error) {
         console.error('Error fetching products:', error);

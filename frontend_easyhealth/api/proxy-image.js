@@ -1,12 +1,10 @@
 // frontend_easyhealth/api/proxy-image.js
-import fetch from 'node-fetch';
+// frontend_easyhealth/api/proxy-image.js
 
 export default async function handler(req, res) {
-  // The path comes after /proxy-media/
-  // Example: /proxy-media/products/img.jpg
-  const path = req.url.replace('/proxy-media/', '').split('?')[0];
-  const backend = "https://childless-jimmy-tactlessly.ngrok-free.dev";
-  const targetUrl = `${backend}/images/${path}?ngrok-skip-browser-warning=1`;
+  const { actualPath } = req.query;
+  const backend = (process.env.VITE_API_URL || "https://childless-jimmy-tactlessly.ngrok-free.dev").replace(/\/api$/, '');
+  const targetUrl = `${backend}/images/${actualPath}?ngrok-skip-browser-warning=1`;
 
   try {
     const response = await fetch(targetUrl);
@@ -19,8 +17,8 @@ export default async function handler(req, res) {
     res.setHeader('Content-Type', contentType || 'image/jpeg');
     res.setHeader('Cache-Control', 'public, max-age=86400, s-maxage=86400');
     
-    const buffer = await response.buffer();
-    res.send(buffer);
+    const arrayBuffer = await response.arrayBuffer();
+    res.send(Buffer.from(arrayBuffer));
   } catch (error) {
     console.error('Proxy Error:', error);
     res.status(500).send('Internal Server Error');

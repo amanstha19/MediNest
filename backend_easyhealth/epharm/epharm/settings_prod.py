@@ -86,15 +86,15 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'epharm.wsgi.application'
 
-# Database - Use Railway PostgreSQL
+# Database - Use Supabase PostgreSQL
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'railway'),
-        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
-        'HOST': os.environ.get('POSTGRES_HOST', ''),
-        'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        'NAME': os.environ.get('POSTGRES_DB', 'drf_pharmacy'),
+        'USER': os.environ.get('POSTGRES_USER', 'drf_user'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'drf123'),
+        'HOST': os.environ.get('POSTGRES_HOST', 'db.vvbreylpmmnutthhmnmn.supabase.co'),
+        'PORT': os.environ.get('POSTGRES_PORT', '5434'),
     }
 }
 
